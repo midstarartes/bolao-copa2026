@@ -921,12 +921,29 @@
       text-align: center;
     }
 
+    .admin-results-trigger--api {
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.14), rgba(255,255,255,0.04) 18%, rgba(255,255,255,0.01) 42%, rgba(0,0,0,0.26) 100%),
+        linear-gradient(180deg, rgba(224,242,254,0.14), rgba(56,189,248,0.16) 34%, rgba(3,105,161,0.92) 100%),
+        linear-gradient(135deg, rgba(8,47,73,0.94), rgba(3,105,161,0.96) 52%, rgba(12,74,110,0.94));
+      color: #eff6ff;
+    }
+
     .admin-results-trigger:hover {
       transform: translateY(-1px);
       box-shadow:
         0 18px 28px rgba(0,0,0,0.38),
         0 0 16px rgba(96,165,250,0.22),
         inset 0 1px 0 rgba(255,255,255,0.18);
+    }
+
+    .admin-results-trigger:disabled {
+      opacity: 0.58;
+      cursor: wait;
+      transform: none;
+      box-shadow:
+        0 14px 24px rgba(0,0,0,0.28),
+        inset 0 1px 0 rgba(255,255,255,0.12);
     }
 
     .rules-grid {
@@ -2841,7 +2858,8 @@
       gap: 10px;
     }
 
-    .results-save {
+    .results-save,
+    .results-api {
       min-width: 220px;
       min-height: 44px;
       padding: 10px 16px;
@@ -2859,6 +2877,19 @@
       box-shadow:
         0 14px 24px rgba(0,0,0,0.34),
         inset 0 1px 0 rgba(255,255,255,0.14);
+    }
+
+    .results-api {
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.14), rgba(255,255,255,0.04) 18%, rgba(255,255,255,0.01) 42%, rgba(0,0,0,0.26) 100%),
+        linear-gradient(135deg, rgba(56,189,248,0.9), rgba(37,99,235,0.94) 52%, rgba(30,64,175,0.96));
+      color: #eff6ff;
+    }
+
+    .results-api:disabled,
+    .results-save:disabled {
+      opacity: 0.58;
+      cursor: wait;
     }
 
     .buff-item:disabled {
@@ -3385,6 +3416,7 @@
         justify-content: stretch;
       }
 
+      .results-api,
       .results-save,
       .admin-results-trigger,
       .admin-button,
@@ -3514,9 +3546,12 @@
         <div class="admin-results-bar" id="admin-results-bar">
           <div class="admin-results-copy">
             <p class="admin-results-label">Painel de resultados oficiais</p>
-            <p class="admin-results-hint">Use esse atalho para lançar o placar oficial e atualizar ranking e histórico em tempo real.</p>
+            <p class="admin-results-hint">Use esse atalho para lançar o placar oficial e atualizar ranking e histórico em tempo real. A API fica como apoio e o admin continua sendo o fallback oficial.</p>
           </div>
-          <button class="admin-results-trigger" id="admin-results-trigger" type="button">Lançar resultado oficial</button>
+          <div class="results-actions">
+            <button class="admin-results-trigger admin-results-trigger--api" id="admin-results-api-trigger" type="button">Sincronizar jogos de hoje pela API</button>
+            <button class="admin-results-trigger" id="admin-results-trigger" type="button">Lançar resultado oficial</button>
+          </div>
         </div>
 
         <section class="board" aria-label="Confrontos" id="matches-board"></section>
@@ -4131,6 +4166,7 @@
         </div>
         <div class="results-feedback" id="results-feedback"></div>
         <div class="results-actions">
+          <button class="results-api" id="results-fetch-api" type="button">Buscar da API</button>
           <button class="results-save" id="results-save" type="submit">Salvar resultado oficial</button>
         </div>
       </form>
@@ -4227,6 +4263,7 @@
     const boardEmpty = document.getElementById("board-empty");
     const gamesPagination = document.getElementById("games-pagination");
     const adminResultsTrigger = document.getElementById("admin-results-trigger");
+    const adminResultsApiTrigger = document.getElementById("admin-results-api-trigger");
     const loginTrigger = document.querySelector(".login-card");
     const loginCardUser = document.getElementById("login-card-user");
     const loginCardLabel = document.getElementById("login-card-label");
@@ -4296,6 +4333,7 @@
     const resultsWinnerSelect = document.getElementById("results-winner-select");
     const resultsStatusSelect = document.getElementById("results-status-select");
     const resultsFeedback = document.getElementById("results-feedback");
+    const resultsFetchApi = document.getElementById("results-fetch-api");
     let fixtures = [];
     let boardColumns = [];
     let matchRecords = [];
@@ -4319,6 +4357,10 @@
     const SUPABASE_TOKEN_KEY = "designLabSupabaseToken";
     const BUFFS_STORAGE_KEY = "designLabBuffSelections";
     const PREDICTIONS_STORAGE_KEY = "designLabPredictions";
+    const THE_SPORTS_DB_BASE_URL = "https://www.thesportsdb.com/api/v1/json/123";
+    const THE_SPORTS_DB_WORLD_CUP_LEAGUE_ID = "4429";
+    const THE_SPORTS_DB_CACHE_KEY = "designLabTheSportsDbCache";
+    const THE_SPORTS_DB_CACHE_TTL_MS = 20 * 60 * 1000;
     const SUPABASE_URL = "https://zoktbengtliqczjlemdk.supabase.co";
     const SUPABASE_ANON_KEY =
       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpva3RiZW5ndGxpcWN6amxlbWRrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgxNjIzODAsImV4cCI6MjA5MzczODM4MH0.sltr6vztakKxqeMjljCOMtlN3_eIl_jItY-xegxjeWE";
@@ -4387,6 +4429,64 @@
       USA: "us",
       UZB: "uz",
     };
+
+    const TEAM_ALIAS_MAP = {
+      ALG: ["Argélia", "Algeria"],
+      ARG: ["Argentina"],
+      AUS: ["Austrália", "Australia"],
+      AUT: ["Áustria", "Austria"],
+      BEL: ["Bélgica", "Belgium"],
+      BIH: ["Bósnia e Herzegovina", "Bosnia and Herzegovina", "Bosnia-Herzegovina"],
+      BRA: ["Brasil", "Brazil"],
+      CAN: ["Canadá", "Canada"],
+      CIV: ["Costa do Marfim", "Ivory Coast", "Cote d'Ivoire"],
+      COD: ["RD Congo", "DR Congo", "Congo DR", "Democratic Republic of the Congo"],
+      COL: ["Colômbia", "Colombia"],
+      CPV: ["Cabo Verde", "Cape Verde"],
+      CRO: ["Croácia", "Croatia"],
+      CZE: ["República Tcheca", "Czech Republic", "Czechia"],
+      CUW: ["Curaçao", "Curacao"],
+      ECU: ["Equador", "Ecuador"],
+      EGY: ["Egito", "Egypt"],
+      ENG: ["Inglaterra", "England"],
+      ESP: ["Espanha", "Spain"],
+      FRA: ["França", "France"],
+      GER: ["Alemanha", "Germany"],
+      GHA: ["Gana", "Ghana"],
+      HAI: ["Haiti"],
+      IRN: ["Irã", "Iran"],
+      IRQ: ["Iraque", "Iraq"],
+      JPN: ["Japão", "Japan"],
+      JOR: ["Jordânia", "Jordan"],
+      KOR: ["Coreia do Sul", "South Korea", "Korea Republic", "Republic of Korea"],
+      KSA: ["Arábia Saudita", "Saudi Arabia"],
+      MAR: ["Marrocos", "Morocco"],
+      MEX: ["México", "Mexico"],
+      NED: ["Holanda", "Netherlands", "The Netherlands"],
+      NOR: ["Noruega", "Norway"],
+      NZL: ["Nova Zelândia", "New Zealand"],
+      PAN: ["Panamá", "Panama"],
+      PAR: ["Paraguai", "Paraguay"],
+      POR: ["Portugal"],
+      RSA: ["África do Sul", "South Africa"],
+      SCO: ["Escócia", "Scotland"],
+      SEN: ["Senegal"],
+      SUI: ["Suíça", "Switzerland"],
+      SWE: ["Suécia", "Sweden"],
+      TUN: ["Tunísia", "Tunisia"],
+      TUR: ["Turquia", "Turkey", "Türkiye", "Turkiye"],
+      URU: ["Uruguai", "Uruguay"],
+      USA: ["Estados Unidos", "United States", "USA", "USMNT"],
+      UZB: ["Uzbequistão", "Uzbekistan"]
+    };
+
+    const TEAM_ALIAS_TO_CODE = Object.entries(TEAM_ALIAS_MAP).reduce((accumulator, [code, aliases]) => {
+      aliases.forEach((alias) => {
+        accumulator[normalizeTextForApi(alias)] = code;
+      });
+      accumulator[normalizeTextForApi(code)] = code;
+      return accumulator;
+    }, {});
 
     const DEFAULT_MATCHES = [
       { id: "jogo-1", match_number: 1, phase_label: "FASE DE GRUPOS", group_name: "GRUPO A", home_team: "México", away_team: "África do Sul", home_code: "MEX", away_code: "RSA", starts_at: "2026-06-11T18:00:00Z" },
@@ -5405,6 +5505,328 @@
         minute: "2-digit",
         hour12: false,
       }).format(date);
+    }
+
+    function normalizeTextForApi(value = "") {
+      return String(value || "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-zA-Z0-9]+/g, " ")
+        .trim()
+        .toLowerCase();
+    }
+
+    function isPlaceholderTeamName(value = "") {
+      const normalized = String(value || "").trim().toUpperCase();
+      return /^\d+[A-L]$/.test(normalized) || /^[WL]\d+$/.test(normalized);
+    }
+
+    function getMatchApiDateKey(match) {
+      return String(match?.starts_at || "").split("T")[0] || "";
+    }
+
+    function getTheSportsDbCacheStore() {
+      try {
+        return JSON.parse(localStorage.getItem(THE_SPORTS_DB_CACHE_KEY) || "{}");
+      } catch {
+        return {};
+      }
+    }
+
+    function setTheSportsDbCacheStore(store) {
+      localStorage.setItem(THE_SPORTS_DB_CACHE_KEY, JSON.stringify(store));
+    }
+
+    function getTeamCodeFromApiName(name = "") {
+      return TEAM_ALIAS_TO_CODE[normalizeTextForApi(name)] || "";
+    }
+
+    function getApiEventTimestamp(event) {
+      if (event?.strTimestamp) {
+        const timestamp = new Date(event.strTimestamp);
+        if (!Number.isNaN(timestamp.getTime())) return timestamp.getTime();
+      }
+
+      if (event?.dateEvent && event?.strTime) {
+        const rawTime = String(event.strTime).trim();
+        const normalizedTime = rawTime.length === 5 ? `${rawTime}:00` : rawTime;
+        const timestamp = new Date(`${event.dateEvent}T${normalizedTime}Z`);
+        if (!Number.isNaN(timestamp.getTime())) return timestamp.getTime();
+      }
+
+      return null;
+    }
+
+    function getApiEventScoreValue(event, keys) {
+      for (const key of keys) {
+        const rawValue = event?.[key];
+        if (rawValue === null || rawValue === undefined || rawValue === "") continue;
+        const parsed = Number.parseInt(rawValue, 10);
+        if (Number.isInteger(parsed)) return parsed;
+      }
+      return null;
+    }
+
+    function mapApiEventStatus(event) {
+      const rawStatus = normalizeTextForApi(
+        event?.strStatus || event?.strProgress || event?.strResult || ""
+      );
+
+      if (
+        rawStatus.includes("cancel") ||
+        rawStatus.includes("postpon") ||
+        rawStatus.includes("abandon")
+      ) {
+        return "cancelled";
+      }
+
+      if (
+        rawStatus === "ft" ||
+        rawStatus === "aet" ||
+        rawStatus.includes("full time") ||
+        rawStatus.includes("after extra time") ||
+        rawStatus.includes("pen")
+      ) {
+        return "completed";
+      }
+
+      return "scheduled";
+    }
+
+    async function fetchWorldCupEventsByDate(dateKey, { force = false } = {}) {
+      if (!dateKey) return [];
+
+      const cache = getTheSportsDbCacheStore();
+      const cachedEntry = cache[dateKey];
+      const now = Date.now();
+
+      if (!force && cachedEntry && Array.isArray(cachedEntry.events) && now - cachedEntry.fetchedAt < THE_SPORTS_DB_CACHE_TTL_MS) {
+        return cachedEntry.events;
+      }
+
+      const url = `${THE_SPORTS_DB_BASE_URL}/eventsday.php?d=${encodeURIComponent(dateKey)}&s=Soccer&l=${encodeURIComponent(THE_SPORTS_DB_WORLD_CUP_LEAGUE_ID)}`;
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error("Não foi possível consultar o TheSportsDB agora.");
+      }
+
+      const payload = await response.json();
+      const events = Array.isArray(payload?.events) ? payload.events : [];
+
+      cache[dateKey] = {
+        fetchedAt: now,
+        events,
+      };
+      setTheSportsDbCacheStore(cache);
+
+      return events;
+    }
+
+    function scoreApiEventForMatch(match, event) {
+      let score = 0;
+      const matchHomeCode = String(match.home_code || "").toUpperCase();
+      const matchAwayCode = String(match.away_code || "").toUpperCase();
+      const apiHomeCode = getTeamCodeFromApiName(event?.strHomeTeam || "");
+      const apiAwayCode = getTeamCodeFromApiName(event?.strAwayTeam || "");
+
+      if (!isPlaceholderTeamName(match.home_team) && matchHomeCode && apiHomeCode === matchHomeCode) {
+        score += 80;
+      } else if (!isPlaceholderTeamName(match.home_team) && normalizeTextForApi(event?.strHomeTeam || "") === normalizeTextForApi(match.home_team || "")) {
+        score += 70;
+      }
+
+      if (!isPlaceholderTeamName(match.away_team) && matchAwayCode && apiAwayCode === matchAwayCode) {
+        score += 80;
+      } else if (!isPlaceholderTeamName(match.away_team) && normalizeTextForApi(event?.strAwayTeam || "") === normalizeTextForApi(match.away_team || "")) {
+        score += 70;
+      }
+
+      const matchTimestamp = new Date(match.starts_at).getTime();
+      const apiTimestamp = getApiEventTimestamp(event);
+      if (Number.isFinite(matchTimestamp) && Number.isFinite(apiTimestamp)) {
+        const diffMinutes = Math.abs(matchTimestamp - apiTimestamp) / 60000;
+        if (diffMinutes <= 20) score += 40;
+        else if (diffMinutes <= 90) score += 28;
+        else if (diffMinutes <= 360) score += 12;
+      }
+
+      const sameDate = getMatchApiDateKey(match) === String(event?.dateEvent || "");
+      if (sameDate) score += 10;
+
+      return score;
+    }
+
+    function findBestApiEventForMatch(match, events) {
+      if (!match || !Array.isArray(events) || !events.length) return null;
+
+      const scoredCandidates = events
+        .map((event) => ({
+          event,
+          score: scoreApiEventForMatch(match, event),
+        }))
+        .sort((left, right) => right.score - left.score);
+
+      const best = scoredCandidates[0];
+      if (!best || best.score < 25) return null;
+      return best.event;
+    }
+
+    function applyApiEventToResultsForm(match, event) {
+      const homeScore = getApiEventScoreValue(event, ["intHomeScore", "intHomeScore2"]);
+      const awayScore = getApiEventScoreValue(event, ["intAwayScore", "intAwayScore2"]);
+      const extraHome = getApiEventScoreValue(event, ["intHomeExtraScore", "intHomeScoreExtra", "intHomeScoreET"]);
+      const extraAway = getApiEventScoreValue(event, ["intAwayExtraScore", "intAwayScoreExtra", "intAwayScoreET"]);
+
+      if (Number.isInteger(homeScore)) resultsHomeScore.value = String(homeScore);
+      if (Number.isInteger(awayScore)) resultsAwayScore.value = String(awayScore);
+      resultsExtraHome.value = Number.isInteger(extraHome) ? String(extraHome) : "";
+      resultsExtraAway.value = Number.isInteger(extraAway) ? String(extraAway) : "";
+
+      const eventStatus = mapApiEventStatus(event);
+      resultsStatusSelect.value = eventStatus;
+
+      const explicitWinner = event?.strWinner ? getTeamCodeFromApiName(event.strWinner) : "";
+      if (explicitWinner && explicitWinner === String(match.home_code || "").toUpperCase()) {
+        resultsWinnerSelect.value = match.home_team;
+      } else if (explicitWinner && explicitWinner === String(match.away_code || "").toUpperCase()) {
+        resultsWinnerSelect.value = match.away_team;
+      } else if (Number.isInteger(homeScore) && Number.isInteger(awayScore) && homeScore !== awayScore) {
+        resultsWinnerSelect.value = homeScore > awayScore ? match.home_team : match.away_team;
+      } else {
+        resultsWinnerSelect.value = "";
+      }
+    }
+
+    async function syncSelectedMatchFromApi({ force = false } = {}) {
+      const currentUser = getCurrentUser();
+      if (!currentUser?.isAdmin) return;
+
+      const match = getMatchRecordById(resultsMatchSelect.value);
+      if (!match) {
+        showResultsFeedback("Selecione um jogo antes de consultar a API.");
+        return;
+      }
+
+      const originalLabel = resultsFetchApi?.textContent || "Buscar da API";
+      if (resultsFetchApi) {
+        resultsFetchApi.disabled = true;
+        resultsFetchApi.textContent = "Buscando...";
+      }
+
+      try {
+        const events = await fetchWorldCupEventsByDate(getMatchApiDateKey(match), { force });
+        const event = findBestApiEventForMatch(match, events);
+
+        if (!event) {
+          showResultsFeedback("A API não encontrou um confronto confiável para esse jogo. O lançamento manual continua disponível.");
+          return;
+        }
+
+        applyApiEventToResultsForm(match, event);
+        showResultsFeedback("Resultado carregado da API. Revise os dados e clique em salvar resultado oficial.", "success");
+      } catch (error) {
+        console.error(error);
+        showResultsFeedback(error.message || "Não foi possível consultar a API agora.");
+      } finally {
+        if (resultsFetchApi) {
+          resultsFetchApi.disabled = false;
+          resultsFetchApi.textContent = originalLabel;
+        }
+      }
+    }
+
+    async function syncTodayMatchesFromApi() {
+      const currentUser = getCurrentUser();
+      if (!currentUser?.isAdmin || !BACKEND_ENABLED) return;
+
+      const todayBrazil = new Intl.DateTimeFormat("en-CA", {
+        timeZone: "America/Sao_Paulo",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      }).format(new Date());
+
+      const todayMatches = matchRecords.filter((match) => getFixtureDateKey(match.starts_at) === todayBrazil);
+      if (!todayMatches.length) {
+        showAdminFeedback("Não há jogos de hoje para sincronizar pela API.");
+        return;
+      }
+
+      const originalLabel = adminResultsApiTrigger?.textContent || "Sincronizar jogos de hoje pela API";
+      if (adminResultsApiTrigger) {
+        adminResultsApiTrigger.disabled = true;
+        adminResultsApiTrigger.textContent = "Sincronizando...";
+      }
+
+      try {
+        const groupedByDate = todayMatches.reduce((accumulator, match) => {
+          const dateKey = getMatchApiDateKey(match);
+          if (!accumulator[dateKey]) accumulator[dateKey] = [];
+          accumulator[dateKey].push(match);
+          return accumulator;
+        }, {});
+
+        let updatedCount = 0;
+
+        for (const [dateKey, matches] of Object.entries(groupedByDate)) {
+          const events = await fetchWorldCupEventsByDate(dateKey);
+
+          for (const match of matches) {
+            const event = findBestApiEventForMatch(match, events);
+            if (!event) continue;
+
+            const status = mapApiEventStatus(event);
+            const homeScore = getApiEventScoreValue(event, ["intHomeScore", "intHomeScore2"]);
+            const awayScore = getApiEventScoreValue(event, ["intAwayScore", "intAwayScore2"]);
+
+            if (!Number.isInteger(homeScore) || !Number.isInteger(awayScore)) continue;
+            if (status === "scheduled") continue;
+
+            const extraHome = getApiEventScoreValue(event, ["intHomeExtraScore", "intHomeScoreExtra", "intHomeScoreET"]);
+            const extraAway = getApiEventScoreValue(event, ["intAwayExtraScore", "intAwayScoreExtra", "intAwayScoreET"]);
+            const explicitWinner = event?.strWinner ? getTeamCodeFromApiName(event.strWinner) : "";
+            const winnerTeam =
+              explicitWinner === String(match.home_code || "").toUpperCase()
+                ? match.home_team
+                : explicitWinner === String(match.away_code || "").toUpperCase()
+                  ? match.away_team
+                  : homeScore > awayScore
+                    ? match.home_team
+                    : awayScore > homeScore
+                      ? match.away_team
+                      : null;
+
+            const { error } = await supabase.rpc("app_admin_set_match_result", {
+              p_token: getBackendToken(),
+              p_match_id: match.id,
+              p_score_home: homeScore,
+              p_score_away: awayScore,
+              p_extra_time_home: Number.isInteger(extraHome) ? extraHome : null,
+              p_extra_time_away: Number.isInteger(extraAway) ? extraAway : null,
+              p_winner_team: winnerTeam,
+              p_status: status,
+            });
+
+            if (!error) {
+              updatedCount += 1;
+            }
+          }
+        }
+
+        await loadMatchesFromBackend();
+        await loadLeaderboard();
+        await loadUserHistory();
+        await loadMissionProgress();
+        showAdminFeedback(updatedCount > 0 ? `${updatedCount} jogo(s) de hoje sincronizado(s) pela API.` : "Nenhum jogo de hoje precisou de atualização pela API.");
+      } catch (error) {
+        console.error(error);
+        showAdminFeedback(error.message || "Não foi possível sincronizar os jogos de hoje pela API.");
+      } finally {
+        if (adminResultsApiTrigger) {
+          adminResultsApiTrigger.disabled = false;
+          adminResultsApiTrigger.textContent = originalLabel;
+        }
+      }
     }
 
     function buildFixtureMarkup(match) {
@@ -6787,6 +7209,10 @@
       openResultsModal();
     });
 
+    adminResultsApiTrigger?.addEventListener("click", () => {
+      void syncTodayMatchesFromApi();
+    });
+
     hydrateMissionCards();
 
     missionCards.forEach((card) => {
@@ -6838,6 +7264,10 @@
 
     resultsMatchSelect?.addEventListener("change", () => {
       fillResultsForm(resultsMatchSelect.value);
+    });
+
+    resultsFetchApi?.addEventListener("click", () => {
+      void syncSelectedMatchFromApi();
     });
 
     resultsForm?.addEventListener("submit", (event) => {
