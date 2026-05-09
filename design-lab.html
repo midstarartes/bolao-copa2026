@@ -5593,110 +5593,6 @@
       return "scheduled";
     }
 
-    async function fetchWorldCupEventsByDate(dateKey, { force = false } = {}) {
-      if (!dateKey) return [];
-
-      const cache = getTheSportsDbCacheStore();
-      const cachedEntry = cache[dateKey];
-      const now = Date.now();
-
-      if (!force && cachedEntry && Array.isArray(cachedEntry.events) && now - cachedEntry.fetchedAt < THE_SPORTS_DB_CACHE_TTL_MS) {
-        return cachedEntry.events;
-      }
-
-      const url = `${THE_SPORTS_DB_BASE_URL}/eventsday.php?d=${encodeURIComponent(dateKey)}&s=Soccer&l=${encodeURIComponent(THE_SPORTS_DB_WORLD_CUP_LEAGUE_ID)}`;
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error("Não foi possível consultar o TheSportsDB agora.");
-      }
-
-      const payload = await response.json();
-      const events = Array.isArray(payload?.events) ? payload.events : [];
-
-      cache[dateKey] = {
-        fetchedAt: now,
-        events,
-      };
-      setTheSportsDbCacheStore(cache);
-
-      return events;
-    }
-
-    function scoreApiEventForMatch(match, event) {
-      let score = 0;
-      const matchHomeCode = String(match.home_code || "").toUpperCase();
-      const matchAwayCode = String(match.away_code || "").toUpperCase();
-      const apiHomeCode = getTeamCodeFromApiName(event?.strHomeTeam || "");
-      const apiAwayCode = getTeamCodeFromApiName(event?.strAwayTeam || "");
-
-      if (!isPlaceholderTeamName(match.home_team) && matchHomeCode && apiHomeCode === matchHomeCode) {
-        score += 80;
-      } else if (!isPlaceholderTeamName(match.home_team) && normalizeTextForApi(event?.strHomeTeam || "") === normalizeTextForApi(match.home_team || "")) {
-        score += 70;
-      }
-
-      if (!isPlaceholderTeamName(match.away_team) && matchAwayCode && apiAwayCode === matchAwayCode) {
-        score += 80;
-      } else if (!isPlaceholderTeamName(match.away_team) && normalizeTextForApi(event?.strAwayTeam || "") === normalizeTextForApi(match.away_team || "")) {
-        score += 70;
-      }
-
-      const matchTimestamp = new Date(match.starts_at).getTime();
-      const apiTimestamp = getApiEventTimestamp(event);
-      if (Number.isFinite(matchTimestamp) && Number.isFinite(apiTimestamp)) {
-        const diffMinutes = Math.abs(matchTimestamp - apiTimestamp) / 60000;
-        if (diffMinutes <= 20) score += 40;
-        else if (diffMinutes <= 90) score += 28;
-        else if (diffMinutes <= 360) score += 12;
-      }
-
-      const sameDate = getMatchApiDateKey(match) === String(event?.dateEvent || "");
-      if (sameDate) score += 10;
-
-      return score;
-    }
-
-    function findBestApiEventForMatch(match, events) {
-      if (!match || !Array.isArray(events) || !events.length) return null;
-
-      const scoredCandidates = events
-        .map((event) => ({
-          event,
-          score: scoreApiEventForMatch(match, event),
-        }))
-        .sort((left, right) => right.score - left.score);
-
-      const best = scoredCandidates[0];
-      if (!best || best.score < 25) return null;
-      return best.event;
-    }
-
-    function applyApiEventToResultsForm(match, event) {
-      const homeScore = getApiEventScoreValue(event, ["intHomeScore", "intHomeScore2"]);
-      const awayScore = getApiEventScoreValue(event, ["intAwayScore", "intAwayScore2"]);
-      const extraHome = getApiEventScoreValue(event, ["intHomeExtraScore", "intHomeScoreExtra", "intHomeScoreET"]);
-      const extraAway = getApiEventScoreValue(event, ["intAwayExtraScore", "intAwayScoreExtra", "intAwayScoreET"]);
-
-      if (Number.isInteger(homeScore)) resultsHomeScore.value = String(homeScore);
-      if (Number.isInteger(awayScore)) resultsAwayScore.value = String(awayScore);
-      resultsExtraHome.value = Number.isInteger(extraHome) ? String(extraHome) : "";
-      resultsExtraAway.value = Number.isInteger(extraAway) ? String(extraAway) : "";
-
-      const eventStatus = mapApiEventStatus(event);
-      resultsStatusSelect.value = eventStatus;
-
-      const explicitWinner = event?.strWinner ? getTeamCodeFromApiName(event.strWinner) : "";
-      if (explicitWinner && explicitWinner === String(match.home_code || "").toUpperCase()) {
-        resultsWinnerSelect.value = match.home_team;
-      } else if (explicitWinner && explicitWinner === String(match.away_code || "").toUpperCase()) {
-        resultsWinnerSelect.value = match.away_team;
-      } else if (Number.isInteger(homeScore) && Number.isInteger(awayScore) && homeScore !== awayScore) {
-        resultsWinnerSelect.value = homeScore > awayScore ? match.home_team : match.away_team;
-      } else {
-        resultsWinnerSelect.value = "";
-      }
-    }
-
     async function syncSelectedMatchFromApi({ force = false } = {}) {
       const currentUser = getCurrentUser();
       if (!currentUser?.isAdmin) return;
@@ -5714,15 +5610,36 @@
       }
 
       try {
-        const events = await fetchWorldCupEventsByDate(getMatchApiDateKey(match), { force });
-        const event = findBestApiEventForMatch(match, events);
+        const response = await fetch("/api/the-sports-sync", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            mode: "match",
+            matchId: match.id,
+            token: getBackendToken(),
+            force,
+          }),
+        });
 
-        if (!event) {
+        const payload = await response.json();
+        if (!response.ok || !payload?.ok) {
+          throw new Error(payload?.message || "Não foi possível consultar a API agora.");
+        }
+
+        const preview = payload.preview;
+        if (!preview?.found) {
           showResultsFeedback("A API não encontrou um confronto confiável para esse jogo. O lançamento manual continua disponível.");
           return;
         }
 
-        applyApiEventToResultsForm(match, event);
+        if (Number.isInteger(preview.homeScore)) resultsHomeScore.value = String(preview.homeScore);
+        if (Number.isInteger(preview.awayScore)) resultsAwayScore.value = String(preview.awayScore);
+        resultsExtraHome.value = Number.isInteger(preview.extraHome) ? String(preview.extraHome) : "";
+        resultsExtraAway.value = Number.isInteger(preview.extraAway) ? String(preview.extraAway) : "";
+        resultsStatusSelect.value = preview.eventStatus || "scheduled";
+        resultsWinnerSelect.value = preview.winnerTeam || "";
         showResultsFeedback("Resultado carregado da API. Revise os dados e clique em salvar resultado oficial.", "success");
       } catch (error) {
         console.error(error);
@@ -5739,19 +5656,6 @@
       const currentUser = getCurrentUser();
       if (!currentUser?.isAdmin || !BACKEND_ENABLED) return;
 
-      const todayBrazil = new Intl.DateTimeFormat("en-CA", {
-        timeZone: "America/Sao_Paulo",
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-      }).format(new Date());
-
-      const todayMatches = matchRecords.filter((match) => getFixtureDateKey(match.starts_at) === todayBrazil);
-      if (!todayMatches.length) {
-        showAdminFeedback("Não há jogos de hoje para sincronizar pela API.");
-        return;
-      }
-
       const originalLabel = adminResultsApiTrigger?.textContent || "Sincronizar jogos de hoje pela API";
       if (adminResultsApiTrigger) {
         adminResultsApiTrigger.disabled = true;
@@ -5759,65 +5663,31 @@
       }
 
       try {
-        const groupedByDate = todayMatches.reduce((accumulator, match) => {
-          const dateKey = getMatchApiDateKey(match);
-          if (!accumulator[dateKey]) accumulator[dateKey] = [];
-          accumulator[dateKey].push(match);
-          return accumulator;
-        }, {});
+        const response = await fetch("/api/the-sports-sync", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            mode: "today",
+            token: getBackendToken(),
+          }),
+        });
 
-        let updatedCount = 0;
-
-        for (const [dateKey, matches] of Object.entries(groupedByDate)) {
-          const events = await fetchWorldCupEventsByDate(dateKey);
-
-          for (const match of matches) {
-            const event = findBestApiEventForMatch(match, events);
-            if (!event) continue;
-
-            const status = mapApiEventStatus(event);
-            const homeScore = getApiEventScoreValue(event, ["intHomeScore", "intHomeScore2"]);
-            const awayScore = getApiEventScoreValue(event, ["intAwayScore", "intAwayScore2"]);
-
-            if (!Number.isInteger(homeScore) || !Number.isInteger(awayScore)) continue;
-            if (status === "scheduled") continue;
-
-            const extraHome = getApiEventScoreValue(event, ["intHomeExtraScore", "intHomeScoreExtra", "intHomeScoreET"]);
-            const extraAway = getApiEventScoreValue(event, ["intAwayExtraScore", "intAwayScoreExtra", "intAwayScoreET"]);
-            const explicitWinner = event?.strWinner ? getTeamCodeFromApiName(event.strWinner) : "";
-            const winnerTeam =
-              explicitWinner === String(match.home_code || "").toUpperCase()
-                ? match.home_team
-                : explicitWinner === String(match.away_code || "").toUpperCase()
-                  ? match.away_team
-                  : homeScore > awayScore
-                    ? match.home_team
-                    : awayScore > homeScore
-                      ? match.away_team
-                      : null;
-
-            const { error } = await supabase.rpc("app_admin_set_match_result", {
-              p_token: getBackendToken(),
-              p_match_id: match.id,
-              p_score_home: homeScore,
-              p_score_away: awayScore,
-              p_extra_time_home: Number.isInteger(extraHome) ? extraHome : null,
-              p_extra_time_away: Number.isInteger(extraAway) ? extraAway : null,
-              p_winner_team: winnerTeam,
-              p_status: status,
-            });
-
-            if (!error) {
-              updatedCount += 1;
-            }
-          }
+        const payload = await response.json();
+        if (!response.ok || !payload?.ok) {
+          throw new Error(payload?.message || "Não foi possível sincronizar os jogos do dia.");
         }
 
         await loadMatchesFromBackend();
         await loadLeaderboard();
         await loadUserHistory();
         await loadMissionProgress();
-        showAdminFeedback(updatedCount > 0 ? `${updatedCount} jogo(s) de hoje sincronizado(s) pela API.` : "Nenhum jogo de hoje precisou de atualização pela API.");
+        showAdminFeedback(
+          Number(payload.updated || 0) > 0
+            ? `${payload.updated} jogo(s) sincronizado(s) automaticamente pela API.`
+            : "Nenhum jogo relevante precisou de atualização pela API."
+        );
       } catch (error) {
         console.error(error);
         showAdminFeedback(error.message || "Não foi possível sincronizar os jogos de hoje pela API.");
