@@ -351,11 +351,11 @@ async function authenticateCronAdmin() {
   });
 
   const loginData = Array.isArray(loginPayload) ? loginPayload[0] : loginPayload;
-  if (!loginData?.session_token) {
+  if (!(loginData?.session_token || loginData?.token)) {
     throw new Error("Não foi possível autenticar o admin automático.");
   }
 
-  return loginData.session_token;
+  return loginData.session_token || loginData.token;
 }
 
 async function resolveAdminTokenForRequest(req, body) {
