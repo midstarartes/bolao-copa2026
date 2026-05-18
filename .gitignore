@@ -1,3 +1,5 @@
 dist/
 node_modules/
 # manter deploy sincronizado pela Vercel
+
+.vercel

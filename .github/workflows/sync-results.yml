@@ -1,0 +1,41 @@
+name: Sincronizar resultados da Copa
+
+on:
+  schedule:
+    - cron: "0 13 * * *"
+    - cron: "0 16 * * *"
+    - cron: "0 19 * * *"
+    - cron: "0 22 * * *"
+    - cron: "0 1 * * *"
+  workflow_dispatch:
+
+jobs:
+  sync-results:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Chamar sincronizacao da API
+        env:
+          SYNC_URL: https://bolao-copa2026-alpha.vercel.app/api/the-sports-sync
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          if [ -z "$CRON_SECRET" ]; then
+            echo "Secret CRON_SECRET nao configurado no GitHub."
+            exit 1
+          fi
+
+          echo "Chamando sincronizacao automatica..."
+          response=$(curl -sS -w "\n%{http_code}" \
+            -H "Authorization: Bearer $CRON_SECRET" \
+            "$SYNC_URL")
+
+          body=$(echo "$response" | sed '$d')
+          status=$(echo "$response" | tail -n 1)
+
+          echo "HTTP status: $status"
+          echo "$body"
+
+          if [ "$status" -lt 200 ] || [ "$status" -ge 300 ]; then
+            echo "Falha na sincronizacao automatica."
+            exit 1
+          fi
