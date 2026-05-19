@@ -36,6 +36,8 @@
         linear-gradient(180deg, var(--bg-top), var(--bg-mid) 42%, var(--bg-bottom));
       position: relative;
       overflow-x: hidden;
+      -webkit-text-size-adjust: 100%;
+      text-size-adjust: 100%;
     }
 
     body::before {
@@ -3443,7 +3445,8 @@
 
     @media (max-width: 720px) {
       .poster {
-        width: min(100vw - 20px, 100%);
+        width: 100%;
+        max-width: 100%;
         padding: 20px 10px 34px;
       }
 
@@ -3508,6 +3511,8 @@
         grid-template-columns: 1fr;
         gap: 16px;
         padding: 14px 0 0;
+        width: 100%;
+        max-width: 100%;
       }
 
       .top-nav {
@@ -3516,6 +3521,8 @@
         gap: 8px;
         margin-bottom: 8px;
         padding: 2px 2px 6px;
+        width: 100%;
+        max-width: 100%;
         overflow-x: auto;
         overflow-y: hidden;
         scrollbar-width: none;
@@ -3540,6 +3547,8 @@
         align-items: stretch;
         gap: 7px;
         margin: 12px 0 8px;
+        width: 100%;
+        max-width: 100%;
         overflow-x: auto;
         overflow-y: hidden;
         padding-bottom: 2px;
@@ -3613,6 +3622,8 @@
         padding: 12px;
         text-align: center;
         justify-content: center;
+        width: 100%;
+        max-width: 100%;
       }
 
       .sync-status-copy,
@@ -3674,6 +3685,8 @@
       .fixture-row {
         grid-template-columns: 56px minmax(112px, 1fr) 56px;
         gap: 8px;
+        width: 100%;
+        max-width: 100%;
       }
 
       .fixture-time {
@@ -3713,8 +3726,25 @@
 
     @media (max-width: 520px) {
       .poster {
-        width: min(100vw - 12px, 100%);
+        width: 100%;
+        max-width: 100%;
         padding: 14px 6px 24px;
+      }
+
+      .header,
+      .header-copy,
+      .top-actions,
+      .tab-stage,
+      .tab-panel,
+      .top-nav,
+      .sub-nav,
+      .board,
+      .ranking-list,
+      .sync-status-bar,
+      .admin-results-bar {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
       }
 
       .top-actions {
@@ -3810,34 +3840,42 @@
       }
 
       .ranking-card-grid {
-        grid-template-columns: 56px minmax(0, 1fr) 62px 76px;
-        gap: 6px;
+        grid-template-columns: 48px minmax(0, 1fr) 54px 66px;
+        gap: 4px;
       }
 
       .ranking-player-name,
       .ranking-metric,
       .ranking-position {
-        font-size: 0.78rem;
+        font-size: 0.72rem;
       }
 
       .ranking-player-real {
-        font-size: 0.62rem;
+        font-size: 0.58rem;
       }
 
       .ranking-headings {
-        padding: 0 10px 2px;
-        gap: 6px;
-        font-size: 0.6rem;
+        grid-template-columns: 48px minmax(0, 1fr) 54px 66px;
+        padding: 0 6px 2px;
+        gap: 4px;
+        font-size: 0.52rem;
+        letter-spacing: 0.05em;
+      }
+
+      .ranking-card {
+        min-height: 56px;
+        padding: 0 8px;
+        border-radius: 14px;
       }
 
       .fixture-row {
-        grid-template-columns: 52px minmax(100px, 1fr) 52px;
-        gap: 6px;
+        grid-template-columns: 48px minmax(92px, 1fr) 48px;
+        gap: 4px;
       }
 
       .badge {
-        width: 52px;
-        height: 52px;
+        width: 48px;
+        height: 48px;
       }
 
       .score-action {
@@ -3847,7 +3885,7 @@
       }
 
       .fixture-time {
-        font-size: 0.7rem;
+        font-size: 0.66rem;
       }
     }
   </style>
