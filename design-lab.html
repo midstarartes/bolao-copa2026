@@ -652,6 +652,19 @@
         0 0 18px rgba(255, 255, 255, 0.08);
     }
 
+    .header-year {
+      display: inline-block;
+      font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+      font-weight: 900;
+      letter-spacing: 0.02em;
+      transform: scaleX(0.9);
+      transform-origin: center;
+      text-shadow:
+        0 10px 28px rgba(0, 0, 0, 0.72),
+        0 1px 0 rgba(255, 255, 255, 0.16),
+        0 0 18px rgba(255, 255, 255, 0.08);
+    }
+
     .header p {
       margin: 0;
       font-size: clamp(0.72rem, 0.92vw, 0.84rem);
@@ -717,6 +730,17 @@
       align-items: center;
       gap: 8px;
       margin: 0 0 8px;
+    }
+
+    .top-nav-hint {
+      display: none;
+      margin: -2px 0 8px;
+      color: rgba(226, 232, 240, 0.5);
+      font-size: 0.58rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      text-align: right;
     }
 
     body.is-admin-session .top-nav {
@@ -1352,7 +1376,7 @@
       position: relative;
       z-index: 1;
       display: grid;
-      gap: 0;
+      gap: 3px;
       min-width: 0;
     }
 
@@ -3529,8 +3553,22 @@
         -webkit-overflow-scrolling: touch;
       }
 
+      .top-nav::after {
+        content: "";
+        position: sticky;
+        right: 0;
+        width: 28px;
+        flex: 0 0 28px;
+        pointer-events: none;
+        background: linear-gradient(90deg, rgba(12, 12, 14, 0), rgba(12, 12, 14, 0.92));
+      }
+
       .top-nav::-webkit-scrollbar {
         display: none;
+      }
+
+      .top-nav-hint {
+        display: block;
       }
 
       .top-nav-button {
@@ -3543,30 +3581,24 @@
       }
 
       .sub-nav {
-        display: flex;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
         align-items: stretch;
-        gap: 7px;
+        gap: 6px;
         margin: 12px 0 8px;
         width: 100%;
         max-width: 100%;
-        overflow-x: auto;
-        overflow-y: hidden;
-        padding-bottom: 2px;
-        scrollbar-width: none;
-        -webkit-overflow-scrolling: touch;
-      }
-
-      .sub-nav::-webkit-scrollbar {
-        display: none;
       }
 
       .sub-nav-card {
-        flex: 0 0 176px;
+        min-width: 0;
       }
 
       .sub-nav-select {
-        min-height: 38px;
-        font-size: 0.72rem;
+        min-height: 36px;
+        padding: 6px 20px 6px 8px;
+        font-size: 0.6rem;
+        letter-spacing: 0.08em;
       }
 
       .rules-grid {
@@ -3773,6 +3805,13 @@
         font-size: clamp(1.42rem, 8vw, 1.86rem);
       }
 
+      .header-year {
+        display: block;
+        margin-top: 2px;
+        font-size: 1.24em;
+        line-height: 0.86;
+      }
+
       .header-kicker,
       .header-edition,
       .header-feature-bar span {
@@ -3812,13 +3851,15 @@
         margin: 10px 0 6px;
       }
 
-      .sub-nav-card {
-        flex-basis: 164px;
-      }
-
       .sub-nav-select {
         min-height: 34px;
-        font-size: 0.68rem;
+        font-size: 0.56rem;
+        padding-inline: 6px 18px;
+      }
+
+      .sub-nav-card::after {
+        right: 8px;
+        font-size: 0.48rem;
       }
 
       .sync-status-bar,
@@ -3887,6 +3928,85 @@
       .fixture-time {
         font-size: 0.66rem;
       }
+
+      .mission-card {
+        grid-template-columns: minmax(0, 1fr) auto auto;
+        gap: 8px;
+        padding: 10px 10px 12px;
+      }
+
+      .mission-copy {
+        grid-column: 1 / -1;
+        gap: 4px;
+      }
+
+      .mission-title {
+        font-size: 0.74rem;
+        line-height: 1.18;
+      }
+
+      .mission-progress {
+        min-width: 72px;
+        min-height: 34px;
+        padding: 6px 8px;
+        font-size: 0.66rem;
+      }
+
+      .mission-claim {
+        width: 132px;
+        min-width: 132px;
+        min-height: 34px;
+        padding: 6px 8px;
+        font-size: 0.62rem;
+      }
+
+      .rules-grid {
+        gap: 6px;
+      }
+
+      .rules-card {
+        min-height: 38px;
+        font-size: 0.62rem;
+        line-height: 1.15;
+      }
+
+      .rules-content {
+        gap: 12px;
+        padding-top: 10px;
+      }
+
+      .rules-column {
+        gap: 12px;
+      }
+
+      .rules-section {
+        gap: 10px;
+        padding: 10px 10px 12px;
+        border-radius: 14px;
+        background:
+          linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02) 24%, rgba(0,0,0,0.18) 100%),
+          linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01) 42%, rgba(0,0,0,0.18));
+        border: 1px solid rgba(255,255,255,0.07);
+        box-shadow:
+          0 10px 20px rgba(0, 0, 0, 0.22),
+          inset 0 1px 0 rgba(255,255,255,0.08);
+      }
+
+      .rules-title {
+        font-size: 0.88rem;
+        padding-bottom: 8px;
+        border-bottom: 1px solid rgba(255,255,255,0.12);
+        box-shadow: 0 8px 10px -10px rgba(255,255,255,0.35);
+      }
+
+      .rules-lines {
+        gap: 8px;
+      }
+
+      .rules-lines p {
+        font-size: 0.82rem;
+        line-height: 1.45;
+      }
     }
   </style>
 </head>
@@ -3898,7 +4018,7 @@
           <p class="header-kicker">Bolão oficial da galera</p>
           <span class="header-edition">Edição 2026</span>
         </div>
-        <h1>Palpites da Copa 2026</h1>
+        <h1>Palpites da Copa <span class="header-year">2026</span></h1>
         <p>Registre seus palpites at&eacute; 30 minutos antes de cada jogo e os &ldquo;extras&rdquo; antes do in&iacute;cio da Copa. Todas as regras est&atilde;o explicadas na aba &ldquo;REGRAS&rdquo;, d&aacute; uma lida l&aacute;.</p>
         <div class="header-feature-bar" aria-label="Destaques do bolão">
           <span>Palpites</span>
@@ -3929,13 +4049,14 @@
       <button class="top-nav-button" type="button" data-tab-target="tab-regras">Regras</button>
       <button class="top-nav-button top-nav-button--admin" type="button" data-tab-target="tab-admin">Admin</button>
     </nav>
+    <p class="top-nav-hint">Deslize para ver mais abas</p>
 
     <div class="tab-stage">
       <section class="tab-panel" id="tab-jogos" aria-label="Jogos">
         <nav class="sub-nav" aria-label="Filtros secund&aacute;rios">
           <label class="sub-nav-card">
             <select class="sub-nav-select" id="filter-status" aria-label="Selecionar Status">
-              <option value="all">TODOS OS JOGOS</option>
+              <option value="all">STATUS</option>
               <option value="not-predicted">N&Atilde;O PALPITADOS</option>
               <option value="predicted">J&Aacute; PALPITADOS</option>
               <option value="today">JOGOS DE HOJE</option>
@@ -3944,7 +4065,7 @@
           </label>
           <label class="sub-nav-card">
             <select class="sub-nav-select" id="filter-phase" aria-label="Selecionar Fase">
-              <option value="all">TODOS OS JOGOS</option>
+              <option value="all">FASE</option>
               <option value="FASE DE GRUPOS">FASE DE GRUPOS</option>
               <option value="16 AVOS DE FINAL">16 AVOS DE FINAL</option>
               <option value="OITAVAS DE FINAL">OITAVAS DE FINAL</option>
@@ -3956,7 +4077,7 @@
           </label>
           <label class="sub-nav-card">
             <select class="sub-nav-select" id="filter-group" aria-label="Selecionar Grupo">
-              <option value="all">TODOS OS GRUPOS</option>
+              <option value="all">GRUPO</option>
               <option value="GRUPO A">GRUPO A</option>
               <option value="GRUPO B">GRUPO B</option>
               <option value="GRUPO C">GRUPO C</option>
