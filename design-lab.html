@@ -870,6 +870,61 @@
         inset 0 -10px 18px rgba(0, 0, 0, 0.28);
     }
 
+    .sync-status-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin: 0 0 12px;
+      padding: 12px 14px;
+      border-radius: 16px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.03) 18%, rgba(255,255,255,0.01) 42%, rgba(0,0,0,0.22) 100%),
+        linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01) 42%, rgba(0,0,0,0.18));
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow:
+        0 14px 28px rgba(0, 0, 0, 0.46),
+        0 3px 10px rgba(0, 0, 0, 0.28),
+        inset 0 1px 0 rgba(255, 255, 255, 0.22),
+        inset 0 -10px 18px rgba(0, 0, 0, 0.28);
+    }
+
+    .sync-status-copy {
+      display: grid;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .sync-status-label {
+      margin: 0;
+      color: #f8fafc;
+      font-size: 0.8rem;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-shadow: 0 4px 12px rgba(0,0,0,0.46);
+    }
+
+    .sync-status-text {
+      margin: 0;
+      color: rgba(226, 232, 240, 0.82);
+      font-size: 0.72rem;
+      font-weight: 700;
+      line-height: 1.45;
+    }
+
+    .sync-status-text.is-success {
+      color: #bbf7d0;
+    }
+
+    .sync-status-text.is-warning {
+      color: #fde68a;
+    }
+
+    .sync-status-text.is-error {
+      color: #fca5a5;
+    }
+
     body.is-admin-session .admin-results-bar {
       display: flex;
     }
@@ -927,6 +982,15 @@
         linear-gradient(180deg, rgba(224,242,254,0.14), rgba(56,189,248,0.16) 34%, rgba(3,105,161,0.92) 100%),
         linear-gradient(135deg, rgba(8,47,73,0.94), rgba(3,105,161,0.96) 52%, rgba(12,74,110,0.94));
       color: #eff6ff;
+    }
+
+    .admin-results-trigger--public {
+      min-width: 210px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.14), rgba(255,255,255,0.04) 18%, rgba(255,255,255,0.01) 42%, rgba(0,0,0,0.26) 100%),
+        linear-gradient(180deg, rgba(220,252,231,0.14), rgba(34,197,94,0.16) 34%, rgba(21,128,61,0.92) 100%),
+        linear-gradient(135deg, rgba(20,83,45,0.94), rgba(22,163,74,0.96) 52%, rgba(21,128,61,0.94));
+      color: #f0fdf4;
     }
 
     .admin-results-trigger:hover {
@@ -3543,6 +3607,14 @@
           </label>
         </nav>
 
+        <div class="sync-status-bar" id="sync-status-bar">
+          <div class="sync-status-copy">
+            <p class="sync-status-label">Resultados automáticos</p>
+            <p class="sync-status-text" id="sync-status-text">A API ainda não registrou nenhuma sincronização. Você pode atualizar manualmente a qualquer momento.</p>
+          </div>
+          <button class="admin-results-trigger admin-results-trigger--public" id="public-sync-trigger" type="button">Atualizar resultados</button>
+        </div>
+
         <div class="admin-results-bar" id="admin-results-bar">
           <div class="admin-results-copy">
             <p class="admin-results-label">Painel de resultados oficiais</p>
@@ -4262,6 +4334,9 @@
     const board = document.getElementById("matches-board");
     const boardEmpty = document.getElementById("board-empty");
     const gamesPagination = document.getElementById("games-pagination");
+    const syncStatusBar = document.getElementById("sync-status-bar");
+    const syncStatusText = document.getElementById("sync-status-text");
+    const publicSyncTrigger = document.getElementById("public-sync-trigger");
     const adminResultsTrigger = document.getElementById("admin-results-trigger");
     const adminResultsApiTrigger = document.getElementById("admin-results-api-trigger");
     const loginTrigger = document.querySelector(".login-card");
@@ -4348,6 +4423,7 @@
     let adminUsersCache = [];
     let missionProgressCache = {};
     let userHistoryCache = [];
+    let apiSyncStatusCache = null;
     let currentGamesPage = 1;
     let pendingBuffId = null;
     const GAMES_PER_PAGE = 12;
@@ -5054,6 +5130,67 @@
       adminFeedback.className = "admin-feedback" + (type ? ` is-${type}` : "");
     }
 
+    function renderApiSyncStatus(syncStatus = null, feedback = null, type = "") {
+      if (!syncStatusBar || !syncStatusText) return;
+      apiSyncStatusCache = syncStatus;
+
+      if (feedback) {
+        syncStatusText.textContent = feedback;
+        syncStatusText.className = "sync-status-text" + (type ? ` is-${type}` : "");
+        return;
+      }
+
+      if (!syncStatus?.last_attempt_at && !syncStatus?.last_synced_at) {
+        syncStatusText.textContent =
+          "A API ainda não registrou nenhuma sincronização. Você pode atualizar manualmente a qualquer momento.";
+        syncStatusText.className = "sync-status-text";
+        return;
+      }
+
+      const referenceDate = syncStatus.last_synced_at || syncStatus.last_attempt_at;
+      const sourceMap = {
+        cron: "automática",
+        admin: "admin",
+        public: "usuário",
+      };
+      const sourceLabel = sourceMap[syncStatus.source] || "sistema";
+      const updatedCount = Number(syncStatus.updated_count || 0);
+      const checkedCount = Number(syncStatus.checked_count || 0);
+
+      if (syncStatus.success === false) {
+        syncStatusText.textContent =
+          `Última tentativa: ${formatDateTimeShort(referenceDate)} • ${sourceLabel} • falhou. ` +
+          `${syncStatus.message || "O admin manual continua disponível como fallback."}`;
+        syncStatusText.className = "sync-status-text is-error";
+        return;
+      }
+
+      syncStatusText.textContent =
+        `Última sincronização: ${formatDateTimeShort(referenceDate)} • ${sourceLabel} • ` +
+        `${updatedCount} jogo(s) atualizado(s) de ${checkedCount} verificado(s).`;
+      syncStatusText.className = "sync-status-text is-success";
+    }
+
+    async function loadApiSyncStatus() {
+      if (!syncStatusText || !BACKEND_ENABLED) {
+        renderApiSyncStatus(null);
+        return;
+      }
+
+      try {
+        const { data, error } = await supabase
+          .from("app_settings")
+          .select("value")
+          .eq("key", "system")
+          .maybeSingle();
+        if (error) throw error;
+        renderApiSyncStatus(data?.value?.api_sync || null);
+      } catch (error) {
+        console.error(error);
+        renderApiSyncStatus(apiSyncStatusCache, "Não foi possível carregar o status da última sincronização da API.", "warning");
+      }
+    }
+
     function hydrateMissionCards() {
       missionCards.forEach((card, index) => {
         const missionId = missionOrder[index];
@@ -5683,6 +5820,7 @@
         await loadLeaderboard();
         await loadUserHistory();
         await loadMissionProgress();
+        await loadApiSyncStatus();
         showAdminFeedback(
           Number(payload.updated || 0) > 0
             ? `${payload.updated} jogo(s) sincronizado(s) automaticamente pela API.`
@@ -5696,6 +5834,44 @@
           adminResultsApiTrigger.disabled = false;
           adminResultsApiTrigger.textContent = originalLabel;
         }
+      }
+    }
+
+    async function triggerPublicResultsSync() {
+      if (!BACKEND_ENABLED || !publicSyncTrigger) return;
+
+      const originalLabel = publicSyncTrigger.textContent || "Atualizar resultados";
+      publicSyncTrigger.disabled = true;
+      publicSyncTrigger.textContent = "Atualizando...";
+      renderApiSyncStatus(apiSyncStatusCache, "Atualizando os resultados pela API. Isso pode levar alguns segundos...", "warning");
+
+      try {
+        const response = await fetch("/api/the-sports-sync", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            mode: "public-sync",
+          }),
+        });
+
+        const payload = await response.json();
+        if (!response.ok || !payload?.ok) {
+          throw new Error(payload?.message || "Não foi possível atualizar os resultados agora.");
+        }
+
+        await loadMatchesFromBackend();
+        await loadLeaderboard();
+        await loadUserHistory();
+        await loadMissionProgress();
+        await loadApiSyncStatus();
+      } catch (error) {
+        console.error(error);
+        renderApiSyncStatus(apiSyncStatusCache, error.message || "Não foi possível atualizar os resultados agora.", "warning");
+      } finally {
+        publicSyncTrigger.disabled = false;
+        publicSyncTrigger.textContent = originalLabel;
       }
     }
 
@@ -7083,6 +7259,10 @@
       void syncTodayMatchesFromApi();
     });
 
+    publicSyncTrigger?.addEventListener("click", () => {
+      void triggerPublicResultsSync();
+    });
+
     hydrateMissionCards();
 
     missionCards.forEach((card) => {
@@ -7610,6 +7790,7 @@
     await fetchCurrentUserFromBackend();
     updateLoginButton();
     updateCoinsCard();
+    await loadApiSyncStatus();
     await restorePredictionsForCurrentUser();
     await restoreExtrasSelections();
     refreshMissionCards();

@@ -10,6 +10,7 @@ const THE_SPORTS_DB_WORLD_CUP_LEAGUE_ID =
 const ADMIN_USERNAME = process.env.ADMIN_USERNAME || "";
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "";
 const CRON_SECRET = process.env.CRON_SECRET || "";
+const PUBLIC_SYNC_COOLDOWN_MS = 10 * 60 * 1000;
 
 const TEAM_ALIAS_MAP = {
   ALG: ["Argélia", "Algeria"],
@@ -280,6 +281,34 @@ async function supabaseSelectMatches(fromIso, toIso) {
   return Array.isArray(data) ? data : [];
 }
 
+async function supabaseSelectSystemSettings() {
+  const url = new URL(`${SUPABASE_URL}/rest/v1/app_settings`);
+  url.searchParams.set("select", "value");
+  url.searchParams.set("key", "eq.system");
+  url.searchParams.set("limit", "1");
+
+  const response = await fetch(url, {
+    headers: {
+      apikey: SUPABASE_ANON_KEY,
+      Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+    },
+  });
+
+  const text = await response.text();
+  const data = text ? JSON.parse(text) : null;
+
+  if (!response.ok) {
+    throw new Error(
+      data?.message ||
+        data?.error_description ||
+        data?.error ||
+        "Não foi possível carregar as configurações do sistema."
+    );
+  }
+
+  return Array.isArray(data) && data[0]?.value ? data[0].value : {};
+}
+
 function getDateKeyWithOffset(offsetDays = 0) {
   const parts = new Intl.DateTimeFormat("en-CA", {
     timeZone: "America/Sao_Paulo",
@@ -356,6 +385,22 @@ async function authenticateCronAdmin() {
   }
 
   return loginData.session_token || loginData.token;
+}
+
+async function recordApiSyncStatus(adminToken, payload) {
+  try {
+    await supabaseRpc("app_admin_set_api_sync_status", {
+      p_token: adminToken,
+      p_source: payload.source || "system",
+      p_updated_count: Number(payload.updatedCount || 0),
+      p_checked_count: Number(payload.checkedCount || 0),
+      p_success: Boolean(payload.success),
+      p_message: payload.message || null,
+      p_requested_by: payload.requestedBy || null,
+    });
+  } catch (error) {
+    console.error("Falha ao registrar status da sincronização:", error);
+  }
 }
 
 async function resolveAdminTokenForRequest(req, body) {
@@ -534,12 +579,35 @@ async function syncRelevantMatches(adminToken) {
   return results;
 }
 
+function getCooldownRemainingMs(lastAttemptAt) {
+  if (!lastAttemptAt) return 0;
+  const timestamp = new Date(lastAttemptAt).getTime();
+  if (!Number.isFinite(timestamp)) return 0;
+  return Math.max(0, PUBLIC_SYNC_COOLDOWN_MS - (Date.now() - timestamp));
+}
+
+function formatCooldownMessage(remainingMs) {
+  const remainingMinutes = Math.max(1, Math.ceil(remainingMs / 60000));
+  return `A sincronização já foi solicitada há pouco tempo. Tente novamente em cerca de ${remainingMinutes} minuto(s).`;
+}
+
 module.exports = async function handler(req, res) {
   try {
     if (req.method === "GET") {
       const adminToken = await resolveAdminTokenForRequest(req, {});
       const results = await syncRelevantMatches(adminToken);
       const updated = results.filter((entry) => entry.updated).length;
+      await recordApiSyncStatus(adminToken, {
+        source: "cron",
+        updatedCount: updated,
+        checkedCount: results.length,
+        success: true,
+        message:
+          updated > 0
+            ? `${updated} jogo(s) atualizado(s) automaticamente.`
+            : "Nenhum jogo relevante precisou de atualização automática.",
+        requestedBy: "github-actions",
+      });
       return res.status(200).json({
         ok: true,
         mode: "cron",
@@ -551,10 +619,10 @@ module.exports = async function handler(req, res) {
 
     if (req.method === "POST") {
       const body = await readJsonBody(req);
-      const adminToken = await resolveAdminTokenForRequest(req, body);
       const mode = body?.mode || "match";
 
       if (mode === "match") {
+        const adminToken = await resolveAdminTokenForRequest(req, body);
         const matchId = body?.matchId || "";
         if (!matchId) {
           return res.status(400).json({ ok: false, message: "matchId é obrigatório." });
@@ -565,8 +633,20 @@ module.exports = async function handler(req, res) {
       }
 
       if (mode === "today") {
+        const adminToken = await resolveAdminTokenForRequest(req, body);
         const results = await syncRelevantMatches(adminToken);
         const updated = results.filter((entry) => entry.updated).length;
+        await recordApiSyncStatus(adminToken, {
+          source: "admin",
+          updatedCount: updated,
+          checkedCount: results.length,
+          success: true,
+          message:
+            updated > 0
+              ? `${updated} jogo(s) sincronizado(s) pelo admin.`
+              : "Nenhum jogo relevante precisou de atualização pela API.",
+          requestedBy: ADMIN_USERNAME || "ADMIN",
+        });
         return res.status(200).json({
           ok: true,
           mode,
@@ -574,6 +654,53 @@ module.exports = async function handler(req, res) {
           checked: results.length,
           results,
         });
+      }
+
+      if (mode === "public-sync") {
+        const systemSettings = await supabaseSelectSystemSettings();
+        const lastAttemptAt = systemSettings?.api_sync?.last_attempt_at || null;
+        const remainingMs = getCooldownRemainingMs(lastAttemptAt);
+        if (remainingMs > 0) {
+          return res.status(429).json({
+            ok: false,
+            message: formatCooldownMessage(remainingMs),
+          });
+        }
+
+        const adminToken = await authenticateCronAdmin();
+        try {
+          const results = await syncRelevantMatches(adminToken);
+          const updated = results.filter((entry) => entry.updated).length;
+          await recordApiSyncStatus(adminToken, {
+            source: "public",
+            updatedCount: updated,
+            checkedCount: results.length,
+            success: true,
+            message:
+              updated > 0
+                ? `${updated} jogo(s) atualizado(s) após solicitação pública.`
+                : "Nenhum jogo relevante precisou de atualização agora.",
+            requestedBy: "public-button",
+          });
+          return res.status(200).json({
+            ok: true,
+            mode,
+            updated,
+            checked: results.length,
+            results,
+          });
+        } catch (error) {
+          await recordApiSyncStatus(adminToken, {
+            source: "public",
+            updatedCount: 0,
+            checkedCount: 0,
+            success: false,
+            message:
+              error?.message || "Falha inesperada durante a sincronização pública.",
+            requestedBy: "public-button",
+          });
+          throw error;
+        }
       }
 
       return res.status(400).json({ ok: false, message: "Modo inválido." });
