@@ -1207,17 +1207,11 @@
     }
 
     .rules-panel {
-      opacity: 1;
-      visibility: visible;
-      transition: opacity 0.5s ease, visibility 0.5s ease;
+      display: block;
     }
 
     .rules-panel.is-hidden {
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
-      position: absolute;
-      inset: 0;
+      display: none;
     }
 
     .rules-panel.is-empty {
@@ -2179,17 +2173,11 @@
     }
 
     .tab-panel {
-      opacity: 1;
-      visibility: visible;
-      transition: opacity 0.5s ease, visibility 0.5s ease;
+      display: block;
     }
 
     .tab-panel.is-hidden {
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
-      position: absolute;
-      inset: 0;
+      display: none;
     }
 
     .tab-panel.is-empty {
