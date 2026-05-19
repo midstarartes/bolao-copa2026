@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover, shrink-to-fit=no" />
   <title>Palpites da Copa 2026</title>
   <meta
     name="description"
@@ -3730,15 +3730,24 @@
         padding: 14px 6px 24px;
       }
 
+      html,
+      body {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: clip;
+      }
+
       .header,
       .header-copy,
       .top-actions,
       .tab-stage,
       .tab-panel,
+      .top-nav-shell,
       .top-nav,
       .sub-nav,
       .board,
       .ranking-list,
+      .rules-panel,
       .sync-status-bar,
       .admin-results-bar {
         width: 100%;
@@ -3747,6 +3756,8 @@
       }
 
       .top-actions {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 6px;
         overflow: hidden;
       }
@@ -3798,8 +3809,29 @@
         margin: 4px 0 6px;
       }
 
+      .top-nav-shell {
+        overflow: hidden;
+      }
+
+      .top-nav {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 6px;
+        padding: 0;
+        overflow: visible;
+      }
+
+      .top-nav::after {
+        display: none;
+      }
+
+      .top-nav-arrow {
+        display: none;
+      }
+
       .top-nav-button {
-        min-width: 92px;
+        min-width: 0;
+        width: 100%;
         min-height: 38px;
         font-size: 0.68rem;
         letter-spacing: 0.08em;
@@ -3812,6 +3844,11 @@
 
       .sub-nav {
         margin: 10px 0 6px;
+      }
+
+      .tab-panel.is-active,
+      .tab-panel:not(.is-hidden) {
+        overflow-x: clip;
       }
 
       .sub-nav-select {
