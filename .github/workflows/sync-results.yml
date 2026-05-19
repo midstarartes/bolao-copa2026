@@ -1,5 +1,9 @@
 name: Sincronizar resultados da Copa
 
+concurrency:
+  group: sync-resultados-copa
+  cancel-in-progress: false
+
 on:
   schedule:
     # Horários em UTC. Em Brasília (UTC-3), roda a cada 5 min de 12h30 até 04h00.

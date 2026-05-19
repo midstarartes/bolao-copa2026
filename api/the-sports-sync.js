@@ -10,7 +10,6 @@ const THE_SPORTS_DB_WORLD_CUP_LEAGUE_ID =
 const ADMIN_USERNAME = process.env.ADMIN_USERNAME || "";
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "";
 const CRON_SECRET = process.env.CRON_SECRET || "";
-const PUBLIC_SYNC_COOLDOWN_MS = 10 * 60 * 1000;
 
 const TEAM_ALIAS_MAP = {
   ALG: ["Argélia", "Algeria"],
@@ -657,6 +656,11 @@ module.exports = async function handler(req, res) {
       }
 
       if (mode === "public-sync") {
+        return res.status(403).json({
+          ok: false,
+          message: "Esse modo de sincronização não está disponível para usuários.",
+        });
+
         const systemSettings = await supabaseSelectSystemSettings();
         const lastAttemptAt = systemSettings?.api_sync?.last_attempt_at || null;
         const remainingMs = getCooldownRemainingMs(lastAttemptAt);
