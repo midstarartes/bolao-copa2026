@@ -3600,8 +3600,8 @@
 
         <div class="sync-status-bar" id="sync-status-bar">
           <div class="sync-status-copy">
-            <p class="sync-status-label">Resultados automáticos</p>
-            <p class="sync-status-text" id="sync-status-text">A API ainda não registrou nenhuma sincronização. As atualizações rodam automaticamente ao longo do dia, com fallback manual do admin se necessário.</p>
+            <p class="sync-status-label">Sincronização automática de resultados a cada 5 minutos</p>
+            <p class="sync-status-text" id="sync-status-text">Última sincronização: A copa ainda não começou.</p>
           </div>
         </div>
 
@@ -5130,33 +5130,20 @@
       }
 
       if (!syncStatus?.last_attempt_at && !syncStatus?.last_synced_at) {
-        syncStatusText.textContent =
-          "A API ainda não registrou nenhuma sincronização. As atualizações rodam automaticamente ao longo do dia, com fallback manual do admin se necessário.";
+        syncStatusText.textContent = "Última sincronização: A copa ainda não começou.";
         syncStatusText.className = "sync-status-text";
         return;
       }
 
       const referenceDate = syncStatus.last_synced_at || syncStatus.last_attempt_at;
-      const sourceMap = {
-        cron: "automática",
-        admin: "admin",
-        public: "usuário",
-      };
-      const sourceLabel = sourceMap[syncStatus.source] || "sistema";
-      const updatedCount = Number(syncStatus.updated_count || 0);
-      const checkedCount = Number(syncStatus.checked_count || 0);
 
       if (syncStatus.success === false) {
-        syncStatusText.textContent =
-          `Última tentativa: ${formatDateTimeShort(referenceDate)} • ${sourceLabel} • falhou. ` +
-          `${syncStatus.message || "O admin manual continua disponível como fallback."}`;
+        syncStatusText.textContent = `Última sincronização: ${formatDateTimeShort(referenceDate)}`;
         syncStatusText.className = "sync-status-text is-error";
         return;
       }
 
-      syncStatusText.textContent =
-        `Última sincronização: ${formatDateTimeShort(referenceDate)} • ${sourceLabel} • ` +
-        `${updatedCount} jogo(s) atualizado(s) de ${checkedCount} verificado(s).`;
+      syncStatusText.textContent = `Última sincronização: ${formatDateTimeShort(referenceDate)}`;
       syncStatusText.className = "sync-status-text is-success";
     }
 
@@ -5176,7 +5163,7 @@
         renderApiSyncStatus(data?.value?.api_sync || null);
       } catch (error) {
         console.error(error);
-        renderApiSyncStatus(apiSyncStatusCache, "Não foi possível carregar o status da última sincronização da API.", "warning");
+        renderApiSyncStatus(apiSyncStatusCache, "Última sincronização: A copa ainda não começou.", "warning");
       }
     }
 
