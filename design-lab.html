@@ -40,6 +40,12 @@
       text-size-adjust: 100%;
     }
 
+    html {
+      width: 100%;
+      max-width: 100%;
+      overflow-x: hidden;
+    }
+
     body::before {
       content: "";
       position: fixed;
@@ -68,6 +74,7 @@
 
     .poster {
       width: min(920px, calc(100vw - 32px));
+      max-width: 100%;
       margin: 0 auto;
       padding: 28px 24px 40px;
       min-height: 100vh;
@@ -697,6 +704,8 @@
 
     .top-nav-shell {
       position: relative;
+      width: 100%;
+      max-width: 100%;
     }
 
     .top-nav {
@@ -3478,6 +3487,7 @@
         justify-content: stretch;
         flex-wrap: nowrap;
         gap: 10px;
+        min-width: 0;
       }
 
       .header p {
@@ -3512,7 +3522,7 @@
         align-items: stretch;
         gap: 8px;
         margin-bottom: 8px;
-        padding: 2px 2px 6px;
+        padding: 2px 32px 6px;
         width: 100%;
         max-width: 100%;
         overflow-x: auto;
@@ -3524,9 +3534,9 @@
       .top-nav::after {
         content: "";
         position: sticky;
-        right: 0;
-        width: 28px;
-        flex: 0 0 28px;
+        right: -1px;
+        width: 20px;
+        flex: 0 0 20px;
         pointer-events: none;
         background: linear-gradient(90deg, rgba(12, 12, 14, 0), rgba(12, 12, 14, 0.92));
       }
@@ -3537,6 +3547,9 @@
 
       .top-nav-arrow {
         display: inline-flex;
+        width: 24px;
+        height: 34px;
+        border-radius: 10px;
       }
 
       .top-nav-button {
@@ -3560,6 +3573,7 @@
 
       .sub-nav-card {
         min-width: 0;
+        width: 100%;
       }
 
       .sub-nav-select {
@@ -3746,6 +3760,7 @@
 
       .top-actions {
         gap: 6px;
+        overflow: hidden;
       }
 
       .coins-card,
@@ -3753,6 +3768,7 @@
         min-height: 42px;
         padding-inline: 8px;
         border-radius: 14px;
+        width: 100%;
       }
 
       .coins-card-value,
@@ -3796,7 +3812,7 @@
       }
 
       .top-nav-button {
-        min-width: 98px;
+        min-width: 92px;
         min-height: 38px;
         font-size: 0.68rem;
         letter-spacing: 0.08em;
