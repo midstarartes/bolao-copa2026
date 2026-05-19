@@ -873,7 +873,7 @@
     .sync-status-bar {
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      justify-content: flex-start;
       gap: 14px;
       margin: 0 0 12px;
       padding: 12px 14px;
@@ -982,15 +982,6 @@
         linear-gradient(180deg, rgba(224,242,254,0.14), rgba(56,189,248,0.16) 34%, rgba(3,105,161,0.92) 100%),
         linear-gradient(135deg, rgba(8,47,73,0.94), rgba(3,105,161,0.96) 52%, rgba(12,74,110,0.94));
       color: #eff6ff;
-    }
-
-    .admin-results-trigger--public {
-      min-width: 210px;
-      background:
-        linear-gradient(180deg, rgba(255,255,255,0.14), rgba(255,255,255,0.04) 18%, rgba(255,255,255,0.01) 42%, rgba(0,0,0,0.26) 100%),
-        linear-gradient(180deg, rgba(220,252,231,0.14), rgba(34,197,94,0.16) 34%, rgba(21,128,61,0.92) 100%),
-        linear-gradient(135deg, rgba(20,83,45,0.94), rgba(22,163,74,0.96) 52%, rgba(21,128,61,0.94));
-      color: #f0fdf4;
     }
 
     .admin-results-trigger:hover {
@@ -3610,9 +3601,8 @@
         <div class="sync-status-bar" id="sync-status-bar">
           <div class="sync-status-copy">
             <p class="sync-status-label">Resultados automáticos</p>
-            <p class="sync-status-text" id="sync-status-text">A API ainda não registrou nenhuma sincronização. Você pode atualizar manualmente a qualquer momento.</p>
+            <p class="sync-status-text" id="sync-status-text">A API ainda não registrou nenhuma sincronização. As atualizações rodam automaticamente ao longo do dia, com fallback manual do admin se necessário.</p>
           </div>
-          <button class="admin-results-trigger admin-results-trigger--public" id="public-sync-trigger" type="button">Atualizar resultados</button>
         </div>
 
         <div class="admin-results-bar" id="admin-results-bar">
@@ -4336,7 +4326,6 @@
     const gamesPagination = document.getElementById("games-pagination");
     const syncStatusBar = document.getElementById("sync-status-bar");
     const syncStatusText = document.getElementById("sync-status-text");
-    const publicSyncTrigger = document.getElementById("public-sync-trigger");
     const adminResultsTrigger = document.getElementById("admin-results-trigger");
     const adminResultsApiTrigger = document.getElementById("admin-results-api-trigger");
     const loginTrigger = document.querySelector(".login-card");
@@ -5142,7 +5131,7 @@
 
       if (!syncStatus?.last_attempt_at && !syncStatus?.last_synced_at) {
         syncStatusText.textContent =
-          "A API ainda não registrou nenhuma sincronização. Você pode atualizar manualmente a qualquer momento.";
+          "A API ainda não registrou nenhuma sincronização. As atualizações rodam automaticamente ao longo do dia, com fallback manual do admin se necessário.";
         syncStatusText.className = "sync-status-text";
         return;
       }
@@ -5834,44 +5823,6 @@
           adminResultsApiTrigger.disabled = false;
           adminResultsApiTrigger.textContent = originalLabel;
         }
-      }
-    }
-
-    async function triggerPublicResultsSync() {
-      if (!BACKEND_ENABLED || !publicSyncTrigger) return;
-
-      const originalLabel = publicSyncTrigger.textContent || "Atualizar resultados";
-      publicSyncTrigger.disabled = true;
-      publicSyncTrigger.textContent = "Atualizando...";
-      renderApiSyncStatus(apiSyncStatusCache, "Atualizando os resultados pela API. Isso pode levar alguns segundos...", "warning");
-
-      try {
-        const response = await fetch("/api/the-sports-sync", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            mode: "public-sync",
-          }),
-        });
-
-        const payload = await response.json();
-        if (!response.ok || !payload?.ok) {
-          throw new Error(payload?.message || "Não foi possível atualizar os resultados agora.");
-        }
-
-        await loadMatchesFromBackend();
-        await loadLeaderboard();
-        await loadUserHistory();
-        await loadMissionProgress();
-        await loadApiSyncStatus();
-      } catch (error) {
-        console.error(error);
-        renderApiSyncStatus(apiSyncStatusCache, error.message || "Não foi possível atualizar os resultados agora.", "warning");
-      } finally {
-        publicSyncTrigger.disabled = false;
-        publicSyncTrigger.textContent = originalLabel;
       }
     }
 
@@ -7257,10 +7208,6 @@
 
     adminResultsApiTrigger?.addEventListener("click", () => {
       void syncTodayMatchesFromApi();
-    });
-
-    publicSyncTrigger?.addEventListener("click", () => {
-      void triggerPublicResultsSync();
     });
 
     hydrateMissionCards();
