@@ -2,10 +2,10 @@ name: Sincronizar resultados da Copa
 
 on:
   schedule:
-    # Horários em UTC. Em Brasília (UTC-3), roda a cada 30 min de 12h30 até 04h00.
-    - cron: "30 15 * * *"
-    - cron: "0,30 16-23 * * *"
-    - cron: "0,30 0-6 * * *"
+    # Horários em UTC. Em Brasília (UTC-3), roda a cada 5 min de 12h30 até 04h00.
+    - cron: "30-59/5 15 * * *"
+    - cron: "*/5 16-23 * * *"
+    - cron: "*/5 0-6 * * *"
     - cron: "0 7 * * *"
   workflow_dispatch:
 
