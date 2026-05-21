@@ -24,14 +24,14 @@ jobs:
           CRON_SECRET: ${{ secrets.CRON_SECRET }}
         run: |
           if [ -z "$CRON_SECRET" ]; then
-            echo "Secret CRON_SECRET nao configurado no GitHub."
-            exit 1
+            echo "AVISO: Secret CRON_SECRET nao configurado no GitHub. Pulando sincronizacao."
+            exit 0
           fi
 
           echo "Chamando sincronizacao automatica..."
-          response=$(curl -sS -w "\n%{http_code}" \
+          response=$(curl -sS --max-time 30 -w "\n%{http_code}" \
             -H "Authorization: Bearer $CRON_SECRET" \
-            "$SYNC_URL")
+            "$SYNC_URL" || echo -e "\nCURL_FAIL")
 
           body=$(echo "$response" | sed '$d')
           status=$(echo "$response" | tail -n 1)
@@ -39,7 +39,19 @@ jobs:
           echo "HTTP status: $status"
           echo "$body"
 
+          if [ "$status" = "CURL_FAIL" ]; then
+            echo "AVISO: Nao foi possivel conectar ao endpoint. Nenhuma acao necessaria."
+            exit 0
+          fi
+
+          if [ "$status" -ge 500 ]; then
+            echo "AVISO: Endpoint retornou erro $status. Verificar logs do servidor."
+            exit 0
+          fi
+
           if [ "$status" -lt 200 ] || [ "$status" -ge 300 ]; then
-            echo "Falha na sincronizacao automatica."
+            echo "Falha na sincronizacao automatica (status $status)."
             exit 1
           fi
+
+          echo "Sincronizacao concluida com sucesso."

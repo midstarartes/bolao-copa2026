@@ -1,0 +1,25 @@
+{
+  "name": "Bolão Copa 2026",
+  "short_name": "Bolão 26",
+  "description": "Bolão da Copa do Mundo 2026 com palpites, extras, moedas, ranking e painel administrativo.",
+  "start_url": "/design-lab.html",
+  "display": "standalone",
+  "background_color": "#0c0c0e",
+  "theme_color": "#1b1b1d",
+  "orientation": "portrait-primary",
+  "lang": "pt-BR",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}

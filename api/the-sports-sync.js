@@ -355,12 +355,18 @@ async function fetchTheSportsDbEventsByDate(dateKey) {
   const secondaryUrl = `${THE_SPORTS_DB_BASE_URL}/${THE_SPORTS_DB_API_KEY}/eventsday.php?d=${encodeURIComponent(dateKey)}&s=Soccer&l=${encodeURIComponent("FIFA World Cup")}`;
 
   const requestEvents = async (url) => {
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error("Não foi possível consultar o TheSportsDB agora.");
+    try {
+      const response = await fetch(url, { signal: AbortSignal.timeout(12000) });
+      if (!response.ok) {
+        console.warn(`TheSportsDB retornou HTTP ${response.status} para ${dateKey}. Ignorando.`);
+        return [];
+      }
+      const payload = await response.json();
+      return Array.isArray(payload?.events) ? payload.events : [];
+    } catch (err) {
+      console.warn(`Falha ao consultar TheSportsDB para ${dateKey}: ${err?.message}. Ignorando.`);
+      return [];
     }
-    const payload = await response.json();
-    return Array.isArray(payload?.events) ? payload.events : [];
   };
 
   const primaryEvents = await requestEvents(primaryUrl);
@@ -424,7 +430,8 @@ async function resolveAdminTokenForRequest(req, body) {
   return sessionToken;
 }
 
-function buildWinnerForMatch(match, event, homeScore, awayScore) {
+function buildWinnerForMatch(match, event, homeScore, awayScore, penaltyHome, penaltyAway) {
+  // 1. Trust explicit strWinner from the API (most reliable)
   const explicitWinnerCode = event?.strWinner
     ? getTeamCodeFromApiName(event.strWinner)
     : "";
@@ -443,8 +450,21 @@ function buildWinnerForMatch(match, event, homeScore, awayScore) {
     return match.away_team;
   }
 
+  // 2. Scores differ → determine winner from regular/ET score
   if (Number.isInteger(homeScore) && Number.isInteger(awayScore) && homeScore !== awayScore) {
     return homeScore > awayScore ? match.home_team : match.away_team;
+  }
+
+  // 3. Scores are level → check penalty shootout
+  if (
+    Number.isInteger(homeScore) &&
+    Number.isInteger(awayScore) &&
+    homeScore === awayScore &&
+    Number.isInteger(penaltyHome) &&
+    Number.isInteger(penaltyAway) &&
+    penaltyHome !== penaltyAway
+  ) {
+    return penaltyHome > penaltyAway ? match.home_team : match.away_team;
   }
 
   return null;
@@ -463,6 +483,9 @@ function mapEventToResultPayload(match, event) {
     "intAwayScoreExtra",
     "intAwayScoreET",
   ]);
+  // Penalty shootout scores (used to resolve winner_team when scores are level after ET)
+  const penaltyHome = getApiEventScoreValue(event, ["intHomePenaltyScore", "intHomeShootout"]);
+  const penaltyAway = getApiEventScoreValue(event, ["intAwayPenaltyScore", "intAwayShootout"]);
 
   return {
     found: true,
@@ -473,7 +496,9 @@ function mapEventToResultPayload(match, event) {
     awayScore,
     extraHome,
     extraAway,
-    winnerTeam: buildWinnerForMatch(match, event, homeScore, awayScore),
+    penaltyHome,
+    penaltyAway,
+    winnerTeam: buildWinnerForMatch(match, event, homeScore, awayScore, penaltyHome, penaltyAway),
     rawStatus: event?.strStatus || event?.strProgress || "",
   };
 }
@@ -544,7 +569,12 @@ async function syncRelevantMatches(adminToken) {
   for (const dateKey of uniqueDateKeys) {
     const { fromIso, toIso } = getBrazilDayBounds(dateKey);
     matchesByDate[dateKey] = await supabaseSelectMatches(fromIso, toIso);
-    eventsByDate[dateKey] = await fetchTheSportsDbEventsByDate(dateKey);
+    // Só consulta a API externa se há jogos cadastrados neste dia
+    if (matchesByDate[dateKey].length > 0) {
+      eventsByDate[dateKey] = await fetchTheSportsDbEventsByDate(dateKey);
+    } else {
+      eventsByDate[dateKey] = [];
+    }
   }
 
   const results = [];

@@ -13,7 +13,9 @@ await mkdir(distDir, { recursive: true });
 const copyTargets = [
   "index.html",
   "design-lab.html",
-  "public"
+  "public",
+  "manifest.json",
+  "icon.svg"
 ];
 
 for (const target of copyTargets) {

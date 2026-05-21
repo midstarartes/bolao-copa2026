@@ -9,6 +9,14 @@
     content="Bolão da Copa do Mundo 2026 com palpites, extras, moedas, ranking e painel administrativo."
   />
   <meta name="theme-color" content="#1b1b1d" />
+  <!-- PWA / Add to Home Screen -->
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="/icon.svg" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Bolão 26" />
   <style>
     :root {
       --bg-top: #0c0c0e;
@@ -171,7 +179,12 @@
       background:
         linear-gradient(180deg, rgba(255, 146, 146, 0.22), rgba(155, 34, 34, 0.12) 24%, rgba(115, 16, 16, 0.9) 100%),
         linear-gradient(135deg, #7f1818, #5e1010 52%, #320808);
+      /* mantém grid coluna — não força row */
+      flex-direction: unset;
     }
+
+    /* Quando logado: esconde o span de nick redundante e mostra só o avatar + label */
+    .login-card.is-logged-in .login-card-user { display: none; }
 
     .login-card.is-logged-in:hover {
       border-color: rgba(255, 124, 124, 0.38);
@@ -275,11 +288,11 @@
     .auth-panel {
       width: min(50vw, 760px);
       min-width: 320px;
-      min-height: min(50vh, 620px);
+      max-height: calc(100dvh - 48px);
       padding: 28px 30px;
       border-radius: 26px;
       position: relative;
-      overflow: hidden;
+      overflow-y: auto;
       color: #f3f5f8;
       background:
         radial-gradient(circle at 50% 18%, rgba(255, 255, 255, 0.08), transparent 22%),
@@ -637,7 +650,7 @@
 
     .header-logo {
       display: block;
-      width: clamp(58px, 9vw, 88px);
+      width: clamp(29px, 4.5vw, 44px);
       height: auto;
       flex: 0 0 auto;
       object-fit: contain;
@@ -2185,57 +2198,23 @@
       padding-top: 6px;
     }
 
-    .extras-actions {
-      display: grid;
-      justify-content: center;
-      margin-top: 18px;
+    .extras-autosave-msg {
+      text-align: center;
+      font-size: 0.80rem;
+      letter-spacing: 0.04em;
+      min-height: 20px;
+      margin-top: 10px;
+      color: rgba(190, 255, 211, 0.75);
+      opacity: 0;
+      transition: opacity 0.25s ease;
     }
 
-    .extras-save-button {
-      width: min(430px, 100%);
-      min-height: 56px;
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 18px;
-      background:
-        linear-gradient(180deg, rgba(255,255,255,0.14), rgba(255,255,255,0.04) 18%, rgba(255,255,255,0.01) 42%, rgba(0,0,0,0.26) 100%),
-        linear-gradient(180deg, rgba(183,255,202,0.16), rgba(74,222,128,0.16) 34%, rgba(21,128,61,0.9) 100%),
-        linear-gradient(135deg, rgba(26,68,34,0.92), rgba(18,95,47,0.96) 52%, rgba(8,58,28,0.94));
-      color: #f4fff8;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      font-size: 0.92rem;
-      font-weight: 900;
-      text-shadow: 0 3px 10px rgba(0,0,0,0.42);
-      box-shadow:
-        0 18px 34px rgba(0, 0, 0, 0.56),
-        0 4px 12px rgba(0, 0, 0, 0.34),
-        inset 0 1px 0 rgba(255, 255, 255, 0.22),
-        inset 0 -12px 20px rgba(0, 0, 0, 0.34);
-      cursor: pointer;
-      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    .extras-autosave-msg.is-visible {
+      opacity: 1;
     }
 
-    .extras-save-button:hover {
-      transform: translateY(-1px);
-      border-color: rgba(190,255,211,0.28);
-      box-shadow:
-        0 20px 38px rgba(0, 0, 0, 0.58),
-        0 0 18px rgba(74,222,128,0.2),
-        inset 0 1px 0 rgba(255, 255, 255, 0.24),
-        inset 0 -12px 20px rgba(0, 0, 0, 0.34);
-    }
-
-    .extras-save-button.is-saved {
-      background:
-        linear-gradient(180deg, rgba(255,255,255,0.14), rgba(255,255,255,0.04) 18%, rgba(255,255,255,0.01) 42%, rgba(0,0,0,0.26) 100%),
-        linear-gradient(180deg, rgba(196,225,255,0.16), rgba(96,165,250,0.16) 34%, rgba(29,78,216,0.9) 100%),
-        linear-gradient(135deg, rgba(24,52,100,0.92), rgba(30,64,175,0.96) 52%, rgba(17,37,95,0.94));
-      border-color: rgba(191, 219, 254, 0.26);
-      box-shadow:
-        0 20px 38px rgba(0, 0, 0, 0.58),
-        0 0 18px rgba(96,165,250,0.2),
-        inset 0 1px 0 rgba(255, 255, 255, 0.24),
-        inset 0 -12px 20px rgba(0, 0, 0, 0.34);
+    .extras-autosave-msg.is-error {
+      color: rgba(255, 180, 180, 0.85);
     }
 
     .extras-grid::before {
@@ -2704,10 +2683,11 @@
     .buffs-panel,
     .buff-target-panel {
       width: min(720px, calc(100vw - 40px));
+      max-height: calc(100dvh - 48px);
       padding: 22px 22px 20px;
       border-radius: 22px;
       position: relative;
-      overflow: hidden;
+      overflow-y: auto;
       background:
         radial-gradient(circle at 50% 14%, rgba(255,255,255,0.08), transparent 20%),
         linear-gradient(180deg, rgba(255,255,255,0.1), rgba(255,255,255,0.02) 18%, rgba(0,0,0,0.5) 100%),
@@ -2850,6 +2830,8 @@
 
     .results-panel {
       width: min(720px, 100%);
+      max-height: calc(100dvh - 40px);
+      overflow-y: auto;
       border-radius: 24px;
       padding: 22px;
       background:
@@ -2969,7 +2951,8 @@
     }
 
     .results-save,
-    .results-api {
+    .results-api,
+    .results-clear {
       min-width: 220px;
       min-height: 44px;
       padding: 10px 16px;
@@ -2996,6 +2979,14 @@
       color: #eff6ff;
     }
 
+    .results-clear {
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.14), rgba(255,255,255,0.04) 18%, rgba(255,255,255,0.01) 42%, rgba(0,0,0,0.26) 100%),
+        linear-gradient(135deg, rgba(239,68,68,0.82), rgba(185,28,28,0.96) 52%, rgba(127,29,29,0.98));
+      color: #fef2f2;
+    }
+
+    .results-clear:disabled,
     .results-api:disabled,
     .results-save:disabled {
       opacity: 0.58;
@@ -3984,6 +3975,258 @@
         line-height: 1.45;
       }
     }
+
+    /* ── Avatar circular ──────────────────────────────────────────── */
+    .user-avatar {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      overflow: hidden;
+      flex-shrink: 0;
+      background: rgba(255,255,255,0.1);
+      border: 2px solid rgba(255,255,255,0.22);
+      font-size: 1.1em;
+      line-height: 1;
+      user-select: none;
+    }
+    .user-avatar img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .user-avatar--xs { width: 28px; height: 28px; font-size: 0.9em; }
+    .user-avatar--sm { width: 34px; height: 34px; font-size: 1.05em; }
+    .user-avatar--md { width: 40px; height: 40px; font-size: 1.25em; }
+    .user-avatar--lg { width: 64px; height: 64px; font-size: 1.8em; }
+
+    /* Avatar no login-card */
+    .login-card-avatar {
+      display: none;
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 2px solid rgba(255,255,255,0.3);
+      align-items: center;
+      justify-content: center;
+      font-size: 1em;
+      flex-shrink: 0;
+    }
+    .login-card-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .login-card.is-logged-in .login-card-avatar { display: inline-flex; }
+    .login-card.is-logged-in { padding: 6px 14px; }
+
+    /* Avatar no ranking */
+    .ranking-player { display: flex; align-items: center; gap: 8px; }
+    .ranking-player .user-avatar { flex-shrink: 0; }
+
+    /* ── Avatar picker (no cadastro) ─────────────────────────────── */
+    .avatar-picker-btn {
+      background: none; border: none; padding: 0; cursor: pointer;
+    }
+    .avatar-picker-btn:hover .avatar-placeholder { opacity: 0.8; }
+
+    /* ── Modal de avatar ─────────────────────────────────────────── */
+    .avatar-modal {
+      position: fixed; inset: 0; z-index: 600;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(0,0,0,0.72);
+      backdrop-filter: blur(4px);
+    }
+    .avatar-modal.is-hidden { display: none; }
+    .avatar-modal-panel {
+      background: linear-gradient(160deg, #1a2540, #0e1628);
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 20px;
+      padding: 24px;
+      width: min(400px, 92vw);
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: 0 24px 56px rgba(0,0,0,0.6);
+    }
+    .avatar-modal-head {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .avatar-modal-head h2 {
+      margin: 0; font-size: 1rem;
+      font-weight: 800; text-transform: uppercase;
+      letter-spacing: 0.08em; color: #f3f5f8;
+    }
+    .avatar-modal-close {
+      background: none; border: none; color: rgba(255,255,255,0.6);
+      font-size: 1.4rem; cursor: pointer; line-height: 1;
+      padding: 4px 8px; border-radius: 8px;
+    }
+    .avatar-modal-close:hover { color: #fff; background: rgba(255,255,255,0.08); }
+    .avatar-modal-section-title {
+      font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.1em;
+      color: rgba(255,255,255,0.45); margin: 0 0 10px;
+    }
+    .avatar-emojis {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+    .avatar-emoji-btn {
+      aspect-ratio: 1;
+      background: rgba(255,255,255,0.06);
+      border: 2px solid rgba(255,255,255,0.1);
+      border-radius: 50%; cursor: pointer;
+      font-size: 1.5rem; display: flex;
+      align-items: center; justify-content: center;
+      transition: all 0.15s ease;
+    }
+    .avatar-emoji-btn:hover { background: rgba(255,255,255,0.14); transform: scale(1.08); }
+    .avatar-emoji-btn.is-selected {
+      border-color: #4fc840;
+      background: rgba(79,200,64,0.18);
+      box-shadow: 0 0 12px rgba(79,200,64,0.28);
+    }
+    .avatar-upload-area {
+      border: 2px dashed rgba(255,255,255,0.22);
+      border-radius: 12px; padding: 16px;
+      text-align: center; cursor: pointer;
+      transition: border-color 0.15s ease;
+    }
+    .avatar-upload-area:hover { border-color: rgba(255,255,255,0.4); }
+    .avatar-upload-area p {
+      margin: 0 0 4px; font-size: 0.82rem;
+      font-weight: 600; color: rgba(255,255,255,0.8);
+    }
+    .avatar-upload-area small {
+      font-size: 0.68rem; color: rgba(255,255,255,0.4);
+    }
+    #avatar-file-input { display: none; }
+
+    /* ── Profile popup ───────────────────────────────────────────── */
+    .profile-overlay {
+      position: fixed; inset: 0; z-index: 500;
+      background: rgba(0,0,0,0.55);
+      backdrop-filter: blur(3px);
+    }
+    .profile-overlay.is-hidden { display: none; }
+    .profile-popup {
+      position: fixed; z-index: 510;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: min(400px, 94vw);
+      max-height: 88vh;
+      overflow-y: auto;
+      background: linear-gradient(160deg, #1a2540, #0e1628);
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 20px;
+      box-shadow: 0 28px 60px rgba(0,0,0,0.65);
+    }
+    .profile-popup.is-hidden { display: none; }
+    .profile-popup-head {
+      display: flex; align-items: center; gap: 12px;
+      padding: 20px 20px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .profile-popup-info { flex: 1; min-width: 0; }
+    .profile-popup-name {
+      margin: 0; font-size: 0.95rem; font-weight: 800;
+      color: #f3f5f8; white-space: nowrap; overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .profile-popup-real {
+      margin: 2px 0 0; font-size: 0.72rem;
+      color: rgba(255,255,255,0.5);
+    }
+    .profile-popup-settings-btn {
+      background: none; border: none;
+      color: rgba(255,255,255,0.45); font-size: 1.2rem;
+      cursor: pointer; padding: 6px; border-radius: 10px;
+      transition: all 0.15s ease;
+    }
+    .profile-popup-settings-btn:hover { color: #fff; background: rgba(255,255,255,0.08); }
+    .profile-popup-body { padding: 16px 20px 20px; }
+    .profile-section {
+      margin-bottom: 16px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .profile-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+    .profile-section-title {
+      font-size: 0.64rem; text-transform: uppercase;
+      letter-spacing: 0.1em; color: rgba(255,255,255,0.38);
+      margin: 0 0 10px;
+    }
+    .profile-field {
+      margin-bottom: 8px;
+    }
+    .profile-input {
+      width: 100%; box-sizing: border-box;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 10px; padding: 9px 12px;
+      color: #f3f5f8; font-size: 0.84rem; font-family: inherit;
+      outline: none;
+    }
+    .profile-input:focus { border-color: rgba(255,255,255,0.3); }
+    .profile-btn {
+      display: inline-block; padding: 9px 18px;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 10px; color: #f3f5f8;
+      font-size: 0.78rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.06em;
+      cursor: pointer; font-family: inherit;
+      transition: background 0.15s ease;
+    }
+    .profile-btn:hover { background: rgba(255,255,255,0.18); }
+    .profile-btn--primary {
+      background: linear-gradient(135deg, #1b5f18, #0f490c);
+      border-color: rgba(100,200,80,0.3);
+    }
+    .profile-btn--primary:hover { background: linear-gradient(135deg, #1f6e1b, #125210); }
+    .profile-btn--danger {
+      background: linear-gradient(135deg, #7f1818, #5e1010);
+      border-color: rgba(220,80,80,0.3);
+      width: 100%;
+    }
+    .profile-btn--danger:hover { background: linear-gradient(135deg, #8f1c1c, #6a1212); }
+    .profile-btn--avatar {
+      display: flex; align-items: center; gap: 8px;
+      width: 100%; margin-bottom: 0;
+      justify-content: center;
+    }
+    .profile-feedback {
+      margin-top: 8px; font-size: 0.74rem;
+      padding: 6px 10px; border-radius: 8px;
+      display: none;
+    }
+    .profile-feedback.is-success { display: block; background: rgba(79,200,64,0.15); color: #7dea68; }
+    .profile-feedback.is-error   { display: block; background: rgba(220,64,64,0.15); color: #f07878; }
+
+    /* ── Painel admin: solicitações de nome ──────────────────────── */
+    .name-request-card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px; padding: 12px 14px;
+      margin-bottom: 10px; display: flex;
+      align-items: flex-start; gap: 10px;
+      flex-wrap: wrap;
+    }
+    .name-request-info { flex: 1; min-width: 0; }
+    .name-request-who {
+      font-size: 0.78rem; font-weight: 700; color: #f3f5f8; margin: 0 0 2px;
+    }
+    .name-request-change {
+      font-size: 0.72rem; color: rgba(255,255,255,0.55); margin: 0;
+    }
+    .name-request-actions { display: flex; gap: 6px; }
+    .name-request-approve, .name-request-reject {
+      padding: 5px 12px; border-radius: 8px; border: none;
+      font-size: 0.72rem; font-weight: 700; cursor: pointer;
+      font-family: inherit;
+    }
+    .name-request-approve { background: rgba(79,200,64,0.2); color: #7dea68; }
+    .name-request-approve:hover { background: rgba(79,200,64,0.35); }
+    .name-request-reject { background: rgba(220,64,64,0.2); color: #f07878; }
+    .name-request-reject:hover { background: rgba(220,64,64,0.35); }
   </style>
 </head>
 <body>
@@ -3996,8 +4239,11 @@
         </div>
         <span class="header-edition">Edição especial entre amigos</span>
         <a class="login-card" href="#" aria-label="Login">
-          <span class="login-card-user" id="login-card-user"></span>
-          <span class="login-card-label" id="login-card-label">Login</span>
+          <span class="login-card-avatar" id="login-card-avatar" aria-hidden="true"></span>
+          <div class="login-card-text">
+            <span class="login-card-user" id="login-card-user"></span>
+            <span class="login-card-label" id="login-card-label">Login</span>
+          </div>
         </a>
       </div>
       <h1>BOLÃO COPA <img class="header-logo" src="https://commons.wikimedia.org/wiki/Special:FilePath/2026%20FIFA%20World%20Cup%20emblem.svg" alt="Logo oficial da Copa do Mundo 2026"></h1>
@@ -4117,9 +4363,7 @@
             <div class="extras-card"><div class="extras-card-content"><p class="extras-card-title">Zebra</p></div></div>
           </div>
         </div>
-        <div class="extras-actions">
-          <button class="extras-save-button" type="button">Salvar Palpites Extras</button>
-        </div>
+        <p class="extras-autosave-msg" id="extras-autosave-msg" aria-live="polite"></p>
       </section>
       <section class="tab-panel is-hidden is-empty" id="tab-ranking" aria-label="Ranking">
         <div class="ranking-list">
@@ -4340,7 +4584,7 @@
                     <p>Empate protegido:</p>
                     <p>Custo: 🪙 (Moeda x1)</p>
                     <p>Buff: Se apostar empate e errar, não perde pontos.</p>
-                    <p>Uso: Disponível até a fase "SEMI-FINAL"</p>
+                    <p>Uso: Disponível até a fase "SEMI-FINAL" inclusive (bloqueado na final e disputa de 3º lugar)</p>
                   </div>
                 </section>
 
@@ -4465,7 +4709,7 @@
                 </label>
                 <label class="admin-field">
                   <span class="admin-label">Nova senha</span>
-                  <input class="admin-input" id="admin-user-password" type="text" placeholder="Deixe em branco para manter">
+                  <input class="admin-input" id="admin-user-password" type="password" placeholder="Deixe em branco para manter" autocomplete="new-password">
                 </label>
                 <label class="admin-check">
                   <input id="admin-user-blocked" type="checkbox">
@@ -4556,6 +4800,28 @@
 
             <section class="admin-panel">
               <div class="admin-panel-head">
+                <h3 class="admin-panel-title">Resultados finais do torneio</h3>
+                <p class="admin-panel-copy">Registre os resultados reais da Copa para pontuar os palpites extras de todos os participantes no ranking.</p>
+              </div>
+              <form class="admin-form admin-form--extras" id="admin-bonus-results-form">
+                <label class="admin-field"><span class="admin-label">Campeão</span><input class="admin-input" id="admin-br-champion" type="text" placeholder="Ex: Brasil"></label>
+                <label class="admin-field"><span class="admin-label">Vice-campeão</span><input class="admin-input" id="admin-br-runner-up" type="text" placeholder="Ex: Argentina"></label>
+                <label class="admin-field"><span class="admin-label">3º lugar</span><input class="admin-input" id="admin-br-third" type="text" placeholder="Ex: França"></label>
+                <label class="admin-field"><span class="admin-label">4º lugar</span><input class="admin-input" id="admin-br-fourth" type="text" placeholder="Ex: Alemanha"></label>
+                <label class="admin-field"><span class="admin-label">Artilheiro</span><input class="admin-input" id="admin-br-top-scorer" type="text" placeholder="Ex: Vini Jr"></label>
+                <label class="admin-field"><span class="admin-label">Melhor campanha</span><input class="admin-input" id="admin-br-best-group" type="text" placeholder="Ex: Brasil"></label>
+                <label class="admin-field"><span class="admin-label">Zebra</span><input class="admin-input" id="admin-br-zebra-team" type="text" placeholder="Ex: Marrocos"></label>
+                <label class="admin-field"><span class="admin-label">Fases avançadas (zebra)</span><input class="admin-input" id="admin-br-zebra-phases" type="number" min="0" max="7" placeholder="0–7"></label>
+                <label class="admin-field"><span class="admin-label">Total de gols</span><input class="admin-input" id="admin-br-total-goals" type="number" min="0" placeholder="Ex: 164"></label>
+                <div class="admin-actions admin-actions--full">
+                  <button class="admin-button admin-button--primary" type="submit">Salvar resultados finais</button>
+                </div>
+              </form>
+              <div class="admin-preview" id="admin-bonus-results-preview">Nenhum resultado final registrado ainda.</div>
+            </section>
+
+            <section class="admin-panel">
+              <div class="admin-panel-head">
                 <h3 class="admin-panel-title">Buffs do usuário</h3>
                 <p class="admin-panel-copy">Aplique ou remova buffs manualmente para corrigir qualquer situação.</p>
               </div>
@@ -4584,6 +4850,30 @@
                 </div>
               </form>
               <div class="admin-buffs-list" id="admin-buffs-list"></div>
+            </section>
+
+            <section class="admin-panel">
+              <div class="admin-panel-head">
+                <h3 class="admin-panel-title">Solicitações de troca de nome</h3>
+                <p class="admin-panel-copy">Participantes que solicitaram trocar o nome real precisam de aprovação aqui.</p>
+              </div>
+              <div id="admin-name-requests-list"><p style="opacity:.45;font-size:.78rem">Nenhuma solicitação pendente.</p></div>
+            </section>
+
+            <section class="admin-panel">
+              <div class="admin-panel-head">
+                <h3 class="admin-panel-title">Minha senha (Admin)</h3>
+                <p class="admin-panel-copy">Altere a senha da sua conta de administrador.</p>
+              </div>
+              <form class="admin-form" id="admin-own-password-form">
+                <label class="admin-field admin-field--full">
+                  <span class="admin-label">Nova senha</span>
+                  <input class="admin-input" id="admin-own-password" type="password" placeholder="Mínimo 6 caracteres" autocomplete="new-password">
+                </label>
+                <div class="admin-actions">
+                  <button class="admin-button admin-button--primary" type="submit">Salvar nova senha</button>
+                </div>
+              </form>
             </section>
 
             <section class="admin-panel admin-panel--wide">
@@ -4695,6 +4985,7 @@
         <div class="results-feedback" id="results-feedback"></div>
         <div class="results-actions">
           <button class="results-api" id="results-fetch-api" type="button">Buscar da API</button>
+          <button class="results-clear" id="results-clear" type="button">Apagar resultado</button>
           <button class="results-save" id="results-save" type="submit">Salvar resultado oficial</button>
         </div>
       </form>
@@ -4727,21 +5018,21 @@
         <form class="register-fields is-hidden" id="register-form">
           <div class="auth-field">
             <label class="auth-label" for="register-name">Nome Real</label>
-            <input class="auth-input" id="register-name" name="register-name" type="text" placeholder="Digite seu nome real" />
+            <input class="auth-input" id="register-name" name="register-name" type="text" placeholder="Digite seu nome real" maxlength="60" />
           </div>
           <div class="auth-field">
             <label class="auth-label" for="register-username">Usuário / Apelido</label>
-            <input class="auth-input" id="register-username" name="register-username" type="text" placeholder="Crie seu usuário" />
+            <input class="auth-input" id="register-username" name="register-username" type="text" placeholder="Crie seu usuário" maxlength="30" />
           </div>
           <div class="auth-field">
             <label class="auth-label" for="register-password">Crie uma Senha</label>
-            <input class="auth-input" id="register-password" name="register-password" type="password" placeholder="Mínimo de 4 caracteres" />
+            <input class="auth-input" id="register-password" name="register-password" type="password" placeholder="Mínimo de 6 caracteres" />
           </div>
           <div class="auth-field">
-            <span class="auth-label">Escolha seu Avatar</span>
-            <div class="avatar-picker">
-              <div class="avatar-placeholder">Avatar</div>
-            </div>
+            <span class="auth-label">Escolha seu Avatar <small style="opacity:.5;font-weight:400">(opcional)</small></span>
+            <button class="avatar-picker-btn" type="button" id="register-avatar-btn" aria-label="Escolher avatar">
+              <div class="avatar-placeholder" id="register-avatar-preview">⚽</div>
+            </button>
           </div>
           <button class="auth-button" type="submit">Finalizar Cadastro</button>
         </form>
@@ -4757,8 +5048,108 @@
       <button class="welcome-button" id="welcome-button" type="button">Ir para aba moedas</button>
     </div>
   </div>
+
+  <!-- ── Avatar picker modal ─────────────────────────────────────── -->
+  <div class="avatar-modal is-hidden" id="avatar-modal" aria-hidden="true">
+    <div class="avatar-modal-panel" role="dialog" aria-modal="true" aria-labelledby="avatar-modal-title">
+      <div class="avatar-modal-head">
+        <h2 id="avatar-modal-title">Escolha seu avatar</h2>
+        <button class="avatar-modal-close" id="avatar-modal-close" type="button" aria-label="Fechar">×</button>
+      </div>
+      <p class="avatar-modal-section-title">Ícones de futebol</p>
+      <div class="avatar-emojis" id="avatar-emojis-grid">
+        <button class="avatar-emoji-btn" type="button" data-emoji="⚽">⚽</button>
+        <button class="avatar-emoji-btn" type="button" data-emoji="🥅">🥅</button>
+        <button class="avatar-emoji-btn" type="button" data-emoji="🏆">🏆</button>
+        <button class="avatar-emoji-btn" type="button" data-emoji="🥇">🥇</button>
+        <button class="avatar-emoji-btn" type="button" data-emoji="👟">👟</button>
+        <button class="avatar-emoji-btn" type="button" data-emoji="🎯">🎯</button>
+        <button class="avatar-emoji-btn" type="button" data-emoji="🦁">🦁</button>
+        <button class="avatar-emoji-btn" type="button" data-emoji="🦅">🦅</button>
+        <button class="avatar-emoji-btn" type="button" data-emoji="👑">👑</button>
+        <button class="avatar-emoji-btn" type="button" data-emoji="🔥">🔥</button>
+      </div>
+      <p class="avatar-modal-section-title">Enviar foto</p>
+      <div class="avatar-upload-area" id="avatar-upload-area">
+        <p>📷 Clique para enviar uma foto</p>
+        <small>Máximo 5 MB — será redimensionada automaticamente</small>
+        <input type="file" id="avatar-file-input" accept="image/*">
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Profile popup ──────────────────────────────────────────── -->
+  <div class="profile-overlay is-hidden" id="profile-overlay"></div>
+  <div class="profile-popup is-hidden" id="profile-popup" role="dialog" aria-modal="true" aria-labelledby="profile-popup-title">
+    <div class="profile-popup-head">
+      <span class="user-avatar user-avatar--md" id="profile-popup-avatar" aria-hidden="true">⚽</span>
+      <div class="profile-popup-info">
+        <p class="profile-popup-name" id="profile-popup-title">—</p>
+        <p class="profile-popup-real" id="profile-popup-real">—</p>
+      </div>
+      <button class="profile-popup-settings-btn" id="profile-popup-close" type="button" aria-label="Fechar">⚙️</button>
+    </div>
+    <div class="profile-popup-body">
+
+      <!-- Avatar -->
+      <div class="profile-section">
+        <p class="profile-section-title">Foto / Ícone</p>
+        <button class="profile-btn profile-btn--avatar" id="profile-change-avatar-btn" type="button">
+          <span>🖼️</span> Trocar foto ou ícone
+        </button>
+      </div>
+
+      <!-- Apelido -->
+      <div class="profile-section">
+        <p class="profile-section-title">Apelido</p>
+        <div class="profile-field">
+          <input class="profile-input" id="profile-nickname-input" type="text" maxlength="30" placeholder="Novo apelido">
+        </div>
+        <button class="profile-btn profile-btn--primary" id="profile-save-nickname-btn" type="button">Salvar apelido</button>
+        <div class="profile-feedback" id="profile-nickname-feedback"></div>
+      </div>
+
+      <!-- Senha -->
+      <div class="profile-section">
+        <p class="profile-section-title">Senha</p>
+        <div class="profile-field">
+          <input class="profile-input" id="profile-current-password" type="password" placeholder="Senha atual" autocomplete="current-password">
+        </div>
+        <div class="profile-field">
+          <input class="profile-input" id="profile-new-password" type="password" placeholder="Nova senha (mín. 6 caracteres)" autocomplete="new-password">
+        </div>
+        <button class="profile-btn profile-btn--primary" id="profile-save-password-btn" type="button">Salvar senha</button>
+        <div class="profile-feedback" id="profile-password-feedback"></div>
+      </div>
+
+      <!-- Trocar nome real (requer aprovação) -->
+      <div class="profile-section">
+        <p class="profile-section-title">Nome real <span style="opacity:.45;font-size:.85em">(requer aprovação do admin)</span></p>
+        <div class="profile-field">
+          <input class="profile-input" id="profile-new-realname" type="text" maxlength="60" placeholder="Novo nome real">
+        </div>
+        <button class="profile-btn" id="profile-request-name-btn" type="button">Enviar solicitação</button>
+        <div class="profile-feedback" id="profile-name-feedback"></div>
+      </div>
+
+      <!-- Sair -->
+      <div class="profile-section">
+        <button class="profile-btn profile-btn--danger" id="profile-logout-btn" type="button">Sair da conta</button>
+      </div>
+
+    </div>
+  </div>
+
   <script type="module">
-    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.106.1/+esm";
+
+    const escapeHtml = (value) =>
+      String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
 
     const topNav = document.getElementById("top-nav");
     const topNavPrev = document.getElementById("top-nav-prev");
@@ -4776,7 +5167,7 @@
     const extrasTextTitle = document.getElementById("extras-text-title");
     const extrasTextInput = document.getElementById("extras-text-input");
     const extrasTextOk = document.getElementById("extras-text-ok");
-    const extrasSaveButton = document.querySelector(".extras-save-button");
+    const extrasAutosaveMsg = document.getElementById("extras-autosave-msg");
     const buffsModal = document.getElementById("buffs-modal");
     const buffsClose = document.getElementById("buffs-close");
     const buffsList = document.getElementById("buffs-list");
@@ -4811,6 +5202,46 @@
     const missionCards = Array.from(document.querySelectorAll(".mission-card"));
     const rankingRows = document.getElementById("ranking-rows");
     const rankingEmpty = document.getElementById("ranking-empty");
+    const loginCardAvatar = document.getElementById("login-card-avatar");
+
+    // Avatar modal
+    const avatarModal = document.getElementById("avatar-modal");
+    const avatarModalClose = document.getElementById("avatar-modal-close");
+    const avatarEmojisGrid = document.getElementById("avatar-emojis-grid");
+    const avatarUploadArea = document.getElementById("avatar-upload-area");
+    const avatarFileInput = document.getElementById("avatar-file-input");
+
+    // Profile popup
+    const profileOverlay = document.getElementById("profile-overlay");
+    const profilePopup = document.getElementById("profile-popup");
+    const profilePopupClose = document.getElementById("profile-popup-close");
+    const profilePopupAvatar = document.getElementById("profile-popup-avatar");
+    const profilePopupTitle = document.getElementById("profile-popup-title");
+    const profilePopupReal = document.getElementById("profile-popup-real");
+    const profileChangeAvatarBtn = document.getElementById("profile-change-avatar-btn");
+    const profileNicknameInput = document.getElementById("profile-nickname-input");
+    const profileSaveNicknameBtn = document.getElementById("profile-save-nickname-btn");
+    const profileNicknameFeedback = document.getElementById("profile-nickname-feedback");
+    const profileCurrentPassword = document.getElementById("profile-current-password");
+    const profileNewPassword = document.getElementById("profile-new-password");
+    const profileSavePasswordBtn = document.getElementById("profile-save-password-btn");
+    const profilePasswordFeedback = document.getElementById("profile-password-feedback");
+    const profileNewRealname = document.getElementById("profile-new-realname");
+    const profileRequestNameBtn = document.getElementById("profile-request-name-btn");
+    const profileNameFeedback = document.getElementById("profile-name-feedback");
+    const profileLogoutBtn = document.getElementById("profile-logout-btn");
+
+    // Admin name requests
+    const adminNameRequestsList = document.getElementById("admin-name-requests-list");
+
+    // Admin own password change
+    const adminOwnPasswordForm = document.getElementById("admin-own-password-form");
+    const adminOwnPasswordInput = document.getElementById("admin-own-password");
+
+    // State for avatar selection (shared between register and profile)
+    let avatarModalContext = "register"; // "register" | "profile"
+    let pendingAvatarType = "preset";
+    let pendingAvatarValue = "⚽";
     const historyList = document.getElementById("history-list");
     const historyEmpty = document.getElementById("history-empty");
     const adminUserSearch = document.getElementById("admin-user-search");
@@ -4853,9 +5284,21 @@
     const adminBuffRemove = document.getElementById("admin-buff-remove");
     const adminBuffsList = document.getElementById("admin-buffs-list");
     const adminExtrasPreview = document.getElementById("admin-extras-preview");
+    const adminBonusResultsForm = document.getElementById("admin-bonus-results-form");
+    const adminBrChampion = document.getElementById("admin-br-champion");
+    const adminBrRunnerUp = document.getElementById("admin-br-runner-up");
+    const adminBrThird = document.getElementById("admin-br-third");
+    const adminBrFourth = document.getElementById("admin-br-fourth");
+    const adminBrTopScorer = document.getElementById("admin-br-top-scorer");
+    const adminBrBestGroup = document.getElementById("admin-br-best-group");
+    const adminBrZebraTeam = document.getElementById("admin-br-zebra-team");
+    const adminBrZebraPhases = document.getElementById("admin-br-zebra-phases");
+    const adminBrTotalGoals = document.getElementById("admin-br-total-goals");
+    const adminBonusResultsPreview = document.getElementById("admin-bonus-results-preview");
     const adminAuditList = document.getElementById("admin-audit-list");
     const resultsModal = document.getElementById("results-modal");
     const resultsClose = document.getElementById("results-close");
+    const resultsClearBtn = document.getElementById("results-clear");
     const resultsForm = document.getElementById("results-form");
     const resultsSubtitle = document.getElementById("results-subtitle");
     const resultsMatchSelect = document.getElementById("results-match-select");
@@ -5229,13 +5672,15 @@
         session_token: token,
       });
 
-      if (error || !data) {
+      // PostgREST may wrap single-row composite returns in an array
+      const payload = Array.isArray(data) ? data[0] : data;
+      if (error || !payload) {
         setBackendToken("");
         setCurrentUser(null);
         return null;
       }
 
-      const mapped = mapBackendUser(data);
+      const mapped = mapBackendUser(payload);
       await fetchBackendUsers();
       setCurrentUser(mapped);
       return mapped;
@@ -5248,14 +5693,12 @@
       if (!currentUser?.username || !token) return null;
 
       const existingRecord = getUserRecord(currentUser.username);
-      const nextCoins = updates.coins ?? existingRecord?.coins ?? currentUser.coins ?? 0;
       const nextMissionClaims = updates.missionClaims ?? existingRecord?.missionClaims ?? currentUser.missionClaims ?? {};
       const nextHasSeenWelcome =
         updates.hasSeenWelcome ?? existingRecord?.hasSeenWelcome ?? currentUser.hasSeenWelcome ?? false;
 
       const { data, error } = await supabase.rpc("app_update_current_user_state", {
         p_token: token,
-        p_coins: nextCoins,
         p_mission_claims: nextMissionClaims,
         p_has_seen_welcome: nextHasSeenWelcome,
       });
@@ -5293,6 +5736,8 @@
       void loadUserHistory();
       if (user?.isAdmin) {
         void loadAdminUsers();
+        void loadBonusResults();
+        void loadAdminNameRequests();
       } else if (activePanel?.id === "tab-admin") {
         activateTab("tab-jogos");
       }
@@ -5313,6 +5758,143 @@
       if (buffsCoins) {
         buffsCoins.textContent = `Moedas: ${getCurrentUserCoins()}`;
       }
+    }
+
+    // ── Avatar helpers ─────────────────────────────────────────────
+    function getAvatarMarkup(avatarType, avatarValue, sizeClass = "user-avatar--sm") {
+      const cls = `user-avatar ${sizeClass}`;
+      if (avatarType === "upload" && avatarValue) {
+        return `<span class="${cls}"><img src="${escapeHtml(avatarValue)}" alt="Avatar" loading="lazy"></span>`;
+      }
+      const emoji = avatarValue || "⚽";
+      return `<span class="${cls}" aria-hidden="true">${escapeHtml(emoji)}</span>`;
+    }
+
+    function setAvatarElement(el, avatarType, avatarValue) {
+      if (!el) return;
+      if (avatarType === "upload" && avatarValue) {
+        el.innerHTML = `<img src="${escapeHtml(avatarValue)}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+      } else {
+        el.textContent = avatarValue || "⚽";
+      }
+    }
+
+    function resizeImageToDataUrl(file, maxSize = 96, quality = 0.82) {
+      return new Promise((resolve, reject) => {
+        if (file.size > 5 * 1024 * 1024) {
+          reject(new Error("Arquivo muito grande. Máximo 5 MB."));
+          return;
+        }
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const img = new Image();
+          img.onload = () => {
+            const canvas = document.createElement("canvas");
+            const ratio = Math.min(maxSize / img.width, maxSize / img.height, 1);
+            canvas.width  = Math.round(img.width  * ratio);
+            canvas.height = Math.round(img.height * ratio);
+            const ctx = canvas.getContext("2d");
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            resolve(canvas.toDataURL("image/jpeg", quality));
+          };
+          img.onerror = () => reject(new Error("Não foi possível carregar a imagem."));
+          img.src = e.target.result;
+        };
+        reader.onerror = () => reject(new Error("Erro ao ler o arquivo."));
+        reader.readAsDataURL(file);
+      });
+    }
+
+    // ── Avatar modal ───────────────────────────────────────────────
+    function openAvatarModal(context = "register") {
+      avatarModalContext = context;
+      // Mark currently selected emoji if applicable
+      const currentValue = context === "profile"
+        ? (getCurrentUser()?.avatarValue || "⚽")
+        : pendingAvatarValue;
+      avatarEmojisGrid?.querySelectorAll(".avatar-emoji-btn").forEach((btn) => {
+        btn.classList.toggle("is-selected", btn.dataset.emoji === currentValue);
+      });
+      avatarModal?.classList.remove("is-hidden");
+      avatarModal?.setAttribute("aria-hidden", "false");
+    }
+
+    function closeAvatarModal() {
+      avatarModal?.classList.add("is-hidden");
+      avatarModal?.setAttribute("aria-hidden", "true");
+    }
+
+    function applyAvatarSelection(type, value) {
+      if (avatarModalContext === "register") {
+        pendingAvatarType = type;
+        pendingAvatarValue = value;
+        const preview = document.getElementById("register-avatar-preview");
+        if (preview) {
+          if (type === "upload") {
+            preview.innerHTML = `<img src="${escapeHtml(value)}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+          } else {
+            preview.textContent = value;
+          }
+        }
+      } else if (avatarModalContext === "profile") {
+        // Atualiza a UI imediatamente (optimistic) antes da confirmação do servidor
+        setAvatarElement(profilePopupAvatar, type, value);
+        if (loginCardAvatar) setAvatarElement(loginCardAvatar, type, value);
+        void saveProfileAvatar(type, value);
+      }
+      closeAvatarModal();
+    }
+
+    async function saveProfileAvatar(type, value) {
+      const token = getBackendToken();
+      if (!token || !BACKEND_ENABLED) return;
+      try {
+        const { data, error } = await supabase.rpc("app_update_current_user_profile", {
+          p_token: token,
+          p_avatar_type: type,
+          p_avatar_value: value,
+        });
+        if (error) throw error;
+        const payload = Array.isArray(data) ? data[0] : data;
+        const mapped = mapBackendUser(payload);
+        setCurrentUser(mapped);
+        updateLoginButton();
+        openProfilePopup(); // refresh popup header
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    // ── Profile popup ──────────────────────────────────────────────
+    function openProfilePopup() {
+      const user = getCurrentUser();
+      if (!user) return;
+      if (profilePopupTitle) profilePopupTitle.textContent = user.username;
+      if (profilePopupReal) profilePopupReal.textContent = user.realName || "";
+      if (profileNicknameInput) profileNicknameInput.value = user.username;
+      setAvatarElement(profilePopupAvatar, user.avatarType, user.avatarValue);
+      profileOverlay?.classList.remove("is-hidden");
+      profilePopup?.classList.remove("is-hidden");
+      profilePopup?.setAttribute("aria-hidden", "false");
+      // Clear feedbacks
+      [profileNicknameFeedback, profilePasswordFeedback, profileNameFeedback].forEach((el) => {
+        if (el) { el.className = "profile-feedback"; el.textContent = ""; }
+      });
+      if (profileCurrentPassword) profileCurrentPassword.value = "";
+      if (profileNewPassword) profileNewPassword.value = "";
+      if (profileNewRealname) profileNewRealname.value = "";
+    }
+
+    function closeProfilePopup() {
+      profileOverlay?.classList.add("is-hidden");
+      profilePopup?.classList.add("is-hidden");
+      profilePopup?.setAttribute("aria-hidden", "true");
+    }
+
+    function showProfileFeedback(el, message, type) {
+      if (!el) return;
+      el.textContent = message;
+      el.className = `profile-feedback is-${type}`;
     }
 
     function formatRankingPoints(value) {
@@ -5349,21 +5931,32 @@
           const classes = ["ranking-card", getRankingCardTone(position)];
           if (isCurrent) classes.push("ranking-card--current");
 
+          const avatarMarkup = entry
+            ? getAvatarMarkup(entry.avatar_type, entry.avatar_value, "user-avatar--sm")
+            : `<span class="user-avatar user-avatar--sm" aria-hidden="true" style="opacity:.25">⚽</span>`;
           const playerMarkup = entry
             ? `
               <div class="ranking-player">
-                <p class="ranking-player-name">${entry.nickname}</p>
-                <p class="ranking-player-real${isCurrent ? " ranking-player-you" : ""}">${isCurrent ? "Você • " : ""}${entry.real_name}</p>
+                ${avatarMarkup}
+                <div>
+                  <p class="ranking-player-name">${escapeHtml(entry.nickname)}</p>
+                  <p class="ranking-player-real${isCurrent ? " ranking-player-you" : ""}">${isCurrent ? "Você • " : ""}${escapeHtml(entry.real_name)}</p>
+                </div>
               </div>
             `
             : `
               <div class="ranking-player">
-                <p class="ranking-player-name ranking-placeholder">Aguardando jogador</p>
-                <p class="ranking-player-real">Sem participante nesta posição</p>
+                <span class="user-avatar user-avatar--sm" aria-hidden="true" style="opacity:.2">⚽</span>
+                <div>
+                  <p class="ranking-player-name ranking-placeholder">Aguardando jogador</p>
+                  <p class="ranking-player-real">Sem participante nesta posição</p>
+                </div>
               </div>
             `;
           const exactMarkup = `<p class="ranking-metric${entry ? "" : " ranking-placeholder"}">${entry ? Number(entry.exact_scores ?? 0) : "—"}</p>`;
-          const pointsMarkup = `<p class="ranking-metric ranking-metric--points${entry ? "" : " ranking-placeholder"}">${entry ? formatRankingPoints(entry.total_points ?? 0) : "—"}</p>`;
+          const bonusPoints = entry ? Number(entry.bonus_points ?? 0) : 0;
+          const bonusSuffix = bonusPoints > 0 ? ` <small style="opacity:.6;font-size:.75em">(+${formatRankingPoints(bonusPoints)} extra)</small>` : "";
+          const pointsMarkup = `<p class="ranking-metric ranking-metric--points${entry ? "" : " ranking-placeholder"}">${entry ? formatRankingPoints(entry.total_points ?? 0) + bonusSuffix : "—"}</p>`;
           const dividerMarkup = position === 3 || position === 8 ? `<div class="ranking-divider" aria-hidden="true"></div>` : "";
 
           return `
@@ -5518,7 +6111,7 @@
           const buffsInfo = entry.applied_buffs ? `
                 <div class="history-block">
                   <span class="history-label">Buffs / efeitos</span>
-                  <span class="history-value">${entry.applied_buffs}</span>
+                  <span class="history-value">${escapeHtml(entry.applied_buffs)}</span>
                 </div>
               ` : "";
           const multiplierInfo = Number(entry.total_multiplier || 1) > 1 ? `
@@ -5532,8 +6125,8 @@
             <article class="history-card">
               <div class="history-card-head">
                 <div>
-                  <p class="history-card-title">Jogo ${entry.match_number} • ${entry.home_team} x ${entry.away_team}</p>
-                  <p class="history-card-meta">${entry.phase_label || "Partida"} • ${formatFixtureTime(entry.starts_at)}</p>
+                  <p class="history-card-title">Jogo ${escapeHtml(String(entry.match_number ?? ""))} • ${escapeHtml(entry.home_team)} x ${escapeHtml(entry.away_team)}</p>
+                  <p class="history-card-meta">${escapeHtml(entry.phase_label || "Partida")} • ${formatFixtureTime(entry.starts_at)}</p>
                 </div>
                 <div class="history-points ${pointsState}">${pointsText}</div>
               </div>
@@ -5815,12 +6408,14 @@
         .map((entry) => {
           const match = getMatchRecordById(entry.match_id);
           const buff = buffCatalog.find((item) => item.id === entry.buff_id);
-          const matchLabel = match ? `Jogo ${match.match_number} • ${match.home_team} x ${match.away_team}` : entry.match_id;
+          const matchLabel = match
+            ? `Jogo ${escapeHtml(String(match.match_number ?? ""))} • ${escapeHtml(match.home_team)} x ${escapeHtml(match.away_team)}`
+            : escapeHtml(String(entry.match_id ?? ""));
           return `
             <article class="admin-buff-card">
-              <p class="admin-buff-title">${buff?.title || entry.buff_id}</p>
+              <p class="admin-buff-title">${escapeHtml(buff?.title || entry.buff_id)}</p>
               <p class="admin-buff-meta"><strong>Jogo:</strong> ${matchLabel}</p>
-              <p class="admin-buff-meta"><strong>Alvo:</strong> ${entry.target_nickname || "Sem alvo"}</p>
+              <p class="admin-buff-meta"><strong>Alvo:</strong> ${escapeHtml(entry.target_nickname || "Sem alvo")}</p>
             </article>
           `;
         })
@@ -5837,9 +6432,9 @@
       adminAuditList.innerHTML = entries
         .map((entry) => `
           <article class="admin-audit-card">
-            <p class="admin-audit-title">${entry.action_label || entry.action_key || "Ação administrativa"}</p>
-            <p class="admin-audit-meta">${entry.admin_nickname || "ADMIN"} • ${formatDateTimeShort(entry.created_at)}</p>
-            <p class="admin-audit-body">${entry.summary || "Sem detalhes adicionais."}</p>
+            <p class="admin-audit-title">${escapeHtml(entry.action_label || entry.action_key || "Ação administrativa")}</p>
+            <p class="admin-audit-meta">${escapeHtml(entry.admin_nickname || "ADMIN")} • ${formatDateTimeShort(entry.created_at)}</p>
+            <p class="admin-audit-body">${escapeHtml(entry.summary || "Sem detalhes adicionais.")}</p>
           </article>
         `)
         .join("");
@@ -5858,8 +6453,8 @@
             <article class="admin-user-card${selected ? " is-selected" : ""}">
               <div class="admin-user-head">
                 <div>
-                  <p class="admin-user-name">${user.nickname}</p>
-                  <p class="admin-user-real">${user.real_name}</p>
+                  <p class="admin-user-name">${escapeHtml(user.nickname)}</p>
+                  <p class="admin-user-real">${escapeHtml(user.real_name)}</p>
                 </div>
                 <button class="admin-user-select" type="button" data-admin-user="${user.user_id}">Gerenciar</button>
               </div>
@@ -5946,7 +6541,7 @@
         fillAdminWinnerOptions(adminPredictionWinner, adminPredictionMatch.value, data?.winner_team || "");
         const match = getMatchRecordById(adminPredictionMatch.value);
         adminPredictionPreview.innerHTML = data
-          ? `<strong>Atual:</strong> ${data.home_score} x ${data.away_score}${data.winner_team ? ` • Avança: ${data.winner_team}` : ""}${(data.extra_time_home != null && data.extra_time_away != null) ? ` • Prorrogação: ${data.extra_time_home} x ${data.extra_time_away}` : ""}${match ? ` • ${match.home_team} x ${match.away_team}` : ""}`
+          ? `<strong>Atual:</strong> ${escapeHtml(String(data.home_score ?? ""))} x ${escapeHtml(String(data.away_score ?? ""))}${data.winner_team ? ` • Avança: ${escapeHtml(data.winner_team)}` : ""}${(data.extra_time_home != null && data.extra_time_away != null) ? ` • Prorrogação: ${escapeHtml(String(data.extra_time_home))} x ${escapeHtml(String(data.extra_time_away))}` : ""}${match ? ` • ${escapeHtml(match.home_team)} x ${escapeHtml(match.away_team)}` : ""}`
           : `Nenhum palpite salvo para esse jogo.`;
       } catch (error) {
         console.error(error);
@@ -5981,10 +6576,105 @@
           ["Gols", Number.isInteger(data?.total_goals) ? data.total_goals : null],
         ].filter(([, value]) => value !== null && value !== undefined && value !== "");
         adminExtrasPreview.innerHTML = previewPairs.length
-          ? `<strong>Atual:</strong> ${previewPairs.map(([label, value]) => `${label}: ${value}`).join(" • ")}`
+          ? `<strong>Atual:</strong> ${previewPairs.map(([label, value]) => `${escapeHtml(String(label))}: ${escapeHtml(String(value))}`).join(" • ")}`
           : `Nenhum palpite extra salvo para esse usuário.`;
       } catch (error) {
         console.error(error);
+      }
+    }
+
+    async function loadAdminNameRequests() {
+      if (!adminNameRequestsList || !BACKEND_ENABLED) return;
+      try {
+        const { data, error } = await supabase.rpc("app_admin_get_name_requests", {
+          p_token: getBackendToken(),
+        });
+        if (error) throw error;
+        const requests = data || [];
+        if (requests.length === 0) {
+          adminNameRequestsList.innerHTML = `<p style="opacity:.45;font-size:.78rem">Nenhuma solicitação pendente.</p>`;
+          return;
+        }
+        adminNameRequestsList.innerHTML = requests.map((r) => `
+          <div class="name-request-card">
+            <div class="name-request-info">
+              <p class="name-request-who">${escapeHtml(r.nickname)}</p>
+              <p class="name-request-change">"${escapeHtml(r.current_name)}" → "${escapeHtml(r.requested_name)}"</p>
+            </div>
+            <div class="name-request-actions">
+              <button class="name-request-approve" data-request-id="${escapeHtml(r.request_id)}" type="button">✓ Aprovar</button>
+              <button class="name-request-reject"  data-request-id="${escapeHtml(r.request_id)}" type="button">✗ Recusar</button>
+            </div>
+          </div>
+        `).join("");
+        adminNameRequestsList.querySelectorAll(".name-request-approve").forEach((btn) => {
+          btn.addEventListener("click", async () => {
+            try {
+              const { data: res, error: err } = await supabase.rpc("app_admin_resolve_name_request", {
+                p_token: getBackendToken(), p_request_id: btn.dataset.requestId, p_approve: true,
+              });
+              if (err) throw err;
+              showAdminFeedback(res || "Nome aprovado.", "success");
+              await loadAdminNameRequests();
+              await loadAdminUsers();
+            } catch (e) { showAdminFeedback(e.message || "Erro."); }
+          });
+        });
+        adminNameRequestsList.querySelectorAll(".name-request-reject").forEach((btn) => {
+          btn.addEventListener("click", async () => {
+            try {
+              const { data: res, error: err } = await supabase.rpc("app_admin_resolve_name_request", {
+                p_token: getBackendToken(), p_request_id: btn.dataset.requestId, p_approve: false,
+              });
+              if (err) throw err;
+              showAdminFeedback(res || "Solicitação recusada.", "success");
+              await loadAdminNameRequests();
+            } catch (e) { showAdminFeedback(e.message || "Erro."); }
+          });
+        });
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    async function loadBonusResults() {
+      if (!adminBonusResultsPreview || !BACKEND_ENABLED) return;
+      try {
+        const { data, error } = await supabase.rpc("app_get_bonus_results");
+        if (error) throw error;
+        const r = data || {};
+        const keys = Object.keys(r).filter((k) => r[k] !== null && r[k] !== undefined && r[k] !== "");
+        if (keys.length === 0) {
+          adminBonusResultsPreview.textContent = "Nenhum resultado final registrado ainda.";
+          return;
+        }
+        // Pre-fill form with saved values
+        if (adminBrChampion) adminBrChampion.value = r.champion || "";
+        if (adminBrRunnerUp) adminBrRunnerUp.value = r.runner_up || "";
+        if (adminBrThird) adminBrThird.value = r.third_place || "";
+        if (adminBrFourth) adminBrFourth.value = r.fourth_place || "";
+        if (adminBrTopScorer) adminBrTopScorer.value = r.top_scorer || "";
+        if (adminBrBestGroup) adminBrBestGroup.value = r.best_group_stage_team || "";
+        if (adminBrZebraTeam) adminBrZebraTeam.value = r.zebra_team || "";
+        if (adminBrZebraPhases) adminBrZebraPhases.value = r.zebra_phases_advanced ?? "";
+        if (adminBrTotalGoals) adminBrTotalGoals.value = r.total_goals ?? "";
+        const pairs = [
+          ["Campeão", r.champion],
+          ["Vice", r.runner_up],
+          ["3º lugar", r.third_place],
+          ["4º lugar", r.fourth_place],
+          ["Artilheiro", r.top_scorer],
+          ["Melhor campanha", r.best_group_stage_team],
+          ["Zebra", r.zebra_team],
+          ["Fases (zebra)", r.zebra_phases_advanced],
+          ["Total de gols", r.total_goals],
+        ].filter(([, v]) => v !== null && v !== undefined && v !== "");
+        adminBonusResultsPreview.innerHTML = `<strong>Salvo:</strong> ${pairs
+          .map(([k, v]) => `${escapeHtml(String(k))}: <strong>${escapeHtml(String(v))}</strong>`)
+          .join(" • ")}`;
+      } catch (error) {
+        console.error(error);
+        adminBonusResultsPreview.textContent = "Erro ao carregar resultados finais.";
       }
     }
 
@@ -6435,6 +7125,43 @@
       }
     }
 
+    async function clearOfficialResult() {
+      const currentUser = getCurrentUser();
+      if (!currentUser?.isAdmin || !BACKEND_ENABLED) return;
+
+      const matchId = resultsMatchSelect.value;
+      const match = getMatchRecordById(matchId);
+      if (!match) { showResultsFeedback("Selecione um jogo."); return; }
+
+      const label = match.home_team && match.away_team
+        ? `${match.home_team} x ${match.away_team}`
+        : `Jogo ${match.match_number ?? ""}`;
+
+      if (!window.confirm(`Apagar o resultado de "${label}"?\n\nO jogo voltará para "Agendado" e os pontos serão removidos.`)) return;
+
+      if (resultsClearBtn) { resultsClearBtn.disabled = true; resultsClearBtn.textContent = "Apagando..."; }
+
+      try {
+        const { error } = await supabase.rpc("app_admin_clear_match_result", {
+          p_token: getBackendToken(),
+          p_match_id: matchId,
+        });
+        if (error) throw error;
+
+        showResultsFeedback("Resultado apagado. O jogo voltou para Agendado.", "success");
+        await loadMatchesFromBackend();
+        await loadLeaderboard();
+        await loadUserHistory();
+        await loadMissionProgress();
+        window.setTimeout(() => closeResultsModal(), 700);
+      } catch (err) {
+        console.error(err);
+        showResultsFeedback(err.message || "Não foi possível apagar o resultado.");
+      } finally {
+        if (resultsClearBtn) { resultsClearBtn.disabled = false; resultsClearBtn.textContent = "Apagar resultado"; }
+      }
+    }
+
     async function spendCoins(cost) {
       const currentUser = getCurrentUser();
       if (!currentUser?.username) return false;
@@ -6715,31 +7442,29 @@
       };
       if (currentClaims[missionId]) return;
 
-      const nextCoins = (storedUser?.coins ?? currentUser.coins ?? 0) + missionDefinitions[missionId].reward;
-      const nextMissionClaims = {
-        ...currentClaims,
-        [missionId]: true,
-      };
-
       if (BACKEND_ENABLED) {
         try {
-          const backendUser = await updateCurrentUserBackendState({
-            coins: nextCoins,
-            missionClaims: nextMissionClaims,
+          const token = getBackendToken();
+          if (!token) return;
+          // Usa app_claim_mission: o servidor valida e credita as moedas
+          const { data, error } = await supabase.rpc("app_claim_mission", {
+            p_token: token,
+            p_mission_id: missionId,
           });
-          setCurrentUser(
-            backendUser || {
-              ...currentUser,
-              coins: nextCoins,
-              missionClaims: nextMissionClaims,
-            }
-          );
+          if (error) throw error;
+          const payload = Array.isArray(data) ? data[0] : data;
+          const mapped = mapBackendUser(payload);
+          await fetchBackendUsers();
+          setCurrentUser(mapped);
         } catch (error) {
           console.error(error);
           showFeedback("Não foi possível resgatar essa missão agora.", "error");
           return;
         }
       } else {
+        const reward = missionDefinitions[missionId]?.reward ?? 0;
+        const nextCoins = (storedUser?.coins ?? currentUser.coins ?? 0) + reward;
+        const nextMissionClaims = { ...currentClaims, [missionId]: true };
         const updatedUser = updateUserRecord(currentUser.username, (user) => ({
           ...user,
           coins: nextCoins,
@@ -6991,6 +7716,16 @@
       { name: "Uzbequistão", code: "uz" }
     ];
 
+    // Times elegíveis para o palpite de Zebra (azarões do torneio)
+    const zebraEligibleNames = new Set([
+      "Paraguai", "Argélia", "Costa do Marfim", "Escócia", "Catar",
+      "Tunísia", "Panamá", "Bósnia e Herzegovina", "RD Congo", "Gana",
+      "Uzbequistão", "África do Sul", "Arábia Saudita", "Cabo Verde",
+      "Jordânia", "Nova Zelândia", "Iraque", "Haiti", "Curaçao"
+    ]);
+
+    const zebraEligibleTeams = worldCupTeams.filter((t) => zebraEligibleNames.has(t.name));
+
     function getTeamFlagMarkup(team) {
       if (team.code) {
         return `<img src="https://flagcdn.com/w80/${team.code}.png" alt="Bandeira de ${team.name}">`;
@@ -6999,8 +7734,8 @@
       return `<span class="extras-picker-flag--emoji" aria-hidden="true">${team.emoji || "🏳️"}</span>`;
     }
 
-    function renderTeamOptions() {
-      extrasPickerList.innerHTML = worldCupTeams
+    function renderTeamOptions(teams = worldCupTeams) {
+      extrasPickerList.innerHTML = teams
         .map(
           (team) => `
             <button class="extras-picker-option" type="button" data-team-name="${team.name}" data-team-code="${team.code || ""}" data-team-emoji="${team.emoji || ""}">
@@ -7023,12 +7758,21 @@
 
           applyExtraSelection(activeExtraSelectCard, selectedTeam);
           closeExtrasPicker();
+          void saveExtrasSelections();
         });
       });
     }
 
     function openExtrasPicker(card) {
       activeExtraSelectCard = card;
+      const isZebra = card.dataset.extraSelect === "zebra";
+      const pickerTitle = document.getElementById("extras-picker-title");
+      if (pickerTitle) {
+        pickerTitle.textContent = isZebra
+          ? "Escolha o azarão do torneio"
+          : "Selecione uma seleção";
+      }
+      renderTeamOptions(isZebra ? zebraEligibleTeams : worldCupTeams);
       extrasPickerModal.classList.remove("is-hidden");
       extrasPickerModal.setAttribute("aria-hidden", "false");
     }
@@ -7197,56 +7941,59 @@
       extrasNavBadge.classList.toggle("is-hidden", remainingCount === 0);
     }
 
+    let _autoSaveTimer = null;
+    function showAutosaveMsg(text, isError = false) {
+      if (!extrasAutosaveMsg) return;
+      if (_autoSaveTimer) { window.clearTimeout(_autoSaveTimer); _autoSaveTimer = null; }
+      extrasAutosaveMsg.textContent = text;
+      extrasAutosaveMsg.classList.toggle("is-error", isError);
+      extrasAutosaveMsg.classList.add("is-visible");
+      _autoSaveTimer = window.setTimeout(() => {
+        extrasAutosaveMsg.classList.remove("is-visible");
+        window.setTimeout(() => { extrasAutosaveMsg.textContent = ""; extrasAutosaveMsg.classList.remove("is-error"); }, 300);
+      }, isError ? 3000 : 1600);
+    }
+
     async function saveExtrasSelections() {
-      if (getCurrentUser()?.isAdmin) {
-        extrasSaveButton.textContent = "Conta ADMIN não participa";
-        window.setTimeout(() => {
-          extrasSaveButton.textContent = "Salvar Palpites Extras";
-        }, 1600);
-        return;
-      }
+      if (getCurrentUser()?.isAdmin) return;
+
       const draft = getExtrasDraft();
       localStorage.setItem(EXTRAS_STORAGE_KEY, JSON.stringify(draft));
 
-      if (BACKEND_ENABLED) {
-        const token = getBackendToken();
-        if (!token) {
-          extrasSaveButton.textContent = "Faça login para salvar";
-          window.setTimeout(() => {
-            extrasSaveButton.textContent = "Salvar Palpites Extras";
-          }, 1600);
-          return;
-        }
+      if (!BACKEND_ENABLED) return;
 
-        const payload = getExtrasPayloadFromDraft(draft);
-        const { error } = await supabase.rpc("app_save_bonus_prediction", {
-          p_token: token,
-          p_champion: payload.champion,
-          p_runner_up: payload.runner_up,
-          p_third_place: payload.third_place,
-          p_fourth_place: payload.fourth_place,
-          p_top_scorer: payload.top_scorer,
-          p_best_group_stage_team: payload.best_group_stage_team,
-          p_tournament_zebra: payload.tournament_zebra,
-          p_total_goals: payload.total_goals,
-        });
+      const token = getBackendToken();
+      if (!token) return;
 
-        if (error) {
-          console.error(error);
-          extrasSaveButton.textContent = "Erro ao salvar";
-          window.setTimeout(() => {
-            extrasSaveButton.textContent = "Salvar Palpites Extras";
-          }, 1600);
-          return;
+      showAutosaveMsg("Salvando…");
+
+      const payload = getExtrasPayloadFromDraft(draft);
+      const { error } = await supabase.rpc("app_save_bonus_prediction", {
+        p_token: token,
+        p_champion: payload.champion,
+        p_runner_up: payload.runner_up,
+        p_third_place: payload.third_place,
+        p_fourth_place: payload.fourth_place,
+        p_top_scorer: payload.top_scorer,
+        p_best_group_stage_team: payload.best_group_stage_team,
+        p_tournament_zebra: payload.tournament_zebra,
+        p_total_goals: payload.total_goals,
+      });
+
+      if (error) {
+        console.error(error);
+        const errMsg = error.message || "";
+        if (errMsg.toLowerCase().includes("sess") || errMsg.toLowerCase().includes("nvalid")) {
+          setBackendToken("");
+          setCurrentUser(null);
+          showAutosaveMsg("Sessão expirada – faça login novamente", true);
+        } else {
+          showAutosaveMsg(errMsg ? `Erro: ${errMsg.slice(0, 40)}` : "Erro ao salvar", true);
         }
+        return;
       }
 
-      extrasSaveButton.classList.add("is-saved");
-      extrasSaveButton.textContent = "Palpites Extras Salvos";
-      window.setTimeout(() => {
-        extrasSaveButton.classList.remove("is-saved");
-        extrasSaveButton.textContent = "Salvar Palpites Extras";
-      }, 1600);
+      showAutosaveMsg("Palpite salvo ✓");
     }
 
     async function restoreExtrasSelections() {
@@ -7345,7 +8092,7 @@
           let stateText = "";
           if (alreadyActive) {
             const activeEntry = activeBuffs.find((entry) => entry.id === buff.id);
-            stateText = activeEntry?.target ? `Ativo em ${activeEntry.target} • clique para cancelar` : "Ativo neste jogo • clique para cancelar";
+            stateText = activeEntry?.target ? `Ativo em ${escapeHtml(activeEntry.target)} • clique para cancelar` : "Ativo neste jogo • clique para cancelar";
           } else if (requiresLogin) {
             stateText = "Faça login para usar moedas";
           } else if (!phaseAllowed) {
@@ -7403,7 +8150,7 @@
       }
 
       buffTargetList.innerHTML = targets
-        .map((name) => `<button class="buff-target-item" type="button" data-target-name="${name}"><span class="buff-target-name">${name}</span></button>`)
+        .map((name) => `<button class="buff-target-item" type="button" data-target-name="${escapeHtml(name)}"><span class="buff-target-name">${escapeHtml(name)}</span></button>`)
         .join("");
 
       buffTargetList.querySelectorAll(".buff-target-item").forEach((button) => {
@@ -7656,6 +8403,7 @@
       if (!activeExtraTextCard) return;
       applyExtraTextSelection(activeExtraTextCard, extrasTextInput.value);
       closeExtrasTextModal();
+      void saveExtrasSelections();
     });
 
     extrasTextInput?.addEventListener("keydown", (event) => {
@@ -7663,10 +8411,6 @@
         event.preventDefault();
         extrasTextOk?.click();
       }
-    });
-
-    extrasSaveButton?.addEventListener("click", () => {
-      void saveExtrasSelections();
     });
 
     adminResultsTrigger?.addEventListener("click", () => {
@@ -7738,6 +8482,10 @@
       void saveOfficialResult(event);
     });
 
+    resultsClearBtn?.addEventListener("click", () => {
+      void clearOfficialResult();
+    });
+
     adminUsersList?.addEventListener("click", (event) => {
       const button = event.target.closest("[data-admin-user]");
       if (!button) return;
@@ -7785,6 +8533,31 @@
       } catch (error) {
         console.error(error);
         showAdminFeedback(error.message || "Não foi possível salvar a conta.");
+      }
+    });
+
+    adminOwnPasswordForm?.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const currentUser = getCurrentUser();
+      if (!currentUser?.isAdmin || !BACKEND_ENABLED) return;
+      const newPassword = adminOwnPasswordInput?.value.trim() || "";
+      if (newPassword.length < 6) {
+        showAdminFeedback("A nova senha precisa ter pelo menos 6 caracteres.");
+        return;
+      }
+      try {
+        const { error } = await supabase.rpc("app_admin_update_user", {
+          p_token: getBackendToken(),
+          p_user_id: currentUser.id,
+          p_password: newPassword,
+        });
+        if (error) throw error;
+        showAdminFeedback("Senha do admin atualizada com sucesso.", "success");
+        if (adminOwnPasswordInput) adminOwnPasswordInput.value = "";
+        await loadAdminAudit();
+      } catch (err) {
+        console.error(err);
+        showAdminFeedback(err.message || "Não foi possível alterar a senha.");
       }
     });
 
@@ -7913,6 +8686,32 @@
       }
     });
 
+    adminBonusResultsForm?.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      try {
+        const zebraPhases = adminBrZebraPhases.value === "" ? null : Number.parseInt(adminBrZebraPhases.value, 10);
+        const totalGoals = adminBrTotalGoals.value === "" ? null : Number.parseInt(adminBrTotalGoals.value, 10);
+        const { error } = await supabase.rpc("app_admin_set_bonus_results", {
+          p_token: getBackendToken(),
+          p_champion: adminBrChampion.value.trim() || null,
+          p_runner_up: adminBrRunnerUp.value.trim() || null,
+          p_third_place: adminBrThird.value.trim() || null,
+          p_fourth_place: adminBrFourth.value.trim() || null,
+          p_top_scorer: adminBrTopScorer.value.trim() || null,
+          p_best_group_stage_team: adminBrBestGroup.value.trim() || null,
+          p_zebra_team: adminBrZebraTeam.value.trim() || null,
+          p_zebra_phases_advanced: zebraPhases,
+          p_total_goals: totalGoals,
+        });
+        if (error) throw error;
+        showAdminFeedback("Resultados finais do torneio salvos com sucesso.", "success");
+        await loadBonusResults();
+      } catch (error) {
+        console.error(error);
+        showAdminFeedback(error.message || "Não foi possível salvar os resultados finais.");
+      }
+    });
+
     adminBuffForm?.addEventListener("submit", async (event) => {
       event.preventDefault();
       if (!selectedAdminUser) return;
@@ -7973,23 +8772,122 @@
       button.addEventListener("click", () => activateRulesTab(button.dataset.rulesTarget));
     });
 
-    renderTeamOptions();
     updateExtrasBadge();
     void loadMatchesFromBackend();
+
+    // ── Avatar modal listeners ─────────────────────────────────────
+    document.getElementById("register-avatar-btn")?.addEventListener("click", () => {
+      openAvatarModal("register");
+    });
+
+    avatarModalClose?.addEventListener("click", closeAvatarModal);
+    avatarModal?.addEventListener("click", (e) => { if (e.target === avatarModal) closeAvatarModal(); });
+
+    avatarEmojisGrid?.addEventListener("click", (e) => {
+      const btn = e.target.closest(".avatar-emoji-btn");
+      if (!btn) return;
+      avatarEmojisGrid.querySelectorAll(".avatar-emoji-btn").forEach((b) => b.classList.remove("is-selected"));
+      btn.classList.add("is-selected");
+      applyAvatarSelection("preset", btn.dataset.emoji);
+    });
+
+    avatarUploadArea?.addEventListener("click", () => avatarFileInput?.click());
+    avatarFileInput?.addEventListener("change", async (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      try {
+        const dataUrl = await resizeImageToDataUrl(file);
+        applyAvatarSelection("upload", dataUrl);
+      } catch (err) {
+        alert(err.message || "Erro ao processar imagem.");
+      }
+      avatarFileInput.value = "";
+    });
+
+    // ── Profile popup listeners ────────────────────────────────────
+    profilePopupClose?.addEventListener("click", closeProfilePopup);
+    profileOverlay?.addEventListener("click", closeProfilePopup);
+
+    profileChangeAvatarBtn?.addEventListener("click", () => openAvatarModal("profile"));
+
+    profileSaveNicknameBtn?.addEventListener("click", async () => {
+      const newNick = profileNicknameInput?.value.trim();
+      if (!newNick) { showProfileFeedback(profileNicknameFeedback, "Digite um apelido.", "error"); return; }
+      try {
+        const { data, error } = await supabase.rpc("app_update_current_user_profile", {
+          p_token: getBackendToken(),
+          p_nickname: newNick,
+        });
+        if (error) throw error;
+        const payload = Array.isArray(data) ? data[0] : data;
+        setCurrentUser(mapBackendUser(payload));
+        updateLoginButton();
+        if (profilePopupTitle) profilePopupTitle.textContent = newNick;
+        showProfileFeedback(profileNicknameFeedback, "Apelido atualizado!", "success");
+      } catch (err) {
+        showProfileFeedback(profileNicknameFeedback, err.message || "Erro ao salvar.", "error");
+      }
+    });
+
+    profileSavePasswordBtn?.addEventListener("click", async () => {
+      const cur = profileCurrentPassword?.value;
+      const nw  = profileNewPassword?.value;
+      if (!cur || !nw) { showProfileFeedback(profilePasswordFeedback, "Preencha ambos os campos.", "error"); return; }
+      if (nw.length < 6) { showProfileFeedback(profilePasswordFeedback, "Mínimo 6 caracteres.", "error"); return; }
+      try {
+        const { error } = await supabase.rpc("app_update_current_user_profile", {
+          p_token: getBackendToken(),
+          p_current_password: cur,
+          p_new_password: nw,
+        });
+        if (error) throw error;
+        if (profileCurrentPassword) profileCurrentPassword.value = "";
+        if (profileNewPassword) profileNewPassword.value = "";
+        showProfileFeedback(profilePasswordFeedback, "Senha alterada com sucesso!", "success");
+      } catch (err) {
+        showProfileFeedback(profilePasswordFeedback, err.message || "Erro ao alterar senha.", "error");
+      }
+    });
+
+    profileRequestNameBtn?.addEventListener("click", async () => {
+      const newName = profileNewRealname?.value.trim();
+      if (!newName) { showProfileFeedback(profileNameFeedback, "Digite o novo nome.", "error"); return; }
+      try {
+        const { data, error } = await supabase.rpc("app_request_name_change", {
+          p_token: getBackendToken(),
+          p_new_name: newName,
+        });
+        if (error) throw error;
+        if (profileNewRealname) profileNewRealname.value = "";
+        showProfileFeedback(profileNameFeedback, data || "Solicitação enviada!", "success");
+      } catch (err) {
+        showProfileFeedback(profileNameFeedback, err.message || "Erro ao enviar.", "error");
+      }
+    });
+
+    profileLogoutBtn?.addEventListener("click", async () => {
+      closeProfilePopup();
+      await performLogout();
+    });
 
     function updateLoginButton() {
       const currentUser = getCurrentUser();
       document.body.classList.toggle("is-admin-session", Boolean(currentUser?.isAdmin));
       if (currentUser?.username) {
         loginTrigger.classList.add("is-logged-in");
-        loginTrigger.setAttribute("aria-label", "Sair");
-        loginCardUser.textContent = currentUser.username;
-        loginCardLabel.textContent = "Sair";
+        loginTrigger.setAttribute("aria-label", "Perfil e configurações");
+        loginCardUser.textContent = "";
+        loginCardLabel.textContent = currentUser.username;
+        // Show avatar in header
+        if (loginCardAvatar) {
+          setAvatarElement(loginCardAvatar, currentUser.avatarType, currentUser.avatarValue);
+        }
       } else {
         loginTrigger.classList.remove("is-logged-in");
         loginTrigger.setAttribute("aria-label", "Login");
         loginCardUser.textContent = "";
         loginCardLabel.textContent = "Login";
+        if (loginCardAvatar) loginCardAvatar.innerHTML = "";
       }
 
       updateCoinsCard();
@@ -8047,10 +8945,10 @@
       activateTab("tab-jogos");
     }
 
-    loginTrigger.addEventListener("click", async (event) => {
+    loginTrigger.addEventListener("click", (event) => {
       event.preventDefault();
       if (getCurrentUser()) {
-        await performLogout();
+        openProfilePopup();
         return;
       }
       openModal();
@@ -8088,8 +8986,8 @@
         return;
       }
 
-      if (password.length < 4) {
-        showFeedback("A senha precisa ter pelo menos 4 caracteres.", "error");
+      if (password.length < 6) {
+        showFeedback("A senha precisa ter pelo menos 6 caracteres.", "error");
         return;
       }
 
@@ -8098,8 +8996,8 @@
           p_nickname: username,
           p_real_name: realName,
           p_password: password,
-          p_avatar_type: "preset",
-          p_avatar_value: null,
+          p_avatar_type: pendingAvatarType || "preset",
+          p_avatar_value: pendingAvatarValue || "⚽",
         });
 
         if (error) {

@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1a4d17"/>
+      <stop offset="100%" stop-color="#071a06"/>
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffe866"/>
+      <stop offset="55%" stop-color="#f5c518"/>
+      <stop offset="100%" stop-color="#b8870a"/>
+    </linearGradient>
+    <linearGradient id="shineGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="rgba(255,255,255,0.22)"/>
+      <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="512" height="512" rx="100" fill="url(#bgGrad)"/>
+  <!-- Shine overlay -->
+  <rect width="512" height="256" rx="100" fill="url(#shineGrad)"/>
+
+  <!-- Trophy cup body -->
+  <path d="M182 68 h148 l-18 152 c-8 34-24 56-56 72 v72 h52 l10 32 H194 l10-32 h52 v-72 c-32-16-48-38-56-72 Z" fill="url(#goldGrad)"/>
+
+  <!-- Trophy highlight -->
+  <path d="M196 68 h118 l-12 110" fill="rgba(255,255,255,0.18)" stroke="none"/>
+
+  <!-- Left handle -->
+  <path d="M182 102 C140 102 120 134 120 166 C120 194 138 214 182 222"
+        fill="none" stroke="url(#goldGrad)" stroke-width="22" stroke-linecap="round"/>
+  <!-- Right handle -->
+  <path d="M330 102 C372 102 392 134 392 166 C392 194 374 214 330 222"
+        fill="none" stroke="url(#goldGrad)" stroke-width="22" stroke-linecap="round"/>
+
+  <!-- Trophy base rectangle -->
+  <rect x="196" y="396" width="120" height="18" rx="8" fill="url(#goldGrad)"/>
+  <rect x="174" y="412" width="164" height="16" rx="8" fill="#c9991a"/>
+
+  <!-- "2026" text -->
+  <text x="256" y="492"
+        text-anchor="middle"
+        font-size="72"
+        font-weight="900"
+        fill="white"
+        font-family="'Arial Black', Arial, Helvetica, sans-serif"
+        letter-spacing="3">2026</text>
+</svg>
