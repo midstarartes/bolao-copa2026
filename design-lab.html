@@ -3470,6 +3470,156 @@
       margin: 0;
     }
 
+    /* ── Coin-bet amount modal ────────────────────────────────────── */
+    .coin-bet-modal {
+      position: fixed;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      z-index: 1200;
+      transition: opacity 0.2s ease, visibility 0.2s ease;
+    }
+
+    .coin-bet-modal.is-hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .coin-bet-panel {
+      position: relative;
+      width: min(360px, calc(100vw - 40px));
+      background: linear-gradient(160deg, #1a1a2e 0%, #12121f 100%);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 20px;
+      padding: 28px 24px 24px;
+      box-shadow:
+        0 32px 80px rgba(0, 0, 0, 0.75),
+        0 6px 20px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    }
+
+    .coin-bet-panel::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 20px;
+      background: radial-gradient(ellipse at 50% 0%, rgba(250, 204, 21, 0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .coin-bet-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+
+    .coin-bet-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #eef2f7;
+      margin: 0;
+    }
+
+    .coin-bet-close {
+      background: rgba(255, 255, 255, 0.08);
+      border: none;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      display: grid;
+      place-items: center;
+      color: rgba(200, 210, 230, 0.7);
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .coin-bet-close:hover {
+      background: rgba(255, 255, 255, 0.16);
+      color: #fff;
+    }
+
+    .coin-bet-desc {
+      font-size: 0.78rem;
+      color: rgba(180, 195, 220, 0.65);
+      margin: 0 0 20px;
+      line-height: 1.5;
+    }
+
+    .coin-bet-amounts {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .coin-bet-amount-btn {
+      padding: 12px 6px;
+      border-radius: 12px;
+      border: 1.5px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.05);
+      color: #c8d6f0;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s, color 0.15s, transform 0.1s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .coin-bet-amount-btn:hover {
+      border-color: rgba(250, 204, 21, 0.55);
+      background: rgba(250, 204, 21, 0.08);
+      color: #fde68a;
+      transform: translateY(-1px);
+    }
+
+    .coin-bet-amount-btn.is-selected {
+      border-color: #facc15;
+      background: rgba(250, 204, 21, 0.14);
+      color: #fde047;
+    }
+
+    .coin-bet-amount-coins {
+      font-size: 0.7rem;
+      opacity: 0.7;
+    }
+
+    .coin-bet-confirm-btn {
+      width: 100%;
+      padding: 12px;
+      border-radius: 12px;
+      border: none;
+      background: linear-gradient(135deg, #facc15 0%, #f59e0b 100%);
+      color: #1a1100;
+      font-size: 0.95rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: opacity 0.15s, transform 0.1s;
+    }
+
+    .coin-bet-confirm-btn:disabled {
+      opacity: 0.38;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .coin-bet-confirm-btn:not(:disabled):hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+    }
+
+    .coin-bet-balance {
+      font-size: 0.78rem;
+      color: rgba(180, 195, 220, 0.55);
+      text-align: center;
+      margin-top: 10px;
+    }
+
     .score {
       min-height: 66px;
       border-radius: 18px;
@@ -4822,6 +4972,18 @@
                     <p>Uso: Disponível até a fase "QUARTAS DE FINAL"</p>
                   </div>
                 </section>
+
+                <section class="rules-section">
+                  <h3 class="rules-title">Multiplicador de Moedas</h3>
+                  <div class="rules-lines">
+                    <p>Custo: 🪙🪙 a 🪙🪙🪙🪙🪙 (escolha de 2 a 5 moedas)</p>
+                    <p>Acertar o resultado (sem precisar de placar exato): recebe o dobro das moedas apostadas.</p>
+                    <p>Acertar o placar exato: recebe o triplo das moedas apostadas.</p>
+                    <p>Errar: perde as moedas apostadas.</p>
+                    <p>Apenas 1 aposta por jogo. Não afeta os pontos do ranking, somente moedas.</p>
+                    <p>Uso: Disponível em todas as fases. Combinável com outros buffs.</p>
+                  </div>
+                </section>
               </div>
             </div>
           </div>
@@ -5035,6 +5197,7 @@
                     <option value="points-x2">Pontuação x2</option>
                     <option value="points-x3">Pontuação x3</option>
                     <option value="cancel-rival">Anular palpite adversário</option>
+                    <option value="coin-bet">Multiplicador de Moedas (aposta)</option>
                   </select>
                 </label>
                 <label class="admin-field">
@@ -5133,6 +5296,23 @@
         <button class="buff-target-close" id="buff-target-close" type="button" aria-label="Fechar">×</button>
       </div>
       <div class="buff-target-list" id="buff-target-list"></div>
+    </div>
+  </div>
+  <div class="coin-bet-modal is-hidden" id="coin-bet-modal" aria-hidden="true">
+    <div class="coin-bet-panel" role="dialog" aria-modal="true" aria-labelledby="coin-bet-title">
+      <div class="coin-bet-head">
+        <h2 class="coin-bet-title" id="coin-bet-title">Multiplicador de Moedas</h2>
+        <button class="coin-bet-close" id="coin-bet-close" type="button" aria-label="Fechar">×</button>
+      </div>
+      <p class="coin-bet-desc">Escolha quantas moedas apostar. Resultado certo → dobra; placar exato → triplica; errou → perde as moedas apostadas.</p>
+      <div class="coin-bet-amounts" id="coin-bet-amounts">
+        <button class="coin-bet-amount-btn" type="button" data-bet="2">2<span class="coin-bet-amount-coins">🪙🪙</span></button>
+        <button class="coin-bet-amount-btn" type="button" data-bet="3">3<span class="coin-bet-amount-coins">🪙🪙🪙</span></button>
+        <button class="coin-bet-amount-btn" type="button" data-bet="4">4<span class="coin-bet-amount-coins">🪙🪙🪙🪙</span></button>
+        <button class="coin-bet-amount-btn" type="button" data-bet="5">5<span class="coin-bet-amount-coins">🪙🪙🪙🪙🪙</span></button>
+      </div>
+      <button class="coin-bet-confirm-btn" id="coin-bet-confirm" type="button" disabled>Confirmar aposta</button>
+      <p class="coin-bet-balance" id="coin-bet-balance"></p>
     </div>
   </div>
   <div class="results-modal is-hidden" id="results-modal" aria-hidden="true">
@@ -5386,6 +5566,11 @@
     const buffTargetModal = document.getElementById("buff-target-modal");
     const buffTargetClose = document.getElementById("buff-target-close");
     const buffTargetList = document.getElementById("buff-target-list");
+    const coinBetModal = document.getElementById("coin-bet-modal");
+    const coinBetClose = document.getElementById("coin-bet-close");
+    const coinBetAmounts = document.getElementById("coin-bet-amounts");
+    const coinBetConfirm = document.getElementById("coin-bet-confirm");
+    const coinBetBalance = document.getElementById("coin-bet-balance");
     const coinsCardValue = document.getElementById("coins-card-value");
     const extrasNavBadge = document.getElementById("extras-nav-badge");
     const statusFilter = document.getElementById("filter-status");
@@ -5779,6 +5964,15 @@
         cost: 5,
         description: "Rival escolhido recebe 0 mesmo se acertar resultado ou placar.",
         usage: "Disponível até a fase QUARTAS DE FINAL"
+      },
+      {
+        id: "coin-bet",
+        title: "Multiplicador de Moedas",
+        cost: 0,           // custo variável (2–5) escolhido pelo usuário
+        minBet: 2,
+        maxBet: 5,
+        description: "Aposte moedas no jogo. Resultado certo → dobra; placar exato → triplica.",
+        usage: "Disponível em todas as fases"
       }
     ];
 
@@ -5954,6 +6148,9 @@
       void loadMissionProgress();
       void loadLeaderboard();
       void loadUserHistory();
+      if (user && !user.isAdmin) {
+        void settlePendingCoinBets();
+      }
       if (user?.isAdmin) {
         void loadAdminUsers();
         void loadBonusResults();
@@ -8362,6 +8559,8 @@
     function getPhaseAvailability(phase, buffId) {
       const normalized = (phase || "").toUpperCase();
 
+      if (buffId === "coin-bet") return true; // disponível em todas as fases
+
       if (buffId === "draw-protected") {
         return normalized !== "FINAL" && normalized !== "DISPUTA 3º LUGAR";
       }
@@ -8391,7 +8590,9 @@
         .map((buff) => {
           const alreadyActive = activeBuffs.some((entry) => entry.id === buff.id);
           const phaseAllowed = getPhaseAvailability(phase, buff.id);
-          const enoughCoins = currentCoins >= buff.cost;
+          const isCoinBet = buff.id === "coin-bet";
+          // For coin-bet, minimum bet is 2, so check if user has at least 2 coins
+          const enoughCoins = isCoinBet ? currentCoins >= (buff.minBet || 2) : currentCoins >= buff.cost;
           const hasConflict = hasConflictingMultiplier(activeBuffs, buff.id);
           const requiresLogin = !currentUser?.username;
           const noTargetsAvailable = buff.id === "cancel-rival" && availableTargets.length === 0;
@@ -8400,7 +8601,11 @@
           let stateText = "";
           if (alreadyActive) {
             const activeEntry = activeBuffs.find((entry) => entry.id === buff.id);
-            stateText = activeEntry?.target ? `Ativo em ${escapeHtml(activeEntry.target)} • clique para cancelar` : "Ativo neste jogo • clique para cancelar";
+            if (isCoinBet && activeEntry?.target) {
+              stateText = `Apostando ${activeEntry.target} moedas • clique para cancelar`;
+            } else {
+              stateText = activeEntry?.target ? `Ativo em ${escapeHtml(activeEntry.target)} • clique para cancelar` : "Ativo neste jogo • clique para cancelar";
+            }
           } else if (requiresLogin) {
             stateText = "Faça login para usar moedas";
           } else if (!phaseAllowed) {
@@ -8413,10 +8618,12 @@
             stateText = "Nenhum adversário disponível";
           }
 
+          const costLabel = isCoinBet ? "Custo: 🪙🪙–🪙🪙🪙🪙🪙 (escolha 2 a 5)" : `Custo: ${"🪙".repeat(buff.cost)}`;
+
           return `
             <button class="buff-item${alreadyActive ? " is-active" : ""}" type="button" data-buff-id="${buff.id}" ${disabled ? "disabled" : ""}>
               <span class="buff-item-title">${buff.title}</span>
-              <span class="buff-item-meta">Custo: ${"🪙".repeat(buff.cost)}</span>
+              <span class="buff-item-meta">${costLabel}</span>
               <span class="buff-item-desc">Buff: ${buff.description}</span>
               <span class="buff-item-desc">Uso: ${buff.usage}</span>
               ${stateText ? `<span class="buff-item-state">${stateText}</span>` : ""}
@@ -8499,6 +8706,78 @@
       pendingBuffId = null;
     }
 
+    function openCoinBetModal() {
+      const currentCoins = getCurrentUserCoins();
+      // Reset selection state
+      coinBetAmounts?.querySelectorAll(".coin-bet-amount-btn").forEach((btn) => {
+        btn.classList.remove("is-selected");
+        const bet = Number(btn.dataset.bet);
+        btn.disabled = currentCoins < bet;
+      });
+      if (coinBetConfirm) coinBetConfirm.disabled = true;
+      if (coinBetBalance) coinBetBalance.textContent = `Saldo atual: ${"🪙".repeat(Math.min(currentCoins, 5))} ${currentCoins} moedas`;
+      coinBetModal?.classList.remove("is-hidden");
+      coinBetModal?.setAttribute("aria-hidden", "false");
+    }
+
+    function closeCoinBetModal() {
+      coinBetModal?.classList.add("is-hidden");
+      coinBetModal?.setAttribute("aria-hidden", "true");
+      pendingBuffId = null;
+    }
+
+    async function handleCoinBetApply(amount) {
+      if (!activeBuffFixture || pendingBuffId !== "coin-bet") return;
+      try {
+        const applied = await applyBuffForFixture(activeBuffFixture, {
+          id: "coin-bet",
+          target: String(amount),
+        });
+        if (!applied) {
+          showBuffFeedback("Moedas insuficientes para apostar.", "error");
+          closeCoinBetModal();
+          renderBuffList();
+          return;
+        }
+        showBuffFeedback(`Apostando ${amount} moedas neste jogo! 🎯`, "success");
+        closeCoinBetModal();
+        renderBuffList();
+      } catch (error) {
+        console.error(error);
+        showBuffFeedback(error.message || "Não foi possível registrar a aposta.", "error");
+        closeCoinBetModal();
+        renderBuffList();
+      }
+    }
+
+    async function settlePendingCoinBets() {
+      if (!BACKEND_ENABLED) return;
+      const token = getBackendToken();
+      if (!token) return;
+      try {
+        const { data, error } = await supabase.rpc("app_settle_pending_coin_bets", { p_token: token });
+        if (error) { console.error("settlePendingCoinBets:", error); return; }
+        const settled = data || [];
+        if (settled.length === 0) return;
+        // Refresh user coins after settlement
+        await fetchCurrentUserFromBackend();
+        updateLoginButton();
+        updateCoinsCard();
+        // Notify user of settled bets
+        settled.forEach((row) => {
+          if (row.outcome === "exact") {
+            console.info(`[coin-bet] Jogo ${row.match_id}: placar exato! +${row.coins_awarded} moedas`);
+          } else if (row.outcome === "result") {
+            console.info(`[coin-bet] Jogo ${row.match_id}: resultado certo! +${row.coins_awarded} moedas`);
+          } else {
+            console.info(`[coin-bet] Jogo ${row.match_id}: errou. -${row.bet_amount} moedas`);
+          }
+        });
+      } catch (err) {
+        console.error("settlePendingCoinBets error:", err);
+      }
+    }
+
     async function handleBuffSelection(buffId) {
       const currentUser = getCurrentUser();
       if (!currentUser?.username) {
@@ -8517,7 +8796,12 @@
         try {
           const removedBuff = await cancelBuffForFixture(activeBuffFixture, buffId);
           if (removedBuff) {
-            showBuffFeedback(`${buff.title} cancelado e ${"🪙".repeat(buff.cost)} devolvidas.`, "success");
+            if (buffId === "coin-bet" && existingBuff.target) {
+              const betAmt = Number(existingBuff.target);
+              showBuffFeedback(`Aposta cancelada e ${"🪙".repeat(betAmt)} devolvidas.`, "success");
+            } else {
+              showBuffFeedback(`${buff.title} cancelado e ${"🪙".repeat(buff.cost)} devolvidas.`, "success");
+            }
           }
         } catch (error) {
           console.error(error);
@@ -8532,6 +8816,12 @@
       if (buffId === "cancel-rival") {
         pendingBuffId = buffId;
         openBuffTargetModal();
+        return;
+      }
+
+      if (buffId === "coin-bet") {
+        pendingBuffId = buffId;
+        openCoinBetModal();
         return;
       }
 
@@ -8768,6 +9058,29 @@
       if (event.target === buffTargetModal) {
         closeBuffTargetModal();
       }
+    });
+
+    // ── Coin-bet modal events ──────────────────────────────────────
+    coinBetClose?.addEventListener("click", closeCoinBetModal);
+
+    coinBetModal?.addEventListener("click", (event) => {
+      if (event.target === coinBetModal) {
+        closeCoinBetModal();
+      }
+    });
+
+    coinBetAmounts?.addEventListener("click", (event) => {
+      const btn = event.target.closest(".coin-bet-amount-btn");
+      if (!btn || btn.disabled) return;
+      coinBetAmounts.querySelectorAll(".coin-bet-amount-btn").forEach((b) => b.classList.remove("is-selected"));
+      btn.classList.add("is-selected");
+      if (coinBetConfirm) coinBetConfirm.disabled = false;
+    });
+
+    coinBetConfirm?.addEventListener("click", () => {
+      const selected = coinBetAmounts?.querySelector(".coin-bet-amount-btn.is-selected");
+      if (!selected) return;
+      void handleCoinBetApply(Number(selected.dataset.bet));
     });
 
     resultsClose?.addEventListener("click", closeResultsModal);
@@ -9252,6 +9565,7 @@
       closeModal();
       closeBuffsModal();
       closeBuffTargetModal();
+      closeCoinBetModal();
       closeResultsModal();
       closeExtrasPicker();
       closeExtrasTextModal();
