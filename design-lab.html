@@ -9,6 +9,7 @@
     content="Bolão da Copa do Mundo 2026 com palpites, extras, moedas, ranking e painel administrativo."
   />
   <meta name="theme-color" content="#1b1b1d" />
+  <meta name="color-scheme" content="dark" />
   <!-- PWA / Add to Home Screen -->
   <link rel="manifest" href="/manifest.json" />
   <link rel="icon" href="/icon.svg" type="image/svg+xml" />
@@ -21,6 +22,7 @@
     :root {
       --bg-top: #0c0c0e;
       --bg-mid: #0c0c0e;
+      color-scheme: dark;
       --bg-bottom: #0c0c0e;
       --panel: rgba(255, 255, 255, 0.045);
       --line: rgba(255, 255, 255, 0.18);
@@ -840,6 +842,40 @@
       box-shadow:
         inset 0 0 0 1px rgba(255, 255, 255, 0.12),
         0 8px 16px rgba(0, 0, 0, 0.18);
+    }
+
+    /* ── Estilos globais para todos os <select> do site ─────────────── */
+    select {
+      color-scheme: dark;
+    }
+
+    /* Popup do dropdown: fundo escuro + texto branco */
+    option {
+      background-color: #14141c;
+      color: #eef1f7;
+      padding: 10px 16px;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    option:checked,
+    option:focus {
+      background-color: #1e2236;
+      color: #ffffff;
+    }
+
+    option:disabled,
+    option[disabled] {
+      color: rgba(200, 210, 230, 0.35);
+      background-color: #0e0e14;
+    }
+
+    optgroup {
+      background-color: #0b0b12;
+      color: rgba(180, 195, 220, 0.55);
+      font-size: 0.72em;
+      font-weight: 900;
+      letter-spacing: 0.1em;
     }
 
     .sub-nav-select {
@@ -5097,6 +5133,7 @@
         <button class="profile-btn profile-btn--avatar" id="profile-change-avatar-btn" type="button">
           <span>🖼️</span> Trocar foto ou ícone
         </button>
+        <div class="profile-feedback" id="profile-avatar-feedback"></div>
       </div>
 
       <!-- Apelido -->
@@ -5229,6 +5266,7 @@
     const profileNewRealname = document.getElementById("profile-new-realname");
     const profileRequestNameBtn = document.getElementById("profile-request-name-btn");
     const profileNameFeedback = document.getElementById("profile-name-feedback");
+    const profileAvatarFeedback = document.getElementById("profile-avatar-feedback");
     const profileLogoutBtn = document.getElementById("profile-logout-btn");
 
     // Admin name requests
@@ -5848,6 +5886,12 @@
     async function saveProfileAvatar(type, value) {
       const token = getBackendToken();
       if (!token || !BACKEND_ENABLED) return;
+
+      // Guarda avatar anterior para reverter em caso de erro
+      const prevUser = getCurrentUser();
+      const prevType  = prevUser?.avatarType  ?? "preset";
+      const prevValue = prevUser?.avatarValue ?? "⚽";
+
       try {
         const { data, error } = await supabase.rpc("app_update_current_user_profile", {
           p_token: token,
@@ -5855,13 +5899,31 @@
           p_avatar_value: value,
         });
         if (error) throw error;
+
         const payload = Array.isArray(data) ? data[0] : data;
-        const mapped = mapBackendUser(payload);
-        setCurrentUser(mapped);
+        if (payload) {
+          const mapped = mapBackendUser(payload);
+          if (mapped) setCurrentUser(mapped);
+        } else {
+          // RPC retornou vazio — busca usuário atualizado para não deslogar
+          await fetchCurrentUserFromBackend();
+        }
         updateLoginButton();
-        openProfilePopup(); // refresh popup header
+
+        // Feedback de sucesso breve
+        showProfileFeedback(profileAvatarFeedback, "Foto salva com sucesso!", "success");
+        setTimeout(() => {
+          if (profileAvatarFeedback) {
+            profileAvatarFeedback.textContent = "";
+            profileAvatarFeedback.className = "profile-feedback";
+          }
+        }, 2500);
       } catch (err) {
-        console.error(err);
+        console.error("Erro ao salvar avatar:", err);
+        // Reverte atualização otimista na UI
+        setAvatarElement(profilePopupAvatar, prevType, prevValue);
+        if (loginCardAvatar) setAvatarElement(loginCardAvatar, prevType, prevValue);
+        showProfileFeedback(profileAvatarFeedback, err.message || "Não foi possível salvar a foto.", "error");
       }
     }
 
@@ -5877,7 +5939,7 @@
       profilePopup?.classList.remove("is-hidden");
       profilePopup?.setAttribute("aria-hidden", "false");
       // Clear feedbacks
-      [profileNicknameFeedback, profilePasswordFeedback, profileNameFeedback].forEach((el) => {
+      [profileNicknameFeedback, profilePasswordFeedback, profileNameFeedback, profileAvatarFeedback].forEach((el) => {
         if (el) { el.className = "profile-feedback"; el.textContent = ""; }
       });
       if (profileCurrentPassword) profileCurrentPassword.value = "";
