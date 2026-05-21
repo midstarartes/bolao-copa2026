@@ -3319,6 +3319,147 @@
         0 1px 0 rgba(255,255,255,0.08);
     }
 
+    /* ── Badge clicável ───────────────────────────────────────────── */
+    .badge {
+      cursor: pointer;
+    }
+
+    .badge:hover .badge-inner,
+    .badge:focus-visible .badge-inner {
+      box-shadow:
+        0 0 0 2px rgba(255, 255, 255, 0.55),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2),
+        inset 0 -10px 10px rgba(0, 0, 0, 0.2);
+      transform: scale(1.07);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .badge-inner {
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    /* ── Team info modal ──────────────────────────────────────────── */
+    .team-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.55);
+      backdrop-filter: blur(3px);
+      -webkit-backdrop-filter: blur(3px);
+      z-index: 1100;
+      transition: opacity 0.18s ease;
+    }
+
+    .team-modal-overlay.is-hidden {
+      display: none;
+    }
+
+    .team-modal {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.94);
+      z-index: 1101;
+      width: min(280px, 88vw);
+      background: linear-gradient(160deg, #1a1a2e 0%, #12121f 100%);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      box-shadow:
+        0 24px 64px rgba(0, 0, 0, 0.7),
+        0 4px 16px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      padding: 28px 24px 24px;
+      transition: opacity 0.18s ease, transform 0.18s ease;
+    }
+
+    .team-modal.is-hidden {
+      display: none;
+    }
+
+    .team-modal:not(.is-hidden) {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    .team-modal-close {
+      position: absolute;
+      top: 12px;
+      right: 14px;
+      background: rgba(255, 255, 255, 0.08);
+      border: none;
+      border-radius: 50%;
+      width: 28px;
+      height: 28px;
+      display: grid;
+      place-items: center;
+      color: rgba(200, 210, 230, 0.7);
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .team-modal-close:hover {
+      background: rgba(255, 255, 255, 0.16);
+      color: #fff;
+    }
+
+    .team-modal-flag-wrap {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      overflow: hidden;
+      box-shadow:
+        0 6px 24px rgba(0, 0, 0, 0.5),
+        0 0 0 3px rgba(255, 255, 255, 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      background: #1e1e2e;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+    }
+
+    .team-modal-flag {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .team-modal-flag.is-hidden {
+      display: none;
+    }
+
+    .team-modal-flag-emoji {
+      font-size: 2.8rem;
+      line-height: 1;
+    }
+
+    .team-modal-flag-emoji.is-hidden {
+      display: none;
+    }
+
+    .team-modal-name {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #eef2f7;
+      text-align: center;
+      letter-spacing: 0.01em;
+      line-height: 1.2;
+      margin: 0;
+    }
+
+    .team-modal-code {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(160, 175, 200, 0.55);
+      margin: 0;
+    }
+
     .score {
       min-height: 66px;
       border-radius: 18px;
@@ -5085,6 +5226,18 @@
     </div>
   </div>
 
+  <!-- ── Team info modal ──────────────────────────────────────────── -->
+  <div class="team-modal-overlay is-hidden" id="team-modal-overlay" aria-hidden="true"></div>
+  <div class="team-modal is-hidden" id="team-modal" role="dialog" aria-modal="true" aria-labelledby="team-modal-name">
+    <button class="team-modal-close" id="team-modal-close" type="button" aria-label="Fechar">✕</button>
+    <div class="team-modal-flag-wrap">
+      <img class="team-modal-flag" id="team-modal-flag" src="" alt="" loading="lazy">
+      <span class="team-modal-flag-emoji is-hidden" id="team-modal-flag-emoji" aria-hidden="true"></span>
+    </div>
+    <p class="team-modal-name" id="team-modal-name"></p>
+    <p class="team-modal-code" id="team-modal-code"></p>
+  </div>
+
   <!-- ── Avatar picker modal ─────────────────────────────────────── -->
   <div class="avatar-modal is-hidden" id="avatar-modal" aria-hidden="true">
     <div class="avatar-modal-panel" role="dialog" aria-modal="true" aria-labelledby="avatar-modal-title">
@@ -5268,6 +5421,15 @@
     const profileNameFeedback = document.getElementById("profile-name-feedback");
     const profileAvatarFeedback = document.getElementById("profile-avatar-feedback");
     const profileLogoutBtn = document.getElementById("profile-logout-btn");
+
+    // Team info modal
+    const teamModal        = document.getElementById("team-modal");
+    const teamModalOverlay = document.getElementById("team-modal-overlay");
+    const teamModalClose   = document.getElementById("team-modal-close");
+    const teamModalFlag    = document.getElementById("team-modal-flag");
+    const teamModalFlagEmoji = document.getElementById("team-modal-flag-emoji");
+    const teamModalName    = document.getElementById("team-modal-name");
+    const teamModalCode    = document.getElementById("team-modal-code");
 
     // Admin name requests
     const adminNameRequestsList = document.getElementById("admin-name-requests-list");
@@ -5951,6 +6113,43 @@
       profileOverlay?.classList.add("is-hidden");
       profilePopup?.classList.add("is-hidden");
       profilePopup?.setAttribute("aria-hidden", "true");
+    }
+
+    // ── Team info modal ────────────────────────────────────────────
+    function openTeamModal(code, rawName) {
+      const upperCode = String(code || "").trim().toUpperCase();
+      // Nome em português: usa primeiro alias do TEAM_ALIAS_MAP ou o nome cru
+      const ptName = TEAM_ALIAS_MAP[upperCode]?.[0] || rawName || upperCode;
+      const flagUrl = getFlagUrl(upperCode);
+
+      if (teamModalName) teamModalName.textContent = ptName;
+      if (teamModalCode) teamModalCode.textContent = upperCode;
+
+      if (flagUrl) {
+        if (teamModalFlag) {
+          teamModalFlag.src = flagUrl.replace("/w80/", "/w160/");
+          teamModalFlag.alt = `Bandeira de ${ptName}`;
+          teamModalFlag.classList.remove("is-hidden");
+        }
+        if (teamModalFlagEmoji) teamModalFlagEmoji.classList.add("is-hidden");
+      } else {
+        if (teamModalFlag) teamModalFlag.classList.add("is-hidden");
+        if (teamModalFlagEmoji) {
+          teamModalFlagEmoji.textContent = upperCode || "?";
+          teamModalFlagEmoji.classList.remove("is-hidden");
+        }
+      }
+
+      teamModalOverlay?.classList.remove("is-hidden");
+      teamModal?.classList.remove("is-hidden");
+      teamModal?.setAttribute("aria-hidden", "false");
+      teamModalClose?.focus();
+    }
+
+    function closeTeamModal() {
+      teamModal?.classList.add("is-hidden");
+      teamModalOverlay?.classList.add("is-hidden");
+      teamModal?.setAttribute("aria-hidden", "true");
     }
 
     function showProfileFeedback(el, message, type) {
@@ -7053,7 +7252,7 @@
           <div class="fixture-row">
             <div>
               <div class="badge-code">${homeCode}</div>
-              <div class="badge">
+              <div class="badge" role="button" tabindex="0" aria-label="Ver ${match.home_team}" data-team-code="${homeCode}" data-team-name="${escapeHtml(match.home_team || homeCode)}">
                 <div class="badge-inner">
                   ${buildBadgeInnerMarkup(homeCode, match.home_team)}
                 </div>
@@ -7074,7 +7273,7 @@
             </div>
             <div>
               <div class="badge-code">${awayCode}</div>
-              <div class="badge">
+              <div class="badge" role="button" tabindex="0" aria-label="Ver ${match.away_team}" data-team-code="${awayCode}" data-team-name="${escapeHtml(match.away_team || awayCode)}">
                 <div class="badge-inner">
                   ${buildBadgeInnerMarkup(awayCode, match.away_team)}
                 </div>
@@ -8864,6 +9063,35 @@
         alert(err.message || "Erro ao processar imagem.");
       }
       avatarFileInput.value = "";
+    });
+
+    // ── Team info modal listeners ──────────────────────────────────
+    teamModalClose?.addEventListener("click", closeTeamModal);
+    teamModalOverlay?.addEventListener("click", closeTeamModal);
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && teamModal && !teamModal.classList.contains("is-hidden")) {
+        closeTeamModal();
+      }
+    });
+
+    // Delegação: clique em qualquer .badge dentro do board abre o modal
+    document.addEventListener("click", (e) => {
+      const badge = e.target.closest(".badge[data-team-code]");
+      if (!badge) return;
+      const code = badge.dataset.teamCode;
+      const name = badge.dataset.teamName;
+      if (code) openTeamModal(code, name);
+    });
+
+    // Suporte a teclado (Enter/Space) nas badges
+    document.addEventListener("keydown", (e) => {
+      if (e.key !== "Enter" && e.key !== " ") return;
+      const badge = e.target.closest(".badge[data-team-code]");
+      if (!badge) return;
+      e.preventDefault();
+      const code = badge.dataset.teamCode;
+      const name = badge.dataset.teamName;
+      if (code) openTeamModal(code, name);
     });
 
     // ── Profile popup listeners ────────────────────────────────────
