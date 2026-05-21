@@ -1817,6 +1817,16 @@
       background: rgba(148, 163, 184, 0.14);
     }
 
+    .history-status.is-missed {
+      color: #f9a8d4;
+      background: rgba(244, 63, 94, 0.10);
+    }
+
+    .history-card.is-missed {
+      opacity: 0.7;
+      border-color: rgba(244, 63, 94, 0.2);
+    }
+
     .admin-shell {
       display: grid;
       gap: 14px;
@@ -4720,6 +4730,7 @@
                     <p>Placar exato: <span class="rules-points-positive">+2</span></p>
                     <p>Acertar vencedor ou empate: <span class="rules-points-positive">+1</span></p>
                     <p>Errar vencedor/empate: <span class="rules-points-negative">-0,5</span></p>
+                    <p>Não palpitar em jogo encerrado: <span class="rules-points-negative">-0,5</span></p>
                   </div>
                 </section>
 
@@ -4731,6 +4742,15 @@
                     <p>Acertar quem avança: <span class="rules-points-positive">+1</span></p>
                     <p>Errar quem avança: <span class="rules-points-negative">-0,5</span></p>
                     <p>Placar exato da prorrogação (Só aparece se o palpite no tempo normal for empate): <span class="rules-points-positive">+1</span></p>
+                    <p>Não palpitar em jogo encerrado: <span class="rules-points-negative">-0,5</span></p>
+                  </div>
+                </section>
+
+                <section class="rules-section">
+                  <h3 class="rules-title">Observações</h3>
+                  <div class="rules-lines">
+                    <p>Os 3 primeiros jogos do torneio têm carência: não há penalidade por ausência.</p>
+                    <p>A penalidade não é retroativa: só conta jogos após a data de criação da conta.</p>
                   </div>
                 </section>
               </div>
@@ -6328,14 +6348,18 @@
       resultsFeedback.className = "results-feedback";
     }
 
-    function getHistoryPointsState(points, matchStatus) {
+    function getHistoryPointsState(points, matchStatus, wasPredicted) {
       if (matchStatus !== "completed") return "is-pending";
+      if (wasPredicted === false) return "is-negative";
       if (Number(points) > 0) return "is-positive";
       if (Number(points) < 0) return "is-negative";
       return "";
     }
 
     function getHistoryStatusLabel(entry) {
+      if (entry.was_predicted === false) {
+        return { label: "Sem palpite", className: "is-missed" };
+      }
       if (entry.match_status !== "completed" || entry.official_home == null || entry.official_away == null) {
         return { label: "Em espera", className: "is-pending" };
       }
@@ -6358,29 +6382,52 @@
 
       historyList.innerHTML = entries
         .map((entry) => {
-          const pointsState = getHistoryPointsState(entry.points_awarded, entry.match_status);
+          const missed = entry.was_predicted === false;
+          const pointsState = getHistoryPointsState(entry.points_awarded, entry.match_status, entry.was_predicted);
           const status = getHistoryStatusLabel(entry);
           const officialScore =
             entry.official_home == null || entry.official_away == null
               ? "Em espera"
               : `${entry.official_home} - ${entry.official_away}`;
-          const predictedScore = `${entry.predicted_home} - ${entry.predicted_away}`;
+          const predictedScore = missed ? "—" : `${entry.predicted_home} - ${entry.predicted_away}`;
           const pointsText =
             entry.match_status !== "completed"
               ? "Em espera"
               : `${Number(entry.points_awarded) > 0 ? "+" : ""}${formatRankingPoints(entry.points_awarded)} pts`;
-          const buffsInfo = entry.applied_buffs ? `
+          const buffsInfo = entry.applied_buffs && !missed ? `
                 <div class="history-block">
                   <span class="history-label">Buffs / efeitos</span>
                   <span class="history-value">${escapeHtml(entry.applied_buffs)}</span>
                 </div>
               ` : "";
-          const multiplierInfo = Number(entry.total_multiplier || 1) > 1 ? `
+          const multiplierInfo = !missed && Number(entry.total_multiplier || 1) > 1 ? `
                 <div class="history-block">
                   <span class="history-label">Multiplicador</span>
                   <span class="history-value">x${formatRankingPoints(entry.total_multiplier)}</span>
                 </div>
               ` : "";
+
+          // Card simplificado para jogos sem palpite
+          if (missed) {
+            return `
+              <article class="history-card is-missed">
+                <div class="history-card-head">
+                  <div>
+                    <p class="history-card-title">Jogo ${escapeHtml(String(entry.match_number ?? ""))} • ${escapeHtml(entry.home_team)} x ${escapeHtml(entry.away_team)}</p>
+                    <p class="history-card-meta">${escapeHtml(entry.phase_label || "Partida")} • ${formatFixtureTime(entry.starts_at)}</p>
+                  </div>
+                  <div class="history-points ${pointsState}">${pointsText}</div>
+                </div>
+                <div class="history-grid">
+                  <div class="history-block">
+                    <span class="history-label">Resultado oficial</span>
+                    <span class="history-value">${officialScore}</span>
+                  </div>
+                </div>
+                <span class="history-status ${status.className}">${status.label}</span>
+              </article>
+            `;
+          }
 
           return `
             <article class="history-card">
