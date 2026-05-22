@@ -1745,49 +1745,97 @@
     }
 
     .history-card {
-      display: grid;
-      gap: 10px;
-      padding: 14px 16px;
-      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      border-radius: 14px;
       background:
         linear-gradient(180deg, rgba(255,255,255,0.16), rgba(255,255,255,0.04) 18%, rgba(255,255,255,0.01) 46%, rgba(0,0,0,0.22) 100%),
         linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01) 42%, rgba(0,0,0,0.18));
       border: 1px solid rgba(255,255,255,0.08);
       box-shadow:
-        0 14px 28px rgba(0, 0, 0, 0.46),
-        0 3px 10px rgba(0, 0, 0, 0.28),
-        inset 0 1px 0 rgba(255, 255, 255, 0.22),
-        inset 0 -10px 18px rgba(0, 0, 0, 0.28);
+        0 8px 20px rgba(0, 0, 0, 0.38),
+        0 2px 6px rgba(0, 0, 0, 0.22),
+        inset 0 1px 0 rgba(255, 255, 255, 0.18),
+        inset 0 -8px 14px rgba(0, 0, 0, 0.22);
     }
 
-    .history-card-head {
+    .history-card.is-missed {
+      opacity: 0.6;
+      border-color: rgba(244, 63, 94, 0.18);
+    }
+
+    /* Coluna esquerda: título + info em linha */
+    .history-card-left {
+      flex: 1;
+      min-width: 0;
       display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 12px;
+      flex-direction: column;
+      gap: 3px;
     }
 
     .history-card-title {
       margin: 0;
       color: #f8fafc;
-      font-size: 0.88rem;
+      font-size: 0.82rem;
       font-weight: 900;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.04em;
       text-transform: uppercase;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .history-card-meta {
-      margin: 2px 0 0;
-      color: rgba(226, 232, 240, 0.68);
-      font-size: 0.72rem;
+      margin: 0;
+      color: rgba(226, 232, 240, 0.52);
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+
+    /* Linha de placares: Palpite → Resultado */
+    .history-scores-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .history-score-lbl {
+      color: rgba(226, 232, 240, 0.5);
+      font-size: 0.66rem;
       font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .history-score-val {
+      color: #f1f5f9;
+      font-size: 0.8rem;
+      font-weight: 900;
+      letter-spacing: 0.04em;
+    }
+
+    .history-score-arrow {
+      color: rgba(226, 232, 240, 0.28);
+      font-size: 0.7rem;
+    }
+
+    /* Coluna direita: pontos + status */
+    .history-card-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 5px;
+      flex-shrink: 0;
     }
 
     .history-points {
-      min-width: 92px;
-      min-height: 36px;
-      padding: 6px 10px;
-      border-radius: 12px;
+      min-width: 72px;
+      padding: 4px 10px;
+      border-radius: 10px;
       display: inline-grid;
       place-items: center;
       border: 1px solid rgba(255,255,255,0.08);
@@ -1798,9 +1846,8 @@
       font-size: 0.74rem;
       font-weight: 900;
       letter-spacing: 0.04em;
-      text-transform: uppercase;
       text-align: center;
-      text-shadow: 0 3px 10px rgba(0,0,0,0.36);
+      text-shadow: 0 2px 8px rgba(0,0,0,0.36);
     }
 
     .history-points.is-positive {
@@ -1818,74 +1865,47 @@
     }
 
     .history-points.is-pending {
-      color: rgba(226, 232, 240, 0.8);
-    }
-
-    .history-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 10px 16px;
-    }
-
-    .history-block {
-      display: grid;
-      gap: 4px;
-    }
-
-    .history-label {
-      color: rgba(226, 232, 240, 0.6);
-      font-size: 0.68rem;
-      font-weight: 800;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-
-    .history-value {
-      color: #f8fafc;
-      font-size: 0.82rem;
-      font-weight: 800;
-      line-height: 1.4;
+      color: rgba(226, 232, 240, 0.7);
     }
 
     .history-status {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
       width: fit-content;
-      padding: 4px 10px;
+      padding: 2px 8px;
       border-radius: 999px;
-      border: 1px solid rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.07);
       background: rgba(255,255,255,0.04);
-      color: rgba(226, 232, 240, 0.8);
-      font-size: 0.68rem;
-      font-weight: 900;
-      letter-spacing: 0.06em;
+      color: rgba(226, 232, 240, 0.7);
+      font-size: 0.63rem;
+      font-weight: 800;
+      letter-spacing: 0.05em;
       text-transform: uppercase;
+      white-space: nowrap;
     }
 
-    .history-status.is-positive {
-      color: #bbf7d0;
-      background: rgba(34, 197, 94, 0.14);
+    .history-status.is-positive  { color: #bbf7d0; background: rgba(34,197,94,0.14); border-color: rgba(34,197,94,0.18); }
+    .history-status.is-negative  { color: #fecaca; background: rgba(239,68,68,0.14);  border-color: rgba(239,68,68,0.18); }
+    .history-status.is-pending   { color: #cbd5e1; background: rgba(148,163,184,0.12); }
+    .history-status.is-missed    { color: #f9a8d4; background: rgba(244,63,94,0.10); }
+
+    /* Linha de buffs (só aparece quando há buffs) */
+    .history-buffs-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 1px;
     }
 
-    .history-status.is-negative {
-      color: #fecaca;
-      background: rgba(239, 68, 68, 0.14);
-    }
-
-    .history-status.is-pending {
-      color: #cbd5e1;
-      background: rgba(148, 163, 184, 0.14);
-    }
-
-    .history-status.is-missed {
-      color: #f9a8d4;
-      background: rgba(244, 63, 94, 0.10);
-    }
-
-    .history-card.is-missed {
-      opacity: 0.7;
-      border-color: rgba(244, 63, 94, 0.2);
+    .history-buff-pill {
+      padding: 1px 7px;
+      border-radius: 999px;
+      background: rgba(139,92,246,0.14);
+      border: 1px solid rgba(139,92,246,0.22);
+      color: #c4b5fd;
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
     }
 
     .admin-shell {
@@ -6934,6 +6954,11 @@
       return "";
     }
 
+    // Corrige nomes com encoding UTF-8/Latin-1 invertido (ex: "MÃ©XICO" → "MÉXICO")
+    function fixTeamEncoding(str) {
+      try { return decodeURIComponent(escape(String(str ?? ""))); } catch { return String(str ?? ""); }
+    }
+
     function getHistoryStatusLabel(entry) {
       if (entry.was_predicted === false) {
         return { label: "Sem palpite", className: "is-missed" };
@@ -6941,13 +6966,10 @@
       if (entry.match_status !== "completed" || entry.official_home == null || entry.official_away == null) {
         return { label: "Em espera", className: "is-pending" };
       }
-      if (Number(entry.points_awarded) > 0) {
-        return { label: "Pontuou", className: "is-positive" };
-      }
-      if (Number(entry.points_awarded) < 0) {
-        return { label: "Perdeu pontos", className: "is-negative" };
-      }
-      return { label: "Neutro", className: "" };
+      if (entry.exact_hit)  return { label: "✓ Placar exato",  className: "is-positive" };
+      if (entry.result_hit) return { label: "✓ Resultado",     className: "is-positive" };
+      if (Number(entry.points_awarded) < 0) return { label: "Perdeu pontos", className: "is-negative" };
+      return { label: "Errou", className: "is-negative" };
     }
 
     function renderUserHistory(entries) {
@@ -6960,83 +6982,72 @@
 
       historyList.innerHTML = entries
         .map((entry) => {
-          const missed = entry.was_predicted === false;
+          const missed    = entry.was_predicted === false;
+          const completed = entry.match_status === "completed"
+                         && entry.official_home != null
+                         && entry.official_away != null;
           const pointsState = getHistoryPointsState(entry.points_awarded, entry.match_status, entry.was_predicted);
-          const status = getHistoryStatusLabel(entry);
-          const officialScore =
-            entry.official_home == null || entry.official_away == null
-              ? "Em espera"
-              : `${entry.official_home} - ${entry.official_away}`;
-          const predictedScore = missed ? "—" : `${entry.predicted_home} - ${entry.predicted_away}`;
-          const pointsText =
-            entry.match_status !== "completed"
-              ? "Em espera"
-              : `${Number(entry.points_awarded) > 0 ? "+" : ""}${formatRankingPoints(entry.points_awarded)} pts`;
-          const buffsInfo = entry.applied_buffs && !missed ? `
-                <div class="history-block">
-                  <span class="history-label">Buffs / efeitos</span>
-                  <span class="history-value">${escapeHtml(entry.applied_buffs)}</span>
-                </div>
-              ` : "";
-          const multiplierInfo = !missed && Number(entry.total_multiplier || 1) > 1 ? `
-                <div class="history-block">
-                  <span class="history-label">Multiplicador</span>
-                  <span class="history-value">x${formatRankingPoints(entry.total_multiplier)}</span>
-                </div>
-              ` : "";
+          const status      = getHistoryStatusLabel(entry);
 
-          // Card simplificado para jogos sem palpite
-          if (missed) {
-            return `
-              <article class="history-card is-missed">
-                <div class="history-card-head">
-                  <div>
-                    <p class="history-card-title">Jogo ${escapeHtml(String(entry.match_number ?? ""))} • ${escapeHtml(entry.home_team)} x ${escapeHtml(entry.away_team)}</p>
-                    <p class="history-card-meta">${escapeHtml(entry.phase_label || "Partida")} • ${formatFixtureTime(entry.starts_at)}</p>
-                  </div>
-                  <div class="history-points ${pointsState}">${pointsText}</div>
-                </div>
-                <div class="history-grid">
-                  <div class="history-block">
-                    <span class="history-label">Resultado oficial</span>
-                    <span class="history-value">${officialScore}</span>
-                  </div>
-                </div>
-                <span class="history-status ${status.className}">${status.label}</span>
-              </article>
-            `;
-          }
+          const homeTeam   = fixTeamEncoding(entry.home_team);
+          const awayTeam   = fixTeamEncoding(entry.away_team);
+          const phaseLabel = fixTeamEncoding(entry.phase_label || "Partida");
+
+          const officialScore  = completed ? `${entry.official_home}–${entry.official_away}` : "–";
+          const predictedScore = missed    ? "–"                                             : `${entry.predicted_home}–${entry.predicted_away}`;
+          const pointsText     = completed
+            ? `${Number(entry.points_awarded) > 0 ? "+" : ""}${formatRankingPoints(entry.points_awarded)} pts`
+            : "Em espera";
+
+          // Buffs como pills compactos
+          const buffsHtml = (!missed && entry.applied_buffs)
+            ? `<div class="history-buffs-row">${
+                entry.applied_buffs.split(",").map((b) => `<span class="history-buff-pill">${escapeHtml(b.trim())}</span>`).join("")
+              }</div>`
+            : "";
+
+          // Multiplicador como pill adicional
+          const multHtml = (!missed && Number(entry.total_multiplier || 1) > 1)
+            ? `<span class="history-buff-pill">×${formatRankingPoints(entry.total_multiplier)}</span>`
+            : "";
+
+          const extraPillsHtml = (buffsHtml || multHtml)
+            ? `<div class="history-buffs-row">${
+                (!missed && Number(entry.total_multiplier || 1) > 1 ? multHtml : "") +
+                (!missed && entry.applied_buffs
+                  ? entry.applied_buffs.split(",").map((b) => `<span class="history-buff-pill">${escapeHtml(b.trim())}</span>`).join("")
+                  : "")
+              }</div>`
+            : "";
+
+          // Linha de placares (só para quem palpitou)
+          const scoresRowHtml = missed
+            ? (completed
+                ? `<div class="history-scores-row">
+                    <span class="history-score-lbl">Resultado</span>
+                    <span class="history-score-val">${officialScore}</span>
+                   </div>`
+                : "")
+            : `<div class="history-scores-row">
+                <span class="history-score-lbl">Palpite</span>
+                <span class="history-score-val">${predictedScore}</span>
+                <span class="history-score-arrow">→</span>
+                <span class="history-score-lbl">Resultado</span>
+                <span class="history-score-val">${officialScore}</span>
+               </div>`;
 
           return `
-            <article class="history-card">
-              <div class="history-card-head">
-                <div>
-                  <p class="history-card-title">Jogo ${escapeHtml(String(entry.match_number ?? ""))} • ${escapeHtml(entry.home_team)} x ${escapeHtml(entry.away_team)}</p>
-                  <p class="history-card-meta">${escapeHtml(entry.phase_label || "Partida")} • ${formatFixtureTime(entry.starts_at)}</p>
-                </div>
+            <article class="history-card${missed ? " is-missed" : ""}">
+              <div class="history-card-left">
+                <p class="history-card-title">Jogo ${escapeHtml(String(entry.match_number ?? ""))} · ${homeTeam} × ${awayTeam}</p>
+                <p class="history-card-meta">${phaseLabel} · ${formatFixtureTime(entry.starts_at)}</p>
+                ${scoresRowHtml}
+                ${extraPillsHtml}
+              </div>
+              <div class="history-card-right">
                 <div class="history-points ${pointsState}">${pointsText}</div>
+                <span class="history-status ${status.className}">${status.label}</span>
               </div>
-              <div class="history-grid">
-                <div class="history-block">
-                  <span class="history-label">Seu palpite</span>
-                  <span class="history-value">${predictedScore}</span>
-                </div>
-                <div class="history-block">
-                  <span class="history-label">Resultado oficial</span>
-                  <span class="history-value">${officialScore}</span>
-                </div>
-                <div class="history-block">
-                  <span class="history-label">Acerto de resultado</span>
-                  <span class="history-value">${entry.result_hit ? "Sim" : "Não"}</span>
-                </div>
-                <div class="history-block">
-                  <span class="history-label">Placar exato</span>
-                  <span class="history-value">${entry.exact_hit ? "Sim" : "Não"}</span>
-                </div>
-                ${multiplierInfo}
-                ${buffsInfo}
-              </div>
-              <span class="history-status ${status.className}">${status.label}</span>
             </article>
           `;
         })
