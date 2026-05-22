@@ -3230,6 +3230,207 @@
       background-image: linear-gradient(180deg, #ffe4ea 0%, #f7a6b7 42%, #d88498 100%);
     }
 
+    /* "Ver Palpites" — mercado fechado */
+    .score-action--predict.is-view {
+      background-image: none;
+      color: rgba(180, 195, 220, 0.65);
+      font-size: 0.7rem;
+      letter-spacing: 0.01em;
+    }
+
+    .score-action--predict.is-view:hover {
+      color: rgba(210, 220, 240, 0.9);
+    }
+
+    /* ── Predictions viewer modal ────────────────────────────────── */
+    .preds-modal {
+      position: fixed;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      z-index: 1300;
+      transition: opacity 0.2s ease, visibility 0.2s ease;
+    }
+
+    .preds-modal.is-hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .preds-panel {
+      position: relative;
+      width: min(480px, calc(100vw - 32px));
+      max-height: calc(100dvh - 48px);
+      overflow-y: auto;
+      background: linear-gradient(160deg, #1a1a2e 0%, #12121f 100%);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 0 0 20px;
+      box-shadow:
+        0 32px 80px rgba(0, 0, 0, 0.75),
+        0 6px 20px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      overscroll-behavior: contain;
+    }
+
+    .preds-panel::before {
+      content: "";
+      position: sticky;
+      top: 0;
+      display: block;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent);
+      margin-bottom: -1px;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .preds-head {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      background: linear-gradient(160deg, #1e1e38 0%, #16162a 100%);
+      border-radius: 20px 20px 0 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 20px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+
+    .preds-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #eef2f7;
+      margin: 0;
+      line-height: 1.2;
+    }
+
+    .preds-subtitle {
+      font-size: 0.72rem;
+      color: rgba(160, 175, 200, 0.55);
+      margin: 3px 0 0;
+    }
+
+    .preds-close {
+      background: rgba(255, 255, 255, 0.08);
+      border: none;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      display: grid;
+      place-items: center;
+      color: rgba(200, 210, 230, 0.7);
+      font-size: 0.9rem;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .preds-close:hover {
+      background: rgba(255, 255, 255, 0.16);
+      color: #fff;
+    }
+
+    .preds-body {
+      padding: 14px 16px 0;
+    }
+
+    .preds-loading,
+    .preds-empty {
+      text-align: center;
+      font-size: 0.82rem;
+      color: rgba(160, 175, 200, 0.5);
+      padding: 28px 16px;
+    }
+
+    .preds-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .preds-row {
+      display: grid;
+      grid-template-columns: 34px 1fr auto;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 12px;
+      padding: 10px 12px;
+      transition: background 0.15s;
+    }
+
+    .preds-row.is-me {
+      background: rgba(99, 102, 241, 0.1);
+      border-color: rgba(99, 102, 241, 0.35);
+    }
+
+    .preds-avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.06);
+      display: grid;
+      place-items: center;
+      font-size: 1.3rem;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .preds-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+    }
+
+    .preds-info {
+      min-width: 0;
+    }
+
+    .preds-nickname {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #c8d6f0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .preds-row.is-me .preds-nickname {
+      color: #a5b4fc;
+    }
+
+    .preds-buffs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 4px;
+    }
+
+    .preds-buff-tag {
+      font-size: 0.65rem;
+      font-weight: 600;
+      padding: 2px 6px;
+      border-radius: 999px;
+      background: rgba(250, 204, 21, 0.12);
+      color: #fde68a;
+      border: 1px solid rgba(250, 204, 21, 0.22);
+      white-space: nowrap;
+    }
+
+    .preds-score {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #eef2f7;
+      white-space: nowrap;
+      letter-spacing: 0.03em;
+      text-align: right;
+    }
+
     .score-action--buffs {
       color: transparent;
       background-image: linear-gradient(180deg, #fff1a6 0%, #facc15 46%, #d97706 100%);
@@ -5315,6 +5516,20 @@
       <p class="coin-bet-balance" id="coin-bet-balance"></p>
     </div>
   </div>
+  <div class="preds-modal is-hidden" id="preds-modal" aria-hidden="true">
+    <div class="preds-panel" role="dialog" aria-modal="true" aria-labelledby="preds-title">
+      <div class="preds-head">
+        <div>
+          <h2 class="preds-title" id="preds-title">Palpites do jogo</h2>
+          <p class="preds-subtitle" id="preds-subtitle"></p>
+        </div>
+        <button class="preds-close" id="preds-close" type="button" aria-label="Fechar">×</button>
+      </div>
+      <div class="preds-body" id="preds-body">
+        <p class="preds-loading">Carregando...</p>
+      </div>
+    </div>
+  </div>
   <div class="results-modal is-hidden" id="results-modal" aria-hidden="true">
     <div class="results-panel" role="dialog" aria-modal="true" aria-labelledby="results-title">
       <div class="results-head">
@@ -5571,6 +5786,11 @@
     const coinBetAmounts = document.getElementById("coin-bet-amounts");
     const coinBetConfirm = document.getElementById("coin-bet-confirm");
     const coinBetBalance = document.getElementById("coin-bet-balance");
+    const predsModal = document.getElementById("preds-modal");
+    const predsClose = document.getElementById("preds-close");
+    const predsTitle = document.getElementById("preds-title");
+    const predsSubtitle = document.getElementById("preds-subtitle");
+    const predsBody = document.getElementById("preds-body");
     const coinsCardValue = document.getElementById("coins-card-value");
     const extrasNavBadge = document.getElementById("extras-nav-badge");
     const statusFilter = document.getElementById("filter-status");
@@ -7492,7 +7712,7 @@
       const awayCode = match.away_code || "";
 
       return `
-        <article class="fixture" data-fixture-id="${match.id}" data-phase="${matchPhase}" data-group="${matchGroup}" data-game-date="${getFixtureDateKey(match.starts_at)}" data-saved="false">
+        <article class="fixture" data-fixture-id="${match.id}" data-phase="${matchPhase}" data-group="${matchGroup}" data-game-date="${getFixtureDateKey(match.starts_at)}" data-starts-at="${match.starts_at || ""}" data-saved="false">
           <div class="fixture-row">
             <div>
               <div class="badge-code">${homeCode}</div>
@@ -7784,12 +8004,13 @@
       const inputs = Array.from(fixture.querySelectorAll(".score-value"));
       button.dataset.mode = "locked";
       button.textContent = "Palpitar";
-      button.classList.remove("is-save", "is-edit");
+      button.classList.remove("is-save", "is-edit", "is-view");
       scoreCard.classList.remove("is-editing", "is-saved");
       inputs.forEach((input) => {
         input.disabled = true;
         input.value = "0";
       });
+      applyMarketState(fixture, button);
     }
 
     function applySavedPredictionToFixture(fixture, prediction) {
@@ -7809,10 +8030,34 @@
       });
       button.dataset.mode = "saved";
       button.textContent = "Editar";
-      button.classList.remove("is-save");
+      button.classList.remove("is-save", "is-view");
       button.classList.add("is-edit");
       scoreCard.classList.remove("is-editing");
       scoreCard.classList.add("is-saved");
+      applyMarketState(fixture, button);
+    }
+
+    // Muda o botão para "Ver Palpites" quando o mercado fechou (30 min antes do início)
+    function applyMarketState(fixture, button) {
+      const startsAt = fixture.dataset.startsAt || fixture.dataset["starts-at"] || "";
+      if (!startsAt) return;
+      const cutoff = new Date(startsAt).getTime() - 30 * 60 * 1000;
+      if (Date.now() < cutoff) return; // mercado ainda aberto
+
+      // Mercado fechado — muda para modo visualização
+      const btn = button || fixture.querySelector(".score-action--predict");
+      if (!btn) return;
+      // Se estiver em modo editing, cancela a edição silenciosamente
+      if (btn.dataset.mode === "editing") {
+        const scoreCard = fixture.querySelector(".score");
+        const inputs = Array.from(fixture.querySelectorAll(".score-value"));
+        inputs.forEach((input) => { input.disabled = true; });
+        scoreCard.classList.remove("is-editing");
+      }
+      btn.dataset.mode = "view";
+      btn.textContent = "Ver Palpites";
+      btn.classList.remove("is-save", "is-edit");
+      btn.classList.add("is-view");
     }
 
     async function restorePredictionsForCurrentUser() {
@@ -8842,6 +9087,105 @@
       renderBuffList();
     }
 
+    // ── Predictions viewer ──────────────────────────────────────────
+
+    const BUFF_LABEL_MAP = {
+      "draw-protected": "Empate Protegido",
+      "error-shield":   "Seguro de Erro",
+      "points-x2":      "x2",
+      "points-x3":      "x3",
+      "cancel-rival":   "Anulador",
+    };
+
+    function buffIdToLabel(rawId) {
+      if (rawId.startsWith("coin-bet:")) {
+        const amt = rawId.split(":")[1];
+        return `Apostou ${amt}🪙`;
+      }
+      return BUFF_LABEL_MAP[rawId] || rawId;
+    }
+
+    function buildAvatarHtml(avatarType, avatarValue, nickname) {
+      if (avatarType === "upload" && avatarValue) {
+        return `<img src="${escapeHtml(avatarValue)}" alt="${escapeHtml(nickname)}" loading="lazy">`;
+      }
+      return escapeHtml(avatarValue || "⚽");
+    }
+
+    async function openMatchPredictionsModal(matchId) {
+      if (!predsModal) return;
+      const match = getMatchRecordById(matchId);
+      const matchLabel = match
+        ? `${escapeHtml(match.home_team)} x ${escapeHtml(match.away_team)}`
+        : escapeHtml(matchId);
+
+      if (predsTitle) predsTitle.textContent = "Palpites do jogo";
+      if (predsSubtitle) predsSubtitle.textContent = matchLabel;
+      if (predsBody) predsBody.innerHTML = `<p class="preds-loading">Carregando…</p>`;
+
+      predsModal.classList.remove("is-hidden");
+      predsModal.setAttribute("aria-hidden", "false");
+
+      const currentUser = getCurrentUser();
+      if (!currentUser?.username) {
+        if (predsBody) predsBody.innerHTML = `<p class="preds-empty">Faça login para ver os palpites.</p>`;
+        return;
+      }
+
+      if (!BACKEND_ENABLED) {
+        if (predsBody) predsBody.innerHTML = `<p class="preds-empty">Disponível somente no modo online.</p>`;
+        return;
+      }
+
+      const token = getBackendToken();
+      if (!token) {
+        if (predsBody) predsBody.innerHTML = `<p class="preds-empty">Sessão inválida.</p>`;
+        return;
+      }
+
+      try {
+        const { data, error } = await supabase.rpc("app_get_match_predictions", {
+          p_token: token,
+          p_match_id: matchId,
+        });
+
+        if (error) throw error;
+
+        const rows = data || [];
+        if (rows.length === 0) {
+          if (predsBody) predsBody.innerHTML = `<p class="preds-empty">Nenhum palpite registrado para este jogo.</p>`;
+          return;
+        }
+
+        const html = `<div class="preds-list">${rows.map((row) => {
+          const isMe = row.nickname?.toLowerCase() === currentUser.nickname?.toLowerCase() ||
+                       row.nickname?.toLowerCase() === currentUser.username?.toLowerCase();
+          const buffTags = (row.buff_ids || [])
+            .map((b) => `<span class="preds-buff-tag">${escapeHtml(buffIdToLabel(b))}</span>`)
+            .join("");
+          return `
+            <div class="preds-row${isMe ? " is-me" : ""}">
+              <div class="preds-avatar">${buildAvatarHtml(row.avatar_type, row.avatar_value, row.nickname)}</div>
+              <div class="preds-info">
+                <div class="preds-nickname">${escapeHtml(row.nickname)}${isMe ? " (você)" : ""}</div>
+                ${buffTags ? `<div class="preds-buffs">${buffTags}</div>` : ""}
+              </div>
+              <div class="preds-score">${row.home_score} – ${row.away_score}</div>
+            </div>
+          `;
+        }).join("")}</div>`;
+
+        if (predsBody) predsBody.innerHTML = html;
+      } catch (err) {
+        if (predsBody) predsBody.innerHTML = `<p class="preds-empty">${escapeHtml(err.message || "Não foi possível carregar os palpites.")}</p>`;
+      }
+    }
+
+    function closeMatchPredictionsModal() {
+      predsModal?.classList.add("is-hidden");
+      predsModal?.setAttribute("aria-hidden", "true");
+    }
+
     function isFixtureVisibleByStatus(fixture, statusValue) {
       const isSaved = fixture.dataset.saved === "true";
       const gameDate = fixture.dataset.gameDate || "";
@@ -8867,6 +9211,14 @@
       const scoreCard = scoreStack.querySelector(".score");
       const inputs = Array.from(scoreCard.querySelectorAll(".score-value"));
       const mode = button.dataset.mode || "locked";
+
+      // Mercado fechado — abre o visualizador de palpites
+      if (mode === "view") {
+        const fixture = button.closest(".fixture");
+        const matchId = fixture?.dataset.fixtureId;
+        if (matchId) void openMatchPredictionsModal(matchId);
+        return;
+      }
 
       if (mode === "editing") {
         inputs.forEach((input) => {
@@ -9081,6 +9433,13 @@
       const selected = coinBetAmounts?.querySelector(".coin-bet-amount-btn.is-selected");
       if (!selected) return;
       void handleCoinBetApply(Number(selected.dataset.bet));
+    });
+
+    // ── Predictions modal events ───────────────────────────────────
+    predsClose?.addEventListener("click", closeMatchPredictionsModal);
+
+    predsModal?.addEventListener("click", (event) => {
+      if (event.target === predsModal) closeMatchPredictionsModal();
     });
 
     resultsClose?.addEventListener("click", closeResultsModal);
@@ -9566,6 +9925,7 @@
       closeBuffsModal();
       closeBuffTargetModal();
       closeCoinBetModal();
+      closeMatchPredictionsModal();
       closeResultsModal();
       closeExtrasPicker();
       closeExtrasTextModal();
