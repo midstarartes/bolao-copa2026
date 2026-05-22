@@ -3175,6 +3175,50 @@
       text-shadow: 0 4px 12px rgba(0, 0, 0, 0.56);
       order: 2;
       margin-top: -1px;
+      text-align: center;
+      width: 100%;
+    }
+
+    /* ── Countdown states ──────────────────────────────────────── */
+    .fixture-countdown--yellow {
+      color: #facc15;
+      font-style: normal;
+    }
+
+    .fixture-countdown--orange {
+      color: #fb923c;
+      font-style: normal;
+    }
+
+    .fixture-countdown--red {
+      color: #f43f5e;
+      font-style: normal;
+      animation: fixture-pulse 1.4s ease-in-out infinite;
+    }
+
+    @keyframes fixture-pulse {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.3; }
+    }
+
+    /* AO VIVO badge */
+    .fixture-badge--live {
+      display: inline-block;
+      background: rgba(239, 68, 68, 0.14);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.28);
+      border-radius: 999px;
+      padding: 2px 10px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      font-style: normal;
+      letter-spacing: 0.04em;
+    }
+
+    /* Sem palpite badge */
+    .fixture-badge--no-pred {
+      color: rgba(148, 163, 184, 0.5);
+      font-style: normal;
     }
 
     .fixture-row {
@@ -7079,6 +7123,94 @@
       gamesPagination.innerHTML = buttons.join("");
     }
 
+    // ── Countdown timer ──────────────────────────────────────────────
+    function updateCountdowns() {
+      const now = Date.now();
+      const H24 = 24 * 60 * 60 * 1000;
+      const LIVE_WINDOW = 150 * 60 * 1000; // 150 min — generous live window
+
+      document.querySelectorAll(".fixture[data-starts-at]").forEach((fixture) => {
+        const startsAtStr = fixture.dataset.startsAt;
+        const status = fixture.dataset.status || "scheduled";
+        const timeEl = fixture.querySelector(".fixture-time");
+        if (!timeEl || !startsAtStr) return;
+
+        const startsAt = new Date(startsAtStr).getTime();
+        if (Number.isNaN(startsAt)) return;
+
+        const cutoff       = startsAt - 30 * 60 * 1000; // market closes 30 min before
+        const msTillStart  = startsAt - now;
+        const msTillCutoff = cutoff - now;
+        const msAfterStart = now - startsAt;
+        const staticLabel  = formatFixtureTime(startsAtStr);
+
+        // Cancelled
+        if (status === "cancelled") {
+          timeEl.textContent = staticLabel;
+          return;
+        }
+
+        // Completed
+        if (status === "completed") {
+          const isSaved = fixture.dataset.saved === "true";
+          if (!isSaved) {
+            timeEl.innerHTML = `${staticLabel} • <span class="fixture-badge--no-pred">Sem palpite</span>`;
+          } else {
+            timeEl.textContent = staticLabel;
+          }
+          return;
+        }
+
+        // AO VIVO — started, within generous live window
+        if (msTillStart <= 0 && msAfterStart < LIVE_WINDOW) {
+          timeEl.innerHTML = `<span class="fixture-badge--live">AO VIVO 🔴</span>`;
+          return;
+        }
+
+        // Past live window, not yet marked completed
+        if (msTillStart <= 0) {
+          timeEl.textContent = staticLabel;
+          return;
+        }
+
+        // Game not started yet ─ outside 24h window → only static label
+        if (msTillStart > H24) {
+          timeEl.textContent = staticLabel;
+          return;
+        }
+
+        // < 24h: show countdown to market cutoff (30 min before start)
+        if (msTillCutoff <= 0) {
+          // Market already closed, game hasn't kicked off yet
+          timeEl.textContent = staticLabel;
+          return;
+        }
+
+        // Countdown to cutoff
+        const totalSec = Math.max(0, Math.floor(msTillCutoff / 1000));
+        const hours    = Math.floor(totalSec / 3600);
+        const minutes  = Math.floor((totalSec % 3600) / 60);
+
+        let countdownHtml;
+        if (msTillCutoff < 15 * 60 * 1000) {
+          // < 15 min — red pulsing
+          const label = minutes < 1 ? "1min" : `${minutes}min`;
+          countdownHtml = `<span class="fixture-countdown--red">Fecha em ${label}</span>`;
+        } else if (msTillCutoff < 60 * 60 * 1000) {
+          // < 1h — orange
+          countdownHtml = `<span class="fixture-countdown--orange">Fecha em ${minutes}min</span>`;
+        } else {
+          // >= 1h — yellow
+          const label = hours > 0
+            ? `${hours}h${minutes > 0 ? " " + minutes + "min" : ""}`
+            : `${minutes}min`;
+          countdownHtml = `<span class="fixture-countdown--yellow">Fecha em ${label}</span>`;
+        }
+
+        timeEl.innerHTML = `${staticLabel} • ${countdownHtml}`;
+      });
+    }
+
     async function renderCurrentGamesPage() {
       filteredMatchRecords = getFilteredMatchesData();
       const totalPages = Math.max(1, Math.ceil(filteredMatchRecords.length / GAMES_PER_PAGE));
@@ -7093,6 +7225,7 @@
       renderGamesPagination(filteredMatchRecords.length);
       refreshMissionCards();
       void loadMissionProgress();
+      updateCountdowns();
     }
 
     function fillAdminMatchOptions() {
@@ -7712,7 +7845,7 @@
       const awayCode = match.away_code || "";
 
       return `
-        <article class="fixture" data-fixture-id="${match.id}" data-phase="${matchPhase}" data-group="${matchGroup}" data-game-date="${getFixtureDateKey(match.starts_at)}" data-starts-at="${match.starts_at || ""}" data-saved="false">
+        <article class="fixture" data-fixture-id="${match.id}" data-phase="${matchPhase}" data-group="${matchGroup}" data-game-date="${getFixtureDateKey(match.starts_at)}" data-starts-at="${match.starts_at || ""}" data-status="${match.status || "scheduled"}" data-saved="false">
           <div class="fixture-row">
             <div>
               <div class="badge-code">${homeCode}</div>
@@ -9754,6 +9887,7 @@
 
     updateExtrasBadge();
     void loadMatchesFromBackend();
+    setInterval(updateCountdowns, 30_000); // atualiza contagens regressivas a cada 30s
 
     // ── Avatar modal listeners ─────────────────────────────────────
     document.getElementById("register-avatar-btn")?.addEventListener("click", () => {
