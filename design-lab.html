@@ -1542,6 +1542,67 @@
         linear-gradient(135deg, rgba(210, 66, 66, 0.14), rgba(255,255,255,0.02) 42%, rgba(56, 10, 10, 0.28));
     }
 
+    .ranking-card--lanterninha {
+      border-color: rgba(251, 146, 60, 0.38);
+      background:
+        linear-gradient(180deg, rgba(253, 186, 116, 0.22), rgba(234, 138, 38, 0.1) 18%, rgba(120, 58, 10, 0.08) 46%, rgba(50, 22, 4, 0.3) 100%),
+        linear-gradient(135deg, rgba(251, 146, 60, 0.14), rgba(255,255,255,0.02) 42%, rgba(90, 38, 6, 0.26));
+      box-shadow:
+        0 18px 34px rgba(0, 0, 0, 0.56),
+        0 0 18px rgba(251, 146, 60, 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.24),
+        inset 0 -12px 20px rgba(0, 0, 0, 0.34);
+    }
+
+    .lanterninha-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      background: rgba(251, 146, 60, 0.16);
+      border: 1px solid rgba(251, 146, 60, 0.36);
+      color: #fb923c;
+      border-radius: 999px;
+      padding: 1px 7px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      line-height: 1.4;
+      vertical-align: middle;
+      margin-left: 5px;
+    }
+
+    .ranking-lanterninha-sep {
+      height: 1px;
+      margin: 8px 0 4px;
+      background: linear-gradient(90deg, transparent, rgba(251, 146, 60, 0.35), transparent);
+      box-shadow: 0 0 8px rgba(251, 146, 60, 0.08);
+    }
+
+    .ranking-lanterninha-label {
+      text-align: center;
+      font-size: 0.74rem;
+      color: rgba(251, 146, 60, 0.65);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      font-weight: 600;
+      margin: 0 0 4px;
+    }
+
+    .profile-popup-lanterninha {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      background: rgba(251, 146, 60, 0.16);
+      border: 1px solid rgba(251, 146, 60, 0.36);
+      color: #fb923c;
+      border-radius: 999px;
+      padding: 2px 8px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      margin-top: 4px;
+    }
+
     .ranking-position {
       position: relative;
       z-index: 1;
@@ -6002,6 +6063,7 @@
     let apiSyncStatusCache = null;
     let currentGamesPage = 1;
     let pendingBuffId = null;
+    let lanterninhaUserId = null;
     const GAMES_PER_PAGE = 12;
     const EXTRAS_STORAGE_KEY = "designLabExtrasSelections";
     const STORAGE_KEY = "designLabUsers";
@@ -6578,6 +6640,9 @@
       if (profilePopupReal) profilePopupReal.textContent = user.realName || "";
       if (profileNicknameInput) profileNicknameInput.value = user.username;
       setAvatarElement(profilePopupAvatar, user.avatarType, user.avatarValue);
+      // Lanterninha badge
+      const isLanterninha = Boolean(lanterninhaUserId && user.id === lanterninhaUserId);
+      refreshProfileLanterninhaBadge(isLanterninha);
       profileOverlay?.classList.remove("is-hidden");
       profilePopup?.classList.remove("is-hidden");
       profilePopup?.setAttribute("aria-hidden", "false");
@@ -6655,7 +6720,7 @@
       return "";
     }
 
-    function renderRanking(entries) {
+    function renderRanking(entries, lanterninhaId) {
       if (!rankingRows || !rankingEmpty) return;
 
       const currentUser = getCurrentUser();
@@ -6668,33 +6733,52 @@
         };
       });
 
-      rankingRows.innerHTML = slots
+      // Check if the lanterninha player is already within the top-10
+      const lanterninhaInTop10 = lanterninhaId
+        ? slots.some(({ entry }) => entry && entry.user_id === lanterninhaId)
+        : false;
+
+      // Find the lanterninha entry (could be beyond top-10)
+      const lanterninhaEntry = lanterninhaId
+        ? entries.find((e) => e.user_id === lanterninhaId) || null
+        : null;
+
+      const buildPlayerMarkup = (entry, isCurrent, isLanterninha) => {
+        const avatarMarkup = entry
+          ? getAvatarMarkup(entry.avatar_type, entry.avatar_value, "user-avatar--sm")
+          : `<span class="user-avatar user-avatar--sm" aria-hidden="true" style="opacity:.25">⚽</span>`;
+        const lanterninhaTag = isLanterninha
+          ? `<span class="lanterninha-tag" title="Lanterninha">🏮</span>`
+          : "";
+        return entry
+          ? `
+            <div class="ranking-player">
+              ${avatarMarkup}
+              <div>
+                <p class="ranking-player-name">${escapeHtml(entry.nickname)}${lanterninhaTag}</p>
+                <p class="ranking-player-real${isCurrent ? " ranking-player-you" : ""}">${isCurrent ? "Você • " : ""}${escapeHtml(entry.real_name)}</p>
+              </div>
+            </div>
+          `
+          : `
+            <div class="ranking-player">
+              <span class="user-avatar user-avatar--sm" aria-hidden="true" style="opacity:.2">⚽</span>
+              <div>
+                <p class="ranking-player-name ranking-placeholder">Aguardando jogador</p>
+                <p class="ranking-player-real">Sem participante nesta posição</p>
+              </div>
+            </div>
+          `;
+      };
+
+      const top10Html = slots
         .map(({ position, entry, isCurrent }) => {
+          const isLanterninha = Boolean(entry && lanterninhaId && entry.user_id === lanterninhaId);
           const classes = ["ranking-card", getRankingCardTone(position)];
           if (isCurrent) classes.push("ranking-card--current");
+          if (isLanterninha) classes.push("ranking-card--lanterninha");
 
-          const avatarMarkup = entry
-            ? getAvatarMarkup(entry.avatar_type, entry.avatar_value, "user-avatar--sm")
-            : `<span class="user-avatar user-avatar--sm" aria-hidden="true" style="opacity:.25">⚽</span>`;
-          const playerMarkup = entry
-            ? `
-              <div class="ranking-player">
-                ${avatarMarkup}
-                <div>
-                  <p class="ranking-player-name">${escapeHtml(entry.nickname)}</p>
-                  <p class="ranking-player-real${isCurrent ? " ranking-player-you" : ""}">${isCurrent ? "Você • " : ""}${escapeHtml(entry.real_name)}</p>
-                </div>
-              </div>
-            `
-            : `
-              <div class="ranking-player">
-                <span class="user-avatar user-avatar--sm" aria-hidden="true" style="opacity:.2">⚽</span>
-                <div>
-                  <p class="ranking-player-name ranking-placeholder">Aguardando jogador</p>
-                  <p class="ranking-player-real">Sem participante nesta posição</p>
-                </div>
-              </div>
-            `;
+          const playerMarkup = buildPlayerMarkup(entry, isCurrent, isLanterninha);
           const exactMarkup = `<p class="ranking-metric${entry ? "" : " ranking-placeholder"}">${entry ? Number(entry.exact_scores ?? 0) : "—"}</p>`;
           const bonusPoints = entry ? Number(entry.bonus_points ?? 0) : 0;
           const bonusSuffix = bonusPoints > 0 ? ` <small style="opacity:.6;font-size:.75em">(+${formatRankingPoints(bonusPoints)} extra)</small>` : "";
@@ -6715,7 +6799,81 @@
         })
         .join("");
 
+      // If the lanterninha player is outside top-10, append a special card below
+      let lanterninhaExtraHtml = "";
+      if (!lanterninhaInTop10 && lanterninhaEntry) {
+        const isCurrent = Boolean(currentUser?.id && lanterninhaEntry.user_id === currentUser.id);
+        const classes = ["ranking-card", "ranking-card--lanterninha"];
+        if (isCurrent) classes.push("ranking-card--current");
+        const position = entries.indexOf(lanterninhaEntry) + 1;
+        const playerMarkup = buildPlayerMarkup(lanterninhaEntry, isCurrent, true);
+        const exactMarkup = `<p class="ranking-metric">${Number(lanterninhaEntry.exact_scores ?? 0)}</p>`;
+        const bonusPoints = Number(lanterninhaEntry.bonus_points ?? 0);
+        const bonusSuffix = bonusPoints > 0 ? ` <small style="opacity:.6;font-size:.75em">(+${formatRankingPoints(bonusPoints)} extra)</small>` : "";
+        const pointsMarkup = `<p class="ranking-metric ranking-metric--points">${formatRankingPoints(lanterninhaEntry.total_points ?? 0)}${bonusSuffix}</p>`;
+        lanterninhaExtraHtml = `
+          <div class="ranking-lanterninha-sep" aria-hidden="true"></div>
+          <p class="ranking-lanterninha-label">🏮 Lanterninha</p>
+          <article class="${classes.join(" ")}">
+            <div class="ranking-card-grid">
+              <p class="ranking-position">${position}º</p>
+              ${playerMarkup}
+              ${exactMarkup}
+              ${pointsMarkup}
+            </div>
+          </article>
+        `;
+      }
+
+      rankingRows.innerHTML = top10Html + lanterninhaExtraHtml;
       rankingEmpty.classList.toggle("is-visible", entries.length === 0);
+    }
+
+    function updateLanterninhaIndicators() {
+      const currentUser = getCurrentUser();
+      const isLanterninha = Boolean(currentUser?.id && lanterninhaUserId && currentUser.id === lanterninhaUserId);
+
+      // ── Login card header badge ──────────────────────────────────────
+      const existingHeaderBadge = document.getElementById("lanterninha-header-badge");
+      if (isLanterninha) {
+        if (!existingHeaderBadge) {
+          const badge = document.createElement("span");
+          badge.id = "lanterninha-header-badge";
+          badge.className = "lanterninha-tag";
+          badge.title = "Você é a lanterninha!";
+          badge.textContent = "🏮";
+          // Insert after the login-card-label span
+          if (loginCardLabel?.parentNode) {
+            loginCardLabel.parentNode.insertBefore(badge, loginCardLabel.nextSibling);
+          }
+        }
+      } else if (existingHeaderBadge) {
+        existingHeaderBadge.remove();
+      }
+
+      // ── Profile popup badge (shown when popup opens) ─────────────────
+      // We update openProfilePopup to add/remove the badge dynamically; here we
+      // refresh if the popup is currently open.
+      const profilePopup = document.getElementById("profile-popup");
+      if (profilePopup && !profilePopup.classList.contains("is-hidden")) {
+        refreshProfileLanterninhaBadge(isLanterninha);
+      }
+    }
+
+    function refreshProfileLanterninhaBadge(isLanterninha) {
+      const existing = document.getElementById("profile-lanterninha-badge");
+      if (isLanterninha) {
+        if (!existing) {
+          const badge = document.createElement("p");
+          badge.id = "profile-lanterninha-badge";
+          badge.className = "profile-popup-lanterninha";
+          badge.textContent = "🏮 Lanterninha";
+          const info = document.querySelector(".profile-popup-info");
+          if (info) info.appendChild(badge);
+        }
+      } else if (existing) {
+        existing.remove();
+      }
     }
 
     async function loadLeaderboard() {
@@ -6729,7 +6887,9 @@
           exact_scores: 0,
           total_points: 0,
         }));
-        renderRanking(localEntries);
+        lanterninhaUserId = localEntries.length >= 2 ? (localEntries[localEntries.length - 1].user_id || null) : null;
+        renderRanking(localEntries, lanterninhaUserId);
+        updateLanterninhaIndicators();
         return;
       }
 
@@ -6738,10 +6898,15 @@
           p_token: getBackendToken() || null,
         });
         if (error) throw error;
-        renderRanking(data || []);
+        const entries = data || [];
+        lanterninhaUserId = entries.length >= 2 ? (entries[entries.length - 1].user_id || null) : null;
+        renderRanking(entries, lanterninhaUserId);
+        updateLanterninhaIndicators();
       } catch (error) {
         console.error(error);
+        lanterninhaUserId = null;
         renderRanking([]);
+        updateLanterninhaIndicators();
       }
     }
 
@@ -10034,6 +10199,7 @@
       }
 
       updateCoinsCard();
+      updateLanterninhaIndicators();
     }
 
     function showFeedback(message, type) {
