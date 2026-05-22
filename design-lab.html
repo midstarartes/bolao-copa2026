@@ -6725,25 +6725,12 @@
 
       const currentUser = getCurrentUser();
 
-      // Only show cards for players that actually exist — no placeholder slots
+      // Mostra TODOS os jogadores cadastrados, sem limite de quantidade
       const slots = entries.map((entry, index) => ({
         position: index + 1,
         entry,
         isCurrent: Boolean(currentUser?.id && entry.user_id === currentUser.id),
       }));
-
-      // Top-10: render all players up to position 10
-      const top10Slots = slots.slice(0, 10);
-
-      // Check if the lanterninha player is already visible in the rendered list
-      const lanterninhaInList = lanterninhaId
-        ? top10Slots.some(({ entry }) => entry.user_id === lanterninhaId)
-        : false;
-
-      // Find the lanterninha entry (could be beyond top-10)
-      const lanterninhaEntry = lanterninhaId
-        ? entries.find((e) => e.user_id === lanterninhaId) || null
-        : null;
 
       const buildPlayerMarkup = (entry, isCurrent, isLanterninha) => {
         const avatarMarkup = getAvatarMarkup(entry.avatar_type, entry.avatar_value, "user-avatar--sm");
@@ -6761,7 +6748,7 @@
         `;
       };
 
-      const top10Html = top10Slots
+      rankingRows.innerHTML = slots
         .map(({ position, entry, isCurrent }) => {
           const isLanterninha = Boolean(lanterninhaId && entry.user_id === lanterninhaId);
           const classes = ["ranking-card", getRankingCardTone(position)];
@@ -6773,8 +6760,8 @@
           const bonusPoints = Number(entry.bonus_points ?? 0);
           const bonusSuffix = bonusPoints > 0 ? ` <small style="opacity:.6;font-size:.75em">(+${formatRankingPoints(bonusPoints)} extra)</small>` : "";
           const pointsMarkup = `<p class="ranking-metric ranking-metric--points">${formatRankingPoints(entry.total_points ?? 0)}${bonusSuffix}</p>`;
-          // Dividers only when enough players exist at those boundaries
-          const dividerMarkup = (position === 3 || position === 8) && top10Slots.length > position
+          // Divisores apenas quando há jogadores suficientes além das fronteiras (3º e 8º)
+          const dividerMarkup = (position === 3 || position === 8) && slots.length > position
             ? `<div class="ranking-divider" aria-hidden="true"></div>`
             : "";
 
@@ -6791,34 +6778,6 @@
           `;
         })
         .join("");
-
-      // If the lanterninha player is outside top-10, append a special card below
-      let lanterninhaExtraHtml = "";
-      if (!lanterninhaInList && lanterninhaEntry) {
-        const isCurrent = Boolean(currentUser?.id && lanterninhaEntry.user_id === currentUser.id);
-        const classes = ["ranking-card", "ranking-card--lanterninha"];
-        if (isCurrent) classes.push("ranking-card--current");
-        const position = entries.indexOf(lanterninhaEntry) + 1;
-        const playerMarkup = buildPlayerMarkup(lanterninhaEntry, isCurrent, true);
-        const exactMarkup = `<p class="ranking-metric">${Number(lanterninhaEntry.exact_scores ?? 0)}</p>`;
-        const bonusPoints = Number(lanterninhaEntry.bonus_points ?? 0);
-        const bonusSuffix = bonusPoints > 0 ? ` <small style="opacity:.6;font-size:.75em">(+${formatRankingPoints(bonusPoints)} extra)</small>` : "";
-        const pointsMarkup = `<p class="ranking-metric ranking-metric--points">${formatRankingPoints(lanterninhaEntry.total_points ?? 0)}${bonusSuffix}</p>`;
-        lanterninhaExtraHtml = `
-          <div class="ranking-lanterninha-sep" aria-hidden="true"></div>
-          <p class="ranking-lanterninha-label">🏮 Lanterninha</p>
-          <article class="${classes.join(" ")}">
-            <div class="ranking-card-grid">
-              <p class="ranking-position">${position}º</p>
-              ${playerMarkup}
-              ${exactMarkup}
-              ${pointsMarkup}
-            </div>
-          </article>
-        `;
-      }
-
-      rankingRows.innerHTML = top10Html + lanterninhaExtraHtml;
       rankingEmpty.classList.toggle("is-visible", entries.length === 0);
     }
 
