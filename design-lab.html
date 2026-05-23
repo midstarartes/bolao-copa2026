@@ -878,10 +878,11 @@
       letter-spacing: 0.1em;
     }
 
-    .sub-nav-select {
+    /* Botão do dropdown customizado */
+    .sub-nav-btn {
       width: 100%;
       min-height: 30px;
-      padding: 6px 30px 6px 12px;
+      padding: 6px 26px 6px 10px;
       border: 0;
       border-radius: 11px;
       background: transparent;
@@ -890,23 +891,86 @@
       font-weight: 700;
       letter-spacing: 0.01em;
       text-align: center;
-      text-align-last: center;
-      text-shadow: 0 3px 10px rgba(0, 0, 0, 0.38);
+      text-shadow: 0 3px 10px rgba(0,0,0,0.38);
       cursor: pointer;
-      appearance: none;
       outline: none;
+      position: relative;
+      display: block;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
-    .sub-nav-card::after {
+    .sub-nav-btn::after {
       content: "▼";
       position: absolute;
-      right: 12px;
+      right: 10px;
       top: 50%;
       transform: translateY(-52%);
-      font-size: 0.56rem;
-      color: rgba(255, 255, 255, 0.6);
+      font-size: 0.52rem;
+      color: rgba(255,255,255,0.55);
       pointer-events: none;
+      transition: transform 0.18s ease;
     }
+
+    .sub-nav-card[data-open] .sub-nav-btn::after {
+      transform: translateY(-52%) rotate(180deg);
+    }
+
+    /* Lista de opções do dropdown */
+    .sub-nav-dropdown {
+      position: absolute;
+      top: calc(100% + 5px);
+      left: 0;
+      min-width: 100%;
+      max-height: min(280px, 60vh);
+      overflow-y: auto;
+      z-index: 300;
+      background: #111119;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      box-shadow:
+        0 20px 48px rgba(0,0,0,0.76),
+        0 6px 16px rgba(0,0,0,0.44),
+        inset 0 1px 0 rgba(255,255,255,0.07);
+      list-style: none;
+      margin: 0;
+      padding: 4px 0;
+      display: none;
+      white-space: nowrap;
+    }
+
+    .sub-nav-card[data-open] .sub-nav-dropdown {
+      display: block;
+    }
+
+    .sub-nav-option {
+      padding: 10px 16px;
+      color: rgba(210,220,235,0.82);
+      font-size: 0.74rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.12s ease, color 0.12s ease;
+    }
+
+    .sub-nav-option:hover {
+      background: rgba(255,255,255,0.07);
+      color: #fff;
+    }
+
+    .sub-nav-option.is-selected {
+      color: #a78bfa;
+    }
+
+    .sub-nav-option.is-selected::before {
+      content: "✓ ";
+      opacity: 0.7;
+    }
+
+    /* Mantém o ::after do card desativado (seta agora está no btn) */
+    .sub-nav-card::after { display: none; }
 
     .fixture.is-hidden {
       display: none;
@@ -4187,7 +4251,7 @@
         width: 100%;
       }
 
-      .sub-nav-select {
+      .sub-nav-btn {
         min-height: 36px;
         padding: 6px 20px 6px 8px;
         font-size: 0.6rem;
@@ -4471,15 +4535,10 @@
         overflow-x: clip;
       }
 
-      .sub-nav-select {
+      .sub-nav-btn {
         min-height: 34px;
         font-size: 0.56rem;
         padding-inline: 6px 18px;
-      }
-
-      .sub-nav-card::after {
-        right: 8px;
-        font-size: 0.48rem;
       }
 
       .sync-status-bar {
@@ -4930,30 +4989,71 @@
 
     <div class="tab-stage">
       <section class="tab-panel" id="tab-jogos" aria-label="Jogos">
-        <nav class="sub-nav" aria-label="Filtros secund&aacute;rios">
-          <label class="sub-nav-card">
-            <select class="sub-nav-select" id="filter-status" aria-label="Selecionar Status">
+        <nav class="sub-nav" aria-label="Filtros secundários">
+
+          <!-- Filtro STATUS -->
+          <div class="sub-nav-card" data-dropdown>
+            <button class="sub-nav-btn" type="button" aria-expanded="false" aria-haspopup="listbox">STATUS</button>
+            <ul class="sub-nav-dropdown" role="listbox" aria-label="Selecionar Status">
+              <li class="sub-nav-option is-selected" data-value="all" role="option" aria-selected="true">STATUS</li>
+              <li class="sub-nav-option" data-value="not-predicted" role="option">NÃO PALPITADOS</li>
+              <li class="sub-nav-option" data-value="predicted" role="option">JÁ PALPITADOS</li>
+              <li class="sub-nav-option" data-value="today" role="option">JOGOS DE HOJE</li>
+              <li class="sub-nav-option" data-value="upcoming" role="option">PRÓXIMOS JOGOS</li>
+            </ul>
+            <select id="filter-status" aria-hidden="true" tabindex="-1" style="display:none">
               <option value="all">STATUS</option>
-              <option value="not-predicted">N&Atilde;O PALPITADOS</option>
-              <option value="predicted">J&Aacute; PALPITADOS</option>
+              <option value="not-predicted">NÃO PALPITADOS</option>
+              <option value="predicted">JÁ PALPITADOS</option>
               <option value="today">JOGOS DE HOJE</option>
-              <option value="upcoming">PR&Oacute;XIMOS JOGOS</option>
+              <option value="upcoming">PRÓXIMOS JOGOS</option>
             </select>
-          </label>
-          <label class="sub-nav-card">
-            <select class="sub-nav-select" id="filter-phase" aria-label="Selecionar Fase">
+          </div>
+
+          <!-- Filtro FASE -->
+          <div class="sub-nav-card" data-dropdown>
+            <button class="sub-nav-btn" type="button" aria-expanded="false" aria-haspopup="listbox">FASE</button>
+            <ul class="sub-nav-dropdown" role="listbox" aria-label="Selecionar Fase">
+              <li class="sub-nav-option is-selected" data-value="all" role="option" aria-selected="true">FASE</li>
+              <li class="sub-nav-option" data-value="FASE DE GRUPOS" role="option">FASE DE GRUPOS</li>
+              <li class="sub-nav-option" data-value="16 AVOS DE FINAL" role="option">16 AVOS DE FINAL</li>
+              <li class="sub-nav-option" data-value="OITAVAS DE FINAL" role="option">OITAVAS DE FINAL</li>
+              <li class="sub-nav-option" data-value="QUARTAS DE FINAL" role="option">QUARTAS DE FINAL</li>
+              <li class="sub-nav-option" data-value="SEMI FINAL" role="option">SEMI FINAL</li>
+              <li class="sub-nav-option" data-value="DISPUTA 3º LUGAR" role="option">DISPUTA 3º LUGAR</li>
+              <li class="sub-nav-option" data-value="FINAL" role="option">FINAL</li>
+            </ul>
+            <select id="filter-phase" aria-hidden="true" tabindex="-1" style="display:none">
               <option value="all">FASE</option>
               <option value="FASE DE GRUPOS">FASE DE GRUPOS</option>
               <option value="16 AVOS DE FINAL">16 AVOS DE FINAL</option>
               <option value="OITAVAS DE FINAL">OITAVAS DE FINAL</option>
               <option value="QUARTAS DE FINAL">QUARTAS DE FINAL</option>
               <option value="SEMI FINAL">SEMI FINAL</option>
-              <option value="DISPUTA 3&ordm; LUGAR">DISPUTA 3&ordm; LUGAR</option>
+              <option value="DISPUTA 3º LUGAR">DISPUTA 3º LUGAR</option>
               <option value="FINAL">FINAL</option>
             </select>
-          </label>
-          <label class="sub-nav-card">
-            <select class="sub-nav-select" id="filter-group" aria-label="Selecionar Grupo">
+          </div>
+
+          <!-- Filtro GRUPO -->
+          <div class="sub-nav-card" data-dropdown>
+            <button class="sub-nav-btn" type="button" aria-expanded="false" aria-haspopup="listbox">GRUPO</button>
+            <ul class="sub-nav-dropdown" role="listbox" aria-label="Selecionar Grupo">
+              <li class="sub-nav-option is-selected" data-value="all" role="option" aria-selected="true">GRUPO</li>
+              <li class="sub-nav-option" data-value="GRUPO A" role="option">GRUPO A</li>
+              <li class="sub-nav-option" data-value="GRUPO B" role="option">GRUPO B</li>
+              <li class="sub-nav-option" data-value="GRUPO C" role="option">GRUPO C</li>
+              <li class="sub-nav-option" data-value="GRUPO D" role="option">GRUPO D</li>
+              <li class="sub-nav-option" data-value="GRUPO E" role="option">GRUPO E</li>
+              <li class="sub-nav-option" data-value="GRUPO F" role="option">GRUPO F</li>
+              <li class="sub-nav-option" data-value="GRUPO G" role="option">GRUPO G</li>
+              <li class="sub-nav-option" data-value="GRUPO H" role="option">GRUPO H</li>
+              <li class="sub-nav-option" data-value="GRUPO I" role="option">GRUPO I</li>
+              <li class="sub-nav-option" data-value="GRUPO J" role="option">GRUPO J</li>
+              <li class="sub-nav-option" data-value="GRUPO K" role="option">GRUPO K</li>
+              <li class="sub-nav-option" data-value="GRUPO L" role="option">GRUPO L</li>
+            </ul>
+            <select id="filter-group" aria-hidden="true" tabindex="-1" style="display:none">
               <option value="all">GRUPO</option>
               <option value="GRUPO A">GRUPO A</option>
               <option value="GRUPO B">GRUPO B</option>
@@ -4968,7 +5068,8 @@
               <option value="GRUPO K">GRUPO K</option>
               <option value="GRUPO L">GRUPO L</option>
             </select>
-          </label>
+          </div>
+
         </nav>
 
         <div class="sync-status-bar" id="sync-status-bar">
@@ -9574,6 +9675,64 @@
     [statusFilter, phaseFilter, groupFilter].forEach((select) => {
       select?.addEventListener("change", () => applyGameFilters(true));
     });
+
+    // ── Dropdowns customizados (substituem <select> nativo no mobile) ──
+    function initSubNavDropdowns() {
+      const cards = document.querySelectorAll(".sub-nav-card[data-dropdown]");
+
+      cards.forEach((card) => {
+        const btn    = card.querySelector(".sub-nav-btn");
+        const list   = card.querySelector(".sub-nav-dropdown");
+        const hidden = card.querySelector("select");
+        const opts   = card.querySelectorAll(".sub-nav-option");
+
+        if (!btn || !list || !hidden) return;
+
+        // Abre / fecha ao clicar no botão
+        btn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const isOpen = card.hasAttribute("data-open");
+          // Fecha todos os outros dropdowns
+          cards.forEach((c) => { c.removeAttribute("data-open"); c.querySelector(".sub-nav-btn")?.setAttribute("aria-expanded", "false"); });
+          if (!isOpen) {
+            card.setAttribute("data-open", "");
+            btn.setAttribute("aria-expanded", "true");
+          }
+        });
+
+        // Seleciona opção
+        opts.forEach((opt) => {
+          opt.addEventListener("click", (e) => {
+            e.stopPropagation();
+            const value = opt.dataset.value;
+            const label = opt.textContent.replace(/^✓\s*/, "").trim();
+
+            // Atualiza estado visual
+            opts.forEach((o) => { o.classList.remove("is-selected"); o.removeAttribute("aria-selected"); });
+            opt.classList.add("is-selected");
+            opt.setAttribute("aria-selected", "true");
+
+            // Atualiza texto do botão
+            btn.textContent = label;
+
+            // Atualiza select escondido e dispara change
+            hidden.value = value;
+            hidden.dispatchEvent(new Event("change", { bubbles: true }));
+
+            // Fecha
+            card.removeAttribute("data-open");
+            btn.setAttribute("aria-expanded", "false");
+          });
+        });
+      });
+
+      // Clique fora fecha tudo
+      document.addEventListener("click", () => {
+        cards.forEach((c) => { c.removeAttribute("data-open"); c.querySelector(".sub-nav-btn")?.setAttribute("aria-expanded", "false"); });
+      });
+    }
+
+    initSubNavDropdowns();
 
     gamesPagination?.addEventListener("click", (event) => {
       const button = event.target.closest("[data-games-page]");
