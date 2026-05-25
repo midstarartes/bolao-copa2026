@@ -1190,29 +1190,13 @@
     }
 
     .rules-content {
-      position: relative;
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      column-gap: 34px;
-      row-gap: 18px;
+      grid-template-columns: 1fr;
+      gap: 14px;
       padding-top: 16px;
+      max-width: 640px;
       color: #eef2f7;
       text-shadow: 0 3px 10px rgba(0, 0, 0, 0.38);
-    }
-
-    .rules-content::before {
-      content: "";
-      position: absolute;
-      top: 4px;
-      bottom: 4px;
-      left: 50%;
-      width: 1px;
-      transform: translateX(-50%);
-      background: linear-gradient(180deg, transparent, rgba(255,255,255,0.12), rgba(255,255,255,0.34), rgba(255,255,255,0.12), transparent);
-      box-shadow:
-        0 0 14px rgba(255, 255, 255, 0.08),
-        0 0 2px rgba(255, 255, 255, 0.22);
-      pointer-events: none;
     }
 
     .rules-section {
@@ -1238,9 +1222,8 @@
     .rules-title {
       margin: 0;
       font-size: 1.0rem;
-      font-weight: 900;
-      letter-spacing: 0.07em;
-      text-transform: uppercase;
+      font-weight: 800;
+      letter-spacing: normal;
       padding-bottom: 9px;
       border-bottom: 1px solid rgba(255,255,255,0.1);
       box-shadow: 0 8px 10px -10px rgba(255,255,255,0.3);
@@ -1324,10 +1307,10 @@
       border-radius: 6px;
       background: rgba(255,255,255,0.07);
       border: 1px solid rgba(255,255,255,0.1);
-      font-size: 0.73rem;
-      font-weight: 800;
-      letter-spacing: 0.03em;
-      color: rgba(226,232,240,0.75);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: normal;
+      color: rgba(226,232,240,0.8);
       vertical-align: middle;
     }
 
@@ -1353,12 +1336,11 @@
 
     .rules-tag {
       display: inline-block;
-      padding: 2px 8px;
+      padding: 2px 9px;
       border-radius: 5px;
-      font-size: 0.68rem;
-      font-weight: 800;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
+      font-size: 0.73rem;
+      font-weight: 700;
+      letter-spacing: normal;
     }
 
     .rules-tag--ok {
@@ -4393,15 +4375,6 @@
 
       .rules-grid {
         grid-template-columns: 1fr;
-      }
-
-      .rules-content {
-        grid-template-columns: 1fr;
-        gap: 14px;
-      }
-
-      .rules-content::before {
-        display: none;
       }
 
       .ranking-headings {
