@@ -5060,6 +5060,102 @@
     .name-request-approve:hover { background: rgba(79,200,64,0.35); }
     .name-request-reject { background: rgba(220,64,64,0.2); color: #f07878; }
     .name-request-reject:hover { background: rgba(220,64,64,0.35); }
+
+    /* ── Missions tab: total de moedas ─────────────────────────── */
+    .coins-total-card-hero {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      align-items: center;
+      gap: 16px;
+      padding: 18px 20px;
+      border-radius: 18px;
+      background:
+        linear-gradient(180deg, rgba(255,234,162,0.24), rgba(173,126,18,0.14) 24%, rgba(124,81,5,0.9) 100%),
+        linear-gradient(135deg, #a16207, #d4a017 52%, #6b4f05);
+      border: 1px solid rgba(255,255,255,0.18);
+      box-shadow:
+        0 18px 32px rgba(0,0,0,0.5),
+        0 8px 18px rgba(5,12,28,0.36),
+        inset 0 1px 0 rgba(255,255,255,0.26),
+        inset 0 -12px 20px rgba(0,0,0,0.24);
+      position: relative;
+      overflow: hidden;
+      color: #fffbed;
+      margin-bottom: 20px;
+    }
+    .coins-total-card-hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.18), transparent 32%),
+        radial-gradient(circle at 22% 18%, rgba(255,255,255,0.16), transparent 26%);
+      pointer-events: none;
+    }
+    .coins-total-card-hero::after {
+      content: "";
+      position: absolute;
+      inset: 1px;
+      border-radius: 17px;
+      border: 1px solid rgba(255,255,255,0.05);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.03);
+      pointer-events: none;
+    }
+    .coins-total-icon-hero {
+      font-size: 2.8rem;
+      line-height: 1;
+      position: relative;
+      z-index: 1;
+    }
+    .coins-total-info-hero {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      gap: 2px;
+    }
+    .coins-total-label-hero {
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+      color: rgba(255,249,219,0.75);
+      text-shadow: 0 2px 6px rgba(0,0,0,0.42);
+    }
+    .coins-total-value-hero {
+      font-size: 2.4rem;
+      font-weight: 900;
+      line-height: 1;
+      letter-spacing: -0.02em;
+      color: #fffbed;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+    }
+    .coins-total-sub-hero {
+      font-size: 0.7rem;
+      color: rgba(255,249,219,0.6);
+      font-weight: 600;
+      margin-top: 2px;
+    }
+    .missions-section-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .missions-section-header::before,
+    .missions-section-header::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: rgba(255,255,255,0.1);
+    }
+    .missions-section-header-label {
+      font-size: 0.7rem;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.42);
+      white-space: nowrap;
+    }
   </style>
 </head>
 <body>
@@ -5258,6 +5354,17 @@
         </div>
       </section>
       <section class="tab-panel is-hidden" id="tab-moedas" aria-label="Moedas">
+        <div class="coins-total-card-hero">
+          <span class="coins-total-icon-hero">🪙</span>
+          <div class="coins-total-info-hero">
+            <span class="coins-total-label-hero">Total de Moedas</span>
+            <span class="coins-total-value-hero" id="missions-tab-coins">0</span>
+            <span class="coins-total-sub-hero">moedas disponíveis</span>
+          </div>
+        </div>
+        <div class="missions-section-header">
+          <span class="missions-section-header-label">Missões para ganhar moedas</span>
+        </div>
         <div class="missions-list">
           <article class="mission-card" data-mission-id="finalizar-cadastro" data-mission-reward="5">
             <div class="mission-copy">
@@ -6208,6 +6315,7 @@
     const predsSubtitle = document.getElementById("preds-subtitle");
     const predsBody = document.getElementById("preds-body");
     const coinsCardValue = document.getElementById("coins-card-value");
+    const missionsTabCoins = document.getElementById("missions-tab-coins");
     const extrasNavBadge = document.getElementById("extras-nav-badge");
     const statusFilter = document.getElementById("filter-status");
     const phaseFilter = document.getElementById("filter-phase");
@@ -6799,7 +6907,9 @@
     }
 
     function updateCoinsCard() {
-      coinsCardValue.textContent = String(getCurrentUserCoins());
+      const currentCoins = String(getCurrentUserCoins());
+      coinsCardValue.textContent = currentCoins;
+      if (missionsTabCoins) missionsTabCoins.textContent = currentCoins;
       if (buffsCoins) {
         buffsCoins.textContent = `Moedas: ${getCurrentUserCoins()}`;
       }
