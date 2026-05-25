@@ -446,38 +446,13 @@ SELECT '──── SEÇÃO 6 ─ Aproveitamento esperado ────' AS seca
 -- Gamma:  raw=(1.0-0.1+2.0-0.5)/7.0 = 2.4/7.0 ≈ 34%
 -- Delta:  4.0/4.0 = 100% (só 3 jogos palpitados)
 SELECT
-  round(coalesce(aproveitamento,0)*100) = 100  AS alpha_100pct_ok,
-  round(coalesce(aproveitamento,0)*100) = 64   AS beta_64pct_ok,
-  round(coalesce(aproveitamento,0)*100) = 34   AS gamma_34pct_ok,
-  round(coalesce(aproveitamento,0)*100) = 100  AS delta_100pct_ok
-FROM (
-  SELECT
-    max(case when nickname='DEMO_Alpha' then aproveitamento end) as alpha_aprov,
-    max(case when nickname='DEMO_Beta'  then aproveitamento end) as beta_aprov,
-    max(case when nickname='DEMO_Gamma' then aproveitamento end) as gamma_aprov,
-    max(case when nickname='DEMO_Delta' then aproveitamento end) as delta_aprov
-  FROM public.app_get_leaderboard(null)
-  WHERE nickname LIKE 'DEMO_%'
-) sub
-CROSS JOIN LATERAL (
-  SELECT
-    round(coalesce(sub.alpha_aprov,0)*100) AS alpha_pct,
-    round(coalesce(sub.beta_aprov, 0)*100) AS beta_pct,
-    round(coalesce(sub.gamma_aprov,0)*100) AS gamma_pct,
-    round(coalesce(sub.delta_aprov,0)*100) AS delta_pct
-) pcts
--- Note: usamos os valores colapsados; o SELECT externo precisa ajustar
-;
-
--- Versão mais simples e legível:
-SELECT
   nickname,
-  round(coalesce(aproveitamento,0)*100) AS aproveit_pct,
+  round(coalesce(aproveitamento, 0) * 100) AS aproveit_pct,
   CASE nickname
-    WHEN 'DEMO_Alpha' THEN round(coalesce(aproveitamento,0)*100) = 100
-    WHEN 'DEMO_Beta'  THEN round(coalesce(aproveitamento,0)*100) BETWEEN 63 AND 65
-    WHEN 'DEMO_Gamma' THEN round(coalesce(aproveitamento,0)*100) BETWEEN 33 AND 35
-    WHEN 'DEMO_Delta' THEN round(coalesce(aproveitamento,0)*100) = 100
+    WHEN 'DEMO_Alpha' THEN round(coalesce(aproveitamento, 0) * 100) = 100
+    WHEN 'DEMO_Beta'  THEN round(coalesce(aproveitamento, 0) * 100) BETWEEN 63 AND 65
+    WHEN 'DEMO_Gamma' THEN round(coalesce(aproveitamento, 0) * 100) BETWEEN 33 AND 35
+    WHEN 'DEMO_Delta' THEN round(coalesce(aproveitamento, 0) * 100) = 100
   END AS aproveit_ok
 FROM public.app_get_leaderboard(null)
 WHERE nickname LIKE 'DEMO_%'
