@@ -1217,34 +1217,160 @@
 
     .rules-section {
       display: grid;
-      gap: 8px;
+      gap: 10px;
+      padding: 14px 16px 16px;
+      border-radius: 14px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02) 24%, rgba(0,0,0,0.14) 100%),
+        linear-gradient(135deg, rgba(255,255,255,0.025), rgba(0,0,0,0.12));
+      border: 1px solid rgba(255,255,255,0.07);
+      box-shadow:
+        0 10px 22px rgba(0,0,0,0.2),
+        inset 0 1px 0 rgba(255,255,255,0.07);
     }
 
     .rules-column {
       display: grid;
-      gap: 18px;
+      gap: 14px;
       align-content: start;
     }
 
     .rules-title {
       margin: 0;
-      font-size: 1.12rem;
+      font-size: 1.0rem;
       font-weight: 900;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.07em;
       text-transform: uppercase;
+      padding-bottom: 9px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      box-shadow: 0 8px 10px -10px rgba(255,255,255,0.3);
     }
 
     .rules-lines {
       display: grid;
-      gap: 6px;
+      gap: 7px;
     }
 
     .rules-lines p {
       margin: 0;
-      font-size: 0.94rem;
+      font-size: 0.91rem;
+      font-weight: 600;
+      line-height: 1.6;
+      color: #d9dde3;
+    }
+
+    /* ── Utilitários de regras ────────────────────────────────────── */
+    .rules-note {
+      margin: 0;
+      font-size: 0.77rem;
       font-weight: 600;
       line-height: 1.5;
-      color: #d9dde3;
+      color: rgba(180,195,220,0.5);
+    }
+
+    .rules-example {
+      padding: 7px 11px;
+      border-left: 2px solid rgba(255,255,255,0.13);
+      border-radius: 0 7px 7px 0;
+      background: rgba(255,255,255,0.035);
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: rgba(226,232,240,0.65);
+      line-height: 1.55;
+    }
+
+    .rules-example strong {
+      color: rgba(226,232,240,0.9);
+    }
+
+    .rules-highlight {
+      padding: 9px 12px;
+      border-radius: 9px;
+      background: rgba(125,255,107,0.055);
+      border: 1px solid rgba(125,255,107,0.13);
+      font-size: 0.86rem;
+      font-weight: 600;
+      line-height: 1.55;
+      color: rgba(226,232,240,0.85);
+    }
+
+    .rules-warn {
+      padding: 8px 12px;
+      border-radius: 9px;
+      background: rgba(255,200,60,0.055);
+      border: 1px solid rgba(255,200,60,0.13);
+      font-size: 0.82rem;
+      font-weight: 600;
+      line-height: 1.5;
+      color: rgba(255,210,90,0.8);
+    }
+
+    .rules-info {
+      padding: 8px 12px;
+      border-radius: 9px;
+      background: rgba(100,180,255,0.055);
+      border: 1px solid rgba(100,180,255,0.13);
+      font-size: 0.82rem;
+      font-weight: 600;
+      line-height: 1.5;
+      color: rgba(160,210,255,0.8);
+    }
+
+    .rules-cost {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      padding: 3px 9px 3px 7px;
+      border-radius: 6px;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.1);
+      font-size: 0.73rem;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      color: rgba(226,232,240,0.75);
+      vertical-align: middle;
+    }
+
+    .rules-availability {
+      font-size: 0.77rem;
+      font-weight: 600;
+      color: rgba(180,195,220,0.48);
+      line-height: 1.45;
+    }
+
+    .rules-divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.09), transparent);
+      margin: 2px 0;
+    }
+
+    .rules-tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      align-items: center;
+    }
+
+    .rules-tag {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 5px;
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .rules-tag--ok {
+      background: rgba(125,255,107,0.1);
+      color: rgba(125,255,107,0.8);
+      border: 1px solid rgba(125,255,107,0.18);
+    }
+
+    .rules-tag--no {
+      background: rgba(255,83,83,0.1);
+      color: rgba(255,140,140,0.8);
+      border: 1px solid rgba(255,83,83,0.18);
     }
 
     .rules-points-positive {
@@ -4669,23 +4795,15 @@
       }
 
       .rules-section {
-        gap: 10px;
-        padding: 10px 10px 12px;
-        border-radius: 14px;
-        background:
-          linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02) 24%, rgba(0,0,0,0.18) 100%),
-          linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01) 42%, rgba(0,0,0,0.18));
-        border: 1px solid rgba(255,255,255,0.07);
-        box-shadow:
-          0 10px 20px rgba(0, 0, 0, 0.22),
-          inset 0 1px 0 rgba(255,255,255,0.08);
+        padding: 11px 11px 13px;
+      }
+
+      .rules-column {
+        gap: 11px;
       }
 
       .rules-title {
-        font-size: 0.88rem;
-        padding-bottom: 8px;
-        border-bottom: 1px solid rgba(255,255,255,0.12);
-        box-shadow: 0 8px 10px -10px rgba(255,255,255,0.35);
+        font-size: 0.84rem;
       }
 
       .rules-lines {
@@ -4694,7 +4812,19 @@
 
       .rules-lines p {
         font-size: 0.82rem;
-        line-height: 1.45;
+        line-height: 1.5;
+      }
+
+      .rules-note {
+        font-size: 0.74rem;
+      }
+
+      .rules-example {
+        font-size: 0.78rem;
+      }
+
+      .rules-availability {
+        font-size: 0.73rem;
       }
 
       .site-footer {
@@ -5312,66 +5442,83 @@
               <div class="rules-column">
 
                 <section class="rules-section">
+                  <h3 class="rules-title">⚡ Regra Geral</h3>
+                  <div class="rules-highlight">
+                    Cada jogo gera <strong>apenas uma pontuação</strong>. As pontuações <strong>não se somam</strong>: placar exato já inclui o acerto de vencedor/quem avança — você recebe o maior nível alcançado, não a soma.
+                  </div>
+                  <div class="rules-example">
+                    Acertou o placar exato → <strong>+2,0</strong> (não +2,0 + 1,0)<br>
+                    Acertou quem avança, errou o placar → <strong>+1,0</strong>
+                  </div>
+                </section>
+
+                <section class="rules-section">
                   <h3 class="rules-title">Fase de Grupos</h3>
                   <div class="rules-lines">
-                    <p>Placar exato (90 min): <span class="rules-points-positive">+1,0</span></p>
-                    <p>Acertar vencedor ou empate: <span class="rules-points-positive">+0,5</span></p>
-                    <p>Errar vencedor/empate: <span class="rules-points-negative">-0,1</span></p>
-                    <p>Não palpitar em jogo encerrado: <span class="rules-points-negative">-0,2</span></p>
+                    <p>Placar exato <span class="rules-note">(90 min + acréscimos)</span> → <span class="rules-points-positive">+1,0</span></p>
+                    <p>Acertar vencedor ou empate → <span class="rules-points-positive">+0,5</span></p>
+                    <p>Errar resultado → <span class="rules-points-negative">−0,1</span></p>
+                    <p>Sem palpite em jogo encerrado → <span class="rules-points-negative">−0,2</span></p>
                   </div>
                 </section>
 
                 <section class="rules-section">
                   <h3 class="rules-title">Mata-Mata Inicial</h3>
-                  <p style="font-size:.74rem;color:rgba(180,195,220,.55);margin:-4px 0 8px">16 avos · Oitavas · Quartas</p>
+                  <p class="rules-availability">16 avos · Oitavas · Quartas de Final</p>
                   <div class="rules-lines">
-                    <p>Placar exato (90 min + acréscimos): <span class="rules-points-positive">+2,0</span></p>
-                    <p>Acertar quem avança: <span class="rules-points-positive">+1,0</span></p>
-                    <p>Errar quem avança: <span class="rules-points-negative">-0,2</span></p>
-                    <p>Não palpitar em jogo encerrado: <span class="rules-points-negative">-0,2</span></p>
-                    <p style="font-size:.73rem;color:rgba(180,195,220,.5);margin-top:4px">Quem avança leva em conta prorrogação e pênaltis.</p>
+                    <p>Placar exato <span class="rules-note">(90 min + acréscimos)</span> → <span class="rules-points-positive">+2,0</span></p>
+                    <p>Acertar quem avança → <span class="rules-points-positive">+1,0</span></p>
+                    <p>Errar quem avança → <span class="rules-points-negative">−0,2</span></p>
+                    <p>Sem palpite em jogo encerrado → <span class="rules-points-negative">−0,2</span></p>
+                  </div>
+                  <div class="rules-info">
+                    <strong>Placar exato</strong> considera somente 90 min + acréscimos.<br>
+                    <strong>Quem avança</strong> considera o resultado final — incluindo prorrogação e pênaltis.
                   </div>
                 </section>
 
                 <section class="rules-section">
                   <h3 class="rules-title">Mata-Mata Decisivo</h3>
-                  <p style="font-size:.74rem;color:rgba(180,195,220,.55);margin:-4px 0 8px">Semifinal · Final · Disputa de 3° Lugar</p>
+                  <p class="rules-availability">Semifinal · Final · Disputa de 3° Lugar</p>
                   <div class="rules-lines">
-                    <p>Placar exato (90 min + acréscimos): <span class="rules-points-positive">+3,0</span></p>
-                    <p>Acertar vencedor / campeão / 3° lugar: <span class="rules-points-positive">+2,0</span></p>
-                    <p>Errar vencedor/campeão: <span class="rules-points-negative">-0,5</span></p>
-                    <p>Não palpitar em jogo encerrado: <span class="rules-points-negative">-0,5</span></p>
-                  </div>
-                </section>
-
-                <section class="rules-section">
-                  <h3 class="rules-title">Observações Gerais</h3>
-                  <div class="rules-lines">
-                    <p>Pontuação <strong>não cumulativa</strong>: placar exato substitui o acerto de resultado — você recebe apenas a maior pontuação válida.</p>
-                    <p>Placar considerado é sempre o dos 90 minutos + acréscimos.</p>
-                    <p>Resultados oficiais seguem a FIFA.</p>
-                    <p>Os 3 primeiros jogos do torneio têm carência — sem penalidade por ausência.</p>
-                    <p>A penalidade por ausência não é retroativa: conta apenas jogos iniciados após a data de criação da sua conta.</p>
+                    <p>Placar exato <span class="rules-note">(90 min + acréscimos)</span> → <span class="rules-points-positive">+3,0</span></p>
+                    <p>Acertar vencedor / campeão / 3° → <span class="rules-points-positive">+2,0</span></p>
+                    <p>Errar vencedor → <span class="rules-points-negative">−0,5</span></p>
+                    <p>Sem palpite em jogo encerrado → <span class="rules-points-negative">−0,5</span></p>
                   </div>
                 </section>
 
               </div>
 
               <div class="rules-column">
+
                 <section class="rules-section">
                   <h3 class="rules-title">Palpites Extras</h3>
-                  <p style="font-size:.74rem;color:rgba(180,195,220,.55);margin:-4px 0 8px">Respondidos antes do início da Copa</p>
+                  <p class="rules-availability">Respondidos antes do início da Copa</p>
                   <div class="rules-lines">
-                    <p>Campeão da Copa: <span class="rules-points-positive">+8</span></p>
-                    <p>Vice-campeão: <span class="rules-points-positive">+5</span></p>
-                    <p>3° lugar: <span class="rules-points-positive">+3</span></p>
-                    <p>4° lugar: <span class="rules-points-positive">+2</span></p>
-                    <p>Artilheiro da Copa: <span class="rules-points-positive">+4</span></p>
-                    <p>Melhor campanha da fase de grupos: <span class="rules-points-positive">+3</span></p>
-                    <p>Total de gols (quem mais se aproximar): <span class="rules-points-positive">+4</span></p>
-                    <p>Zebra da Copa: <span class="rules-points-positive">+2</span> por fase que o azarão avançar.</p>
+                    <p>Campeão da Copa → <span class="rules-points-positive">+8</span></p>
+                    <p>Vice-campeão → <span class="rules-points-positive">+5</span></p>
+                    <p>3° lugar → <span class="rules-points-positive">+3</span></p>
+                    <p>4° lugar → <span class="rules-points-positive">+2</span></p>
+                    <p>Artilheiro da Copa → <span class="rules-points-positive">+4</span></p>
+                    <p>Melhor campanha (fase de grupos) → <span class="rules-points-positive">+3</span></p>
+                    <p>Total de gols — quem mais se aproximar → <span class="rules-points-positive">+4</span></p>
+                    <p>Zebra da Copa → <span class="rules-points-positive">+2</span> <span class="rules-note">por fase que o azarão avançar</span></p>
                   </div>
                 </section>
+
+                <section class="rules-section">
+                  <h3 class="rules-title">📅 Penalidade por Ausência</h3>
+                  <div class="rules-lines">
+                    <p>Grupos e Mata-Mata Inicial → <span class="rules-points-negative">−0,2</span> por jogo não palpitado</p>
+                    <p>Mata-Mata Decisivo → <span class="rules-points-negative">−0,5</span> por jogo não palpitado</p>
+                  </div>
+                  <div class="rules-highlight">
+                    Novos participantes <strong>não recebem penalidade</strong> por jogos encerrados <strong>antes</strong> da criação da conta.
+                  </div>
+                  <p class="rules-note">Os 3 primeiros jogos do torneio também têm carência — sem penalidade por ausência.</p>
+                </section>
+
               </div>
             </div>
           </div>
@@ -5383,35 +5530,49 @@
 
                 <section class="rules-section">
                   <h3 class="rules-title">🛡️ Empate Protegido</h3>
+                  <p class="rules-lines"><span class="rules-cost">🪙 1 moeda</span></p>
                   <div class="rules-lines">
-                    <p>Custo: <span class="rules-points-positive">🪙 1 moeda</span></p>
-                    <p>Você apostou em vencedor, mas o jogo terminou empatado nos 90 min? Seus pontos negativos são zerados — você não perde nada.</p>
-                    <p>Não concede pontos positivos, apenas impede a perda.</p>
-                    <p>Disponível: Fase de Grupos até Semi Final (inclusive).</p>
-                    <p>Bloqueado: Final e Disputa de 3° Lugar.</p>
+                    <p>Apostou em um vencedor e o jogo terminou empatado nos 90 min? Você não perde pontos.</p>
+                    <p class="rules-note">Não concede pontos — apenas impede a perda.</p>
+                  </div>
+                  <div class="rules-divider"></div>
+                  <div class="rules-tag-row">
+                    <span class="rules-tag rules-tag--ok">✓ Grupos até Semi Final</span>
+                    <span class="rules-tag rules-tag--no">✗ Final · Disputa 3°</span>
                   </div>
                 </section>
 
                 <section class="rules-section">
-                  <h3 class="rules-title">⚡ Palpite Duplo</h3>
+                  <h3 class="rules-title">⚡ Pontuação Dobrada</h3>
+                  <p class="rules-lines"><span class="rules-cost">🪙🪙🪙🪙 4 moedas</span></p>
                   <div class="rules-lines">
-                    <p>Custo: <span class="rules-points-positive">🪙🪙🪙🪙 4 moedas</span></p>
-                    <p>Multiplica por 2 a pontuação final desse jogo. Funciona tanto para positivo quanto para negativo.</p>
-                    <p>Exemplo: +2,0 vira +4,0 · -0,2 vira -0,4</p>
-                    <p>Disponível: Fase de Grupos, 16 avos, Oitavas e Quartas de Final.</p>
-                    <p>Bloqueado: Semi Final, Final e Disputa de 3° Lugar.</p>
+                    <p>Multiplica por <strong>×2</strong> a pontuação final desse jogo — vale para positivo <em>e</em> negativo.</p>
+                  </div>
+                  <div class="rules-example">
+                    +2,0 → <strong>+4,0</strong> &nbsp;·&nbsp; −0,2 → <strong>−0,4</strong>
+                  </div>
+                  <div class="rules-warn">
+                    <strong>Combinado com Empate Protegido:</strong> a proteção é aplicada primeiro (resultado = 0), depois o ×2. Se o jogo empatar, você fica com 0 — não perde pontos.
+                  </div>
+                  <div class="rules-divider"></div>
+                  <div class="rules-tag-row">
+                    <span class="rules-tag rules-tag--ok">✓ Grupos · 16 avos · Oitavas · Quartas</span>
+                    <span class="rules-tag rules-tag--no">✗ Semi Final em diante</span>
                   </div>
                 </section>
 
                 <section class="rules-section">
                   <h3 class="rules-title">🎲 Aposta de Moedas</h3>
+                  <p class="rules-lines"><span class="rules-cost">🪙 1 moeda</span></p>
                   <div class="rules-lines">
-                    <p>Custo: <span class="rules-points-positive">🪙 1 moeda</span> (fixo)</p>
                     <p>Placar exato → recebe <strong>3 moedas</strong></p>
-                    <p>Resultado certo / quem avança → recebe <strong>2 moedas</strong></p>
-                    <p>Errou → <strong>0</strong> (perde a moeda apostada)</p>
-                    <p>1 aposta por jogo. Não afeta pontos do ranking, só moedas.</p>
-                    <p>Disponível em todas as fases. Combinável com outros buffs.</p>
+                    <p>Acertou resultado / quem avança → recebe <strong>2 moedas</strong></p>
+                    <p>Errou → <strong>0</strong> <span class="rules-note">(perde a moeda apostada)</span></p>
+                  </div>
+                  <div class="rules-divider"></div>
+                  <p class="rules-note">Não afeta pontos do ranking — só moedas. 1 aposta por jogo. Combinável com outros buffs.</p>
+                  <div class="rules-tag-row">
+                    <span class="rules-tag rules-tag--ok">✓ Todas as fases</span>
                   </div>
                 </section>
 
@@ -5421,23 +5582,34 @@
 
                 <section class="rules-section">
                   <h3 class="rules-title">💀 Zerar Adversário</h3>
+                  <p class="rules-lines"><span class="rules-cost">🪙🪙🪙🪙 4 moedas</span></p>
                   <div class="rules-lines">
-                    <p>Custo: <span class="rules-points-positive">🪙🪙🪙🪙 4 moedas</span></p>
-                    <p>O adversário escolhido recebe 0 pontos nesse jogo, mesmo que acerte o placar exato.</p>
-                    <p>Limite: máximo de <strong>2 usos por torneio</strong>.</p>
-                    <p>Disponível: <strong>Apenas na Fase de Grupos.</strong></p>
+                    <p>O adversário termina o jogo com <strong>exatamente 0 pontos</strong> — independente do resultado positivo ou negativo.</p>
+                  </div>
+                  <div class="rules-example">
+                    +3,0 → <strong>0</strong> &nbsp;·&nbsp; +1,0 → <strong>0</strong> &nbsp;·&nbsp; −0,2 → <strong>0</strong>
+                  </div>
+                  <div class="rules-divider"></div>
+                  <p class="rules-note">Máximo de <strong>2 usos por torneio</strong>.</p>
+                  <div class="rules-tag-row">
+                    <span class="rules-tag rules-tag--ok">✓ Apenas Fase de Grupos</span>
                   </div>
                 </section>
 
                 <section class="rules-section">
-                  <h3 class="rules-title">✂️ Meia Adversário</h3>
+                  <h3 class="rules-title">✂️ Meiar Adversário</h3>
+                  <p class="rules-lines"><span class="rules-cost">🪙🪙🪙 3 moedas</span></p>
                   <div class="rules-lines">
-                    <p>Custo: <span class="rules-points-positive">🪙🪙🪙 3 moedas</span></p>
-                    <p>Divide pela metade a pontuação final do adversário nesse jogo.</p>
-                    <p>Exemplo: +2,0 → +1,0 · +1,0 → +0,5 · -0,2 → -0,1</p>
-                    <p>Limite: máximo de <strong>2 usos por torneio</strong>.</p>
-                    <p>Disponível: Mata-Mata Inicial (16 avos, Oitavas, Quartas).</p>
-                    <p>Bloqueado: Semi Final, Final e Disputa de 3° Lugar.</p>
+                    <p>O adversário recebe <strong>exatamente metade</strong> da pontuação final desse jogo. Sem arredondamento — pode gerar duas casas decimais.</p>
+                  </div>
+                  <div class="rules-example">
+                    +3,0 → <strong>+1,5</strong> &nbsp;·&nbsp; +2,0 → <strong>+1,0</strong> &nbsp;·&nbsp; +1,0 → <strong>+0,5</strong> &nbsp;·&nbsp; −0,2 → <strong>−0,1</strong>
+                  </div>
+                  <div class="rules-divider"></div>
+                  <p class="rules-note">Máximo de <strong>2 usos por torneio</strong>.</p>
+                  <div class="rules-tag-row">
+                    <span class="rules-tag rules-tag--ok">✓ Mata-Mata Inicial — 16 avos · Oitavas · Quartas</span>
+                    <span class="rules-tag rules-tag--no">✗ Semi Final em diante</span>
                   </div>
                 </section>
 
@@ -5453,12 +5625,15 @@
                 <section class="rules-section">
                   <h3 class="rules-title">Regras Gerais</h3>
                   <div class="rules-lines">
-                    <p>Os palpites fecham <strong>30 minutos antes</strong> de cada jogo.</p>
+                    <p>Palpites fecham <strong>30 minutos antes</strong> de cada jogo.</p>
                     <p>Após o fechamento, os palpites dos outros participantes ficam visíveis.</p>
-                    <p>Buffs valem apenas para jogos normais — não para palpites extras.</p>
-                    <p>Jogos cancelados ou anulados pela FIFA serão desconsiderados.</p>
-                    <p>Resultados oficiais seguem a FIFA (90 min + acréscimos para pontuação de placar).</p>
-                    <p>Prorrogação e pênaltis determinam quem avança no mata-mata, mas não afetam a pontuação de placar exato.</p>
+                    <p>Buffs valem apenas para jogos normais — não afetam palpites extras.</p>
+                    <p>Jogos cancelados ou anulados pela FIFA são desconsiderados.</p>
+                  </div>
+                  <div class="rules-divider"></div>
+                  <div class="rules-lines">
+                    <p class="rules-note">Resultados seguem a FIFA. Para pontuação de placar, valem os 90 min + acréscimos.</p>
+                    <p class="rules-note">Prorrogação e pênaltis determinam quem avança, mas <em>não</em> alteram a pontuação de placar exato.</p>
                   </div>
                 </section>
 
@@ -5469,22 +5644,24 @@
                 <section class="rules-section">
                   <h3 class="rules-title">Critérios de Desempate</h3>
                   <div class="rules-lines">
-                    <p><strong>1°</strong> Maior total de pontos</p>
-                    <p><strong>2°</strong> Mais placares exatos</p>
-                    <p><strong>3°</strong> Melhor aproveitamento (%)</p>
-                    <p><strong>4°</strong> Acertou o campeão da Copa</p>
-                    <p><strong>5°</strong> Ordem alfabética (apelido)</p>
+                    <p><strong>1°</strong> &nbsp;Maior total de pontos</p>
+                    <p><strong>2°</strong> &nbsp;Mais placares exatos</p>
+                    <p><strong>3°</strong> &nbsp;Melhor aproveitamento (%)</p>
+                    <p><strong>4°</strong> &nbsp;Acertou o campeão da Copa</p>
+                    <p><strong>5°</strong> &nbsp;Ordem alfabética pelo apelido</p>
                   </div>
                 </section>
 
                 <section class="rules-section">
                   <h3 class="rules-title">O que é Aproveitamento?</h3>
                   <div class="rules-lines">
-                    <p>É a proporção entre os pontos que você obteve e os pontos máximos possíveis nos jogos em que palpitou.</p>
-                    <p>Fórmula: pontos obtidos ÷ pontos máximos palpitados</p>
-                    <p>Não considera buffs, moedas, penalidade de ausência nem palpites extras.</p>
-                    <p>Exemplo: 3 jogos de grupos palpitados — max. 3,0 pts. Obteve 1,9 → aproveitamento 63%.</p>
+                    <p>Proporção entre os pontos obtidos e os pontos máximos possíveis nos jogos em que você palpitou.</p>
                   </div>
+                  <div class="rules-example">
+                    Fórmula: <strong>pontos obtidos ÷ pontos máximos palpitados</strong><br>
+                    Exemplo: 3 jogos de grupos palpitados (máx. 3,0 pts). Obteve 1,9 → <strong>63%</strong>
+                  </div>
+                  <p class="rules-note">Não considera buffs, moedas, penalidade de ausência nem palpites extras.</p>
                 </section>
 
               </div>
@@ -5666,9 +5843,9 @@
                   <span class="admin-label">Buff</span>
                   <select class="admin-select" id="admin-buff-id">
                     <option value="draw-protected">Empate Protegido (1🪙)</option>
-                    <option value="palpite-duplo">Palpite Duplo ×2 (4🪙)</option>
+                    <option value="palpite-duplo">Pontuação Dobrada ×2 (4🪙)</option>
                     <option value="zerar-adversario">Zerar Adversário (4🪙)</option>
-                    <option value="meia-adversario">Meia Adversário (3🪙)</option>
+                    <option value="meia-adversario">Meiar Adversário (3🪙)</option>
                     <option value="coin-bet">Aposta de Moedas (1🪙)</option>
                   </select>
                 </label>
@@ -6425,9 +6602,9 @@
       },
       {
         id: "palpite-duplo",
-        title: "Palpite Duplo",
+        title: "Pontuação Dobrada",
         cost: 4,
-        description: "Multiplica sua pontuação final desse jogo por 2 (inclusive negativos).",
+        description: "Dobra a pontuação final desse jogo — vale para positivo e negativo.",
         usage: "Disponível até QUARTAS DE FINAL"
       },
       {
@@ -6439,9 +6616,9 @@
       },
       {
         id: "meia-adversario",
-        title: "Meia Adversário",
+        title: "Meiar Adversário",
         cost: 3,
-        description: "Divide pela metade a pontuação do adversário nesse jogo.",
+        description: "Adversário recebe exatamente metade da pontuação desse jogo. Sem arredondamento.",
         usage: "Mata-Mata Inicial (16avos a Quartas) · máx. 2 usos no torneio"
       },
       {
@@ -9226,7 +9403,7 @@
     }
 
     function hasConflictingMultiplier(activeBuffs, buffId) {
-      // Não há mais conflito entre multiplicadores (palpite-duplo é o único)
+      // Não há mais conflito entre multiplicadores (pontuação-dobrada é o único)
       return false;
     }
 
@@ -9510,9 +9687,9 @@
 
     const BUFF_LABEL_MAP = {
       "draw-protected":    "Empate Protegido",
-      "palpite-duplo":     "Palpite Duplo ×2",
+      "palpite-duplo":     "Pontuação Dobrada ×2",
       "zerar-adversario":  "Zerou",
-      "meia-adversario":   "Meia",
+      "meia-adversario":   "Meiar",
       "coin-bet":          "Apostou 1🪙",
       // legado (registros antigos migrados)
       "error-shield":      "Seguro de Erro",
