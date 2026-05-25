@@ -1734,6 +1734,13 @@
       color: #86efac;
     }
 
+    .ranking-player-aproveit {
+      display: inline-block;
+      color: rgba(226, 232, 240, 0.45);
+      font-size: 0.65rem;
+      font-weight: 700;
+    }
+
     .ranking-metric {
       position: relative;
       z-index: 1;
@@ -5298,153 +5305,192 @@
           <button class="rules-card" type="button" data-rules-target="rules-complementares">REGRAS COMPLEMENTARES</button>
         </div>
         <div class="rules-stage">
+
+          <!-- ── PONTUAÇÕES ── -->
           <div class="rules-panel" id="rules-pontuacoes">
             <div class="rules-content">
               <div class="rules-column">
+
                 <section class="rules-section">
                   <h3 class="rules-title">Fase de Grupos</h3>
                   <div class="rules-lines">
-                    <p>Placar exato: <span class="rules-points-positive">+2</span></p>
-                    <p>Acertar vencedor ou empate: <span class="rules-points-positive">+1</span></p>
-                    <p>Errar vencedor/empate: <span class="rules-points-negative">-0,5</span></p>
+                    <p>Placar exato (90 min): <span class="rules-points-positive">+1,0</span></p>
+                    <p>Acertar vencedor ou empate: <span class="rules-points-positive">+0,5</span></p>
+                    <p>Errar vencedor/empate: <span class="rules-points-negative">-0,1</span></p>
+                    <p>Não palpitar em jogo encerrado: <span class="rules-points-negative">-0,2</span></p>
+                  </div>
+                </section>
+
+                <section class="rules-section">
+                  <h3 class="rules-title">Mata-Mata Inicial</h3>
+                  <p style="font-size:.74rem;color:rgba(180,195,220,.55);margin:-4px 0 8px">16 avos · Oitavas · Quartas</p>
+                  <div class="rules-lines">
+                    <p>Placar exato (90 min + acréscimos): <span class="rules-points-positive">+2,0</span></p>
+                    <p>Acertar quem avança: <span class="rules-points-positive">+1,0</span></p>
+                    <p>Errar quem avança: <span class="rules-points-negative">-0,2</span></p>
+                    <p>Não palpitar em jogo encerrado: <span class="rules-points-negative">-0,2</span></p>
+                    <p style="font-size:.73rem;color:rgba(180,195,220,.5);margin-top:4px">Quem avança leva em conta prorrogação e pênaltis.</p>
+                  </div>
+                </section>
+
+                <section class="rules-section">
+                  <h3 class="rules-title">Mata-Mata Decisivo</h3>
+                  <p style="font-size:.74rem;color:rgba(180,195,220,.55);margin:-4px 0 8px">Semifinal · Final · Disputa de 3° Lugar</p>
+                  <div class="rules-lines">
+                    <p>Placar exato (90 min + acréscimos): <span class="rules-points-positive">+3,0</span></p>
+                    <p>Acertar vencedor / campeão / 3° lugar: <span class="rules-points-positive">+2,0</span></p>
+                    <p>Errar vencedor/campeão: <span class="rules-points-negative">-0,5</span></p>
                     <p>Não palpitar em jogo encerrado: <span class="rules-points-negative">-0,5</span></p>
                   </div>
                 </section>
 
                 <section class="rules-section">
-                  <h3 class="rules-title">Mata-Mata</h3>
+                  <h3 class="rules-title">Observações Gerais</h3>
                   <div class="rules-lines">
-                    <p>Placar exato no tempo normal: <span class="rules-points-positive">+3</span></p>
-                    <p>Acertar vencedor no tempo normal: <span class="rules-points-positive">+1,5</span></p>
-                    <p>Acertar quem avança: <span class="rules-points-positive">+1</span></p>
-                    <p>Errar quem avança: <span class="rules-points-negative">-0,5</span></p>
-                    <p>Placar exato da prorrogação (Só aparece se o palpite no tempo normal for empate): <span class="rules-points-positive">+1</span></p>
-                    <p>Não palpitar em jogo encerrado: <span class="rules-points-negative">-0,5</span></p>
+                    <p>Pontuação <strong>não cumulativa</strong>: placar exato substitui o acerto de resultado — você recebe apenas a maior pontuação válida.</p>
+                    <p>Placar considerado é sempre o dos 90 minutos + acréscimos.</p>
+                    <p>Resultados oficiais seguem a FIFA.</p>
+                    <p>Os 3 primeiros jogos do torneio têm carência — sem penalidade por ausência.</p>
+                    <p>A penalidade por ausência não é retroativa: conta apenas jogos iniciados após a data de criação da sua conta.</p>
                   </div>
                 </section>
 
-                <section class="rules-section">
-                  <h3 class="rules-title">Observações</h3>
-                  <div class="rules-lines">
-                    <p>Os 3 primeiros jogos do torneio têm carência: não há penalidade por ausência.</p>
-                    <p>A penalidade não é retroativa: só conta jogos após a data de criação da conta.</p>
-                  </div>
-                </section>
               </div>
 
               <div class="rules-column">
                 <section class="rules-section">
                   <h3 class="rules-title">Palpites Extras</h3>
+                  <p style="font-size:.74rem;color:rgba(180,195,220,.55);margin:-4px 0 8px">Respondidos antes do início da Copa</p>
                   <div class="rules-lines">
                     <p>Campeão da Copa: <span class="rules-points-positive">+8</span></p>
                     <p>Vice-campeão: <span class="rules-points-positive">+5</span></p>
-                    <p>3º lugar: <span class="rules-points-positive">+3</span></p>
-                    <p>4º lugar: <span class="rules-points-positive">+2</span></p>
+                    <p>3° lugar: <span class="rules-points-positive">+3</span></p>
+                    <p>4° lugar: <span class="rules-points-positive">+2</span></p>
                     <p>Artilheiro da Copa: <span class="rules-points-positive">+4</span></p>
                     <p>Melhor campanha da fase de grupos: <span class="rules-points-positive">+3</span></p>
-                    <p>Total de gols da copa (quem mais se aproximar): <span class="rules-points-positive">+4</span></p>
-                    <p>Zebra da copa: Pontuação cumulativa: <span class="rules-points-positive">+2</span> para cada fase avançada.</p>
+                    <p>Total de gols (quem mais se aproximar): <span class="rules-points-positive">+4</span></p>
+                    <p>Zebra da Copa: <span class="rules-points-positive">+2</span> por fase que o azarão avançar.</p>
                   </div>
                 </section>
               </div>
             </div>
           </div>
+
+          <!-- ── BUFFS ── -->
           <div class="rules-panel is-hidden" id="rules-buffs">
             <div class="rules-content">
               <div class="rules-column">
+
                 <section class="rules-section">
-                  <h3 class="rules-title">Buffs com Moedas</h3>
+                  <h3 class="rules-title">🛡️ Empate Protegido</h3>
                   <div class="rules-lines">
-                    <p>Empate protegido:</p>
-                    <p>Custo: 🪙 (Moeda x1)</p>
-                    <p>Buff: Se apostar empate e errar, não perde pontos.</p>
-                    <p>Uso: Disponível até a fase "SEMI-FINAL" inclusive (bloqueado na final e disputa de 3º lugar)</p>
+                    <p>Custo: <span class="rules-points-positive">🪙 1 moeda</span></p>
+                    <p>Você apostou em vencedor, mas o jogo terminou empatado nos 90 min? Seus pontos negativos são zerados — você não perde nada.</p>
+                    <p>Não concede pontos positivos, apenas impede a perda.</p>
+                    <p>Disponível: Fase de Grupos até Semi Final (inclusive).</p>
+                    <p>Bloqueado: Final e Disputa de 3° Lugar.</p>
                   </div>
                 </section>
 
                 <section class="rules-section">
-                  <h3 class="rules-title">Seguro de erro</h3>
+                  <h3 class="rules-title">⚡ Palpite Duplo</h3>
                   <div class="rules-lines">
-                    <p>Custo: 🪙🪙 (Moeda x2)</p>
-                    <p>Buff: Anula pontuação negativa do jogo.</p>
-                    <p>Uso: Disponível até a fase "QUARTAS DE FINAL"</p>
+                    <p>Custo: <span class="rules-points-positive">🪙🪙🪙🪙 4 moedas</span></p>
+                    <p>Multiplica por 2 a pontuação final desse jogo. Funciona tanto para positivo quanto para negativo.</p>
+                    <p>Exemplo: +2,0 vira +4,0 · -0,2 vira -0,4</p>
+                    <p>Disponível: Fase de Grupos, 16 avos, Oitavas e Quartas de Final.</p>
+                    <p>Bloqueado: Semi Final, Final e Disputa de 3° Lugar.</p>
                   </div>
                 </section>
 
                 <section class="rules-section">
-                  <h3 class="rules-title">Pontuação x2</h3>
+                  <h3 class="rules-title">🎲 Aposta de Moedas</h3>
                   <div class="rules-lines">
-                    <p>Custo: 🪙🪙🪙 (Moeda x3)</p>
-                    <p>Buff: Multiplica ganhos e perdas por 2.</p>
-                    <p>Uso: Disponível até a fase "QUARTAS DE FINAL"</p>
+                    <p>Custo: <span class="rules-points-positive">🪙 1 moeda</span> (fixo)</p>
+                    <p>Placar exato → recebe <strong>3 moedas</strong></p>
+                    <p>Resultado certo / quem avança → recebe <strong>2 moedas</strong></p>
+                    <p>Errou → <strong>0</strong> (perde a moeda apostada)</p>
+                    <p>1 aposta por jogo. Não afeta pontos do ranking, só moedas.</p>
+                    <p>Disponível em todas as fases. Combinável com outros buffs.</p>
                   </div>
                 </section>
+
               </div>
 
               <div class="rules-column">
+
                 <section class="rules-section">
-                  <h3 class="rules-title">Pontuação x3</h3>
+                  <h3 class="rules-title">💀 Zerar Adversário</h3>
                   <div class="rules-lines">
-                    <p>Custo: 🪙🪙🪙🪙 (Moeda x4)</p>
-                    <p>Buff: Multiplica ganhos e perdas por 3.</p>
-                    <p>Uso: Disponível até a fase "QUARTAS DE FINAL"</p>
+                    <p>Custo: <span class="rules-points-positive">🪙🪙🪙🪙 4 moedas</span></p>
+                    <p>O adversário escolhido recebe 0 pontos nesse jogo, mesmo que acerte o placar exato.</p>
+                    <p>Limite: máximo de <strong>2 usos por torneio</strong>.</p>
+                    <p>Disponível: <strong>Apenas na Fase de Grupos.</strong></p>
                   </div>
                 </section>
 
                 <section class="rules-section">
-                  <h3 class="rules-title">Anular palpite adversário</h3>
+                  <h3 class="rules-title">✂️ Meia Adversário</h3>
                   <div class="rules-lines">
-                    <p>Custo: 🪙🪙🪙🪙🪙 (Moeda x5)</p>
-                    <p>Buff: Rival escolhido recebe 0 mesmo se acertar resultado ou placar)</p>
-                    <p>Uso: Disponível até a fase "QUARTAS DE FINAL"</p>
+                    <p>Custo: <span class="rules-points-positive">🪙🪙🪙 3 moedas</span></p>
+                    <p>Divide pela metade a pontuação final do adversário nesse jogo.</p>
+                    <p>Exemplo: +2,0 → +1,0 · +1,0 → +0,5 · -0,2 → -0,1</p>
+                    <p>Limite: máximo de <strong>2 usos por torneio</strong>.</p>
+                    <p>Disponível: Mata-Mata Inicial (16 avos, Oitavas, Quartas).</p>
+                    <p>Bloqueado: Semi Final, Final e Disputa de 3° Lugar.</p>
                   </div>
                 </section>
 
-                <section class="rules-section">
-                  <h3 class="rules-title">Multiplicador de Moedas</h3>
-                  <div class="rules-lines">
-                    <p>Custo: 🪙🪙 a 🪙🪙🪙🪙🪙 (escolha de 2 a 5 moedas)</p>
-                    <p>Acertar o resultado (sem precisar de placar exato): recebe o dobro das moedas apostadas.</p>
-                    <p>Acertar o placar exato: recebe o triplo das moedas apostadas.</p>
-                    <p>Errar: perde as moedas apostadas.</p>
-                    <p>Apenas 1 aposta por jogo. Não afeta os pontos do ranking, somente moedas.</p>
-                    <p>Uso: Disponível em todas as fases. Combinável com outros buffs.</p>
-                  </div>
-                </section>
               </div>
             </div>
           </div>
+
+          <!-- ── REGRAS COMPLEMENTARES ── -->
           <div class="rules-panel is-hidden" id="rules-complementares">
             <div class="rules-content">
               <div class="rules-column">
+
                 <section class="rules-section">
                   <h3 class="rules-title">Regras Gerais</h3>
                   <div class="rules-lines">
-                    <p>Os palpites fecham 30 minutos antes de cada jogo.</p>
-                    <p>Após o fechamento, os palpites dos outros usuários ficam visíveis.</p>
-                    <p>Buffs não funcionam em palpites extras, só em jogos normais.</p>
-                    <p>Os Buffs x2 e x3 não podem ser usados juntos.</p>
-                    <p>Semifinais e disputa de terceiro lugar possuem x2 para todos automaticamente nos dois jogos.</p>
-                    <p>Final possui x3 para todos automaticamente.</p>
-                    <p>Jogos cancelados serão anulados.</p>
-                    <p>Resultados oficiais seguem a FIFA.</p>
+                    <p>Os palpites fecham <strong>30 minutos antes</strong> de cada jogo.</p>
+                    <p>Após o fechamento, os palpites dos outros participantes ficam visíveis.</p>
+                    <p>Buffs valem apenas para jogos normais — não para palpites extras.</p>
+                    <p>Jogos cancelados ou anulados pela FIFA serão desconsiderados.</p>
+                    <p>Resultados oficiais seguem a FIFA (90 min + acréscimos para pontuação de placar).</p>
+                    <p>Prorrogação e pênaltis determinam quem avança no mata-mata, mas não afetam a pontuação de placar exato.</p>
                   </div>
                 </section>
+
               </div>
 
               <div class="rules-column">
+
                 <section class="rules-section">
-                  <h3 class="rules-title">Desempate do Ranking</h3>
+                  <h3 class="rules-title">Critérios de Desempate</h3>
                   <div class="rules-lines">
-                    <p>1º critério: mais placares exatos.</p>
-                    <p>2º critério: mais acertos de resultado.</p>
-                    <p>3º critério: melhor desempenho no mata-mata.</p>
-                    <p>4º critério: sorteio automático.</p>
+                    <p><strong>1°</strong> Maior total de pontos</p>
+                    <p><strong>2°</strong> Mais placares exatos</p>
+                    <p><strong>3°</strong> Melhor aproveitamento (%)</p>
+                    <p><strong>4°</strong> Acertou o campeão da Copa</p>
+                    <p><strong>5°</strong> Ordem alfabética (apelido)</p>
                   </div>
                 </section>
+
+                <section class="rules-section">
+                  <h3 class="rules-title">O que é Aproveitamento?</h3>
+                  <div class="rules-lines">
+                    <p>É a proporção entre os pontos que você obteve e os pontos máximos possíveis nos jogos em que palpitou.</p>
+                    <p>Fórmula: pontos obtidos ÷ pontos máximos palpitados</p>
+                    <p>Não considera buffs, moedas, penalidade de ausência nem palpites extras.</p>
+                    <p>Exemplo: 3 jogos de grupos palpitados — max. 3,0 pts. Obteve 1,9 → aproveitamento 63%.</p>
+                  </div>
+                </section>
+
               </div>
             </div>
           </div>
+
         </div>
       </section>
       <section class="tab-panel is-hidden is-empty" id="tab-admin" aria-label="Administração">
@@ -5619,12 +5665,11 @@
                 <label class="admin-field">
                   <span class="admin-label">Buff</span>
                   <select class="admin-select" id="admin-buff-id">
-                    <option value="draw-protected">Empate protegido</option>
-                    <option value="error-shield">Seguro de erro</option>
-                    <option value="points-x2">Pontuação x2</option>
-                    <option value="points-x3">Pontuação x3</option>
-                    <option value="cancel-rival">Anular palpite adversário</option>
-                    <option value="coin-bet">Multiplicador de Moedas (aposta)</option>
+                    <option value="draw-protected">Empate Protegido (1🪙)</option>
+                    <option value="palpite-duplo">Palpite Duplo ×2 (4🪙)</option>
+                    <option value="zerar-adversario">Zerar Adversário (4🪙)</option>
+                    <option value="meia-adversario">Meia Adversário (3🪙)</option>
+                    <option value="coin-bet">Aposta de Moedas (1🪙)</option>
                   </select>
                 </label>
                 <label class="admin-field">
@@ -5728,17 +5773,11 @@
   <div class="coin-bet-modal is-hidden" id="coin-bet-modal" aria-hidden="true">
     <div class="coin-bet-panel" role="dialog" aria-modal="true" aria-labelledby="coin-bet-title">
       <div class="coin-bet-head">
-        <h2 class="coin-bet-title" id="coin-bet-title">Multiplicador de Moedas</h2>
+        <h2 class="coin-bet-title" id="coin-bet-title">Aposta de Moedas</h2>
         <button class="coin-bet-close" id="coin-bet-close" type="button" aria-label="Fechar">×</button>
       </div>
-      <p class="coin-bet-desc">Escolha quantas moedas apostar. Resultado certo → dobra; placar exato → triplica; errou → perde as moedas apostadas.</p>
-      <div class="coin-bet-amounts" id="coin-bet-amounts">
-        <button class="coin-bet-amount-btn" type="button" data-bet="2">2<span class="coin-bet-amount-coins">🪙🪙</span></button>
-        <button class="coin-bet-amount-btn" type="button" data-bet="3">3<span class="coin-bet-amount-coins">🪙🪙🪙</span></button>
-        <button class="coin-bet-amount-btn" type="button" data-bet="4">4<span class="coin-bet-amount-coins">🪙🪙🪙🪙</span></button>
-        <button class="coin-bet-amount-btn" type="button" data-bet="5">5<span class="coin-bet-amount-coins">🪙🪙🪙🪙🪙</span></button>
-      </div>
-      <button class="coin-bet-confirm-btn" id="coin-bet-confirm" type="button" disabled>Confirmar aposta</button>
+      <p class="coin-bet-desc">Aposte <strong>1 moeda</strong> neste jogo.<br>Placar exato → <strong>+3 moedas</strong> · Resultado certo → <strong>+2 moedas</strong> · Errou → <strong>0</strong></p>
+      <button class="coin-bet-confirm-btn" id="coin-bet-confirm" type="button">Confirmar aposta (1 🪙)</button>
       <p class="coin-bet-balance" id="coin-bet-balance"></p>
     </div>
   </div>
@@ -6379,46 +6418,37 @@
     const buffCatalog = [
       {
         id: "draw-protected",
-        title: "Empate protegido",
+        title: "Empate Protegido",
         cost: 1,
-        description: "Se apostar empate e errar, não perde pontos.",
-        usage: "Disponível até a fase SEMI-FINAL"
+        description: "Apostou em vencedor e o jogo empatou? Não perde pontos.",
+        usage: "Disponível até SEMI FINAL (bloqueado na Final e Disputa de 3°)"
       },
       {
-        id: "error-shield",
-        title: "Seguro de erro",
-        cost: 2,
-        description: "Anula pontuação negativa do jogo.",
-        usage: "Disponível até a fase QUARTAS DE FINAL"
-      },
-      {
-        id: "points-x2",
-        title: "Pontuação x2",
-        cost: 3,
-        description: "Multiplica ganhos e perdas por 2.",
-        usage: "Disponível até a fase QUARTAS DE FINAL"
-      },
-      {
-        id: "points-x3",
-        title: "Pontuação x3",
+        id: "palpite-duplo",
+        title: "Palpite Duplo",
         cost: 4,
-        description: "Multiplica ganhos e perdas por 3.",
-        usage: "Disponível até a fase QUARTAS DE FINAL"
+        description: "Multiplica sua pontuação final desse jogo por 2 (inclusive negativos).",
+        usage: "Disponível até QUARTAS DE FINAL"
       },
       {
-        id: "cancel-rival",
-        title: "Anular palpite adversário",
-        cost: 5,
-        description: "Rival escolhido recebe 0 mesmo se acertar resultado ou placar.",
-        usage: "Disponível até a fase QUARTAS DE FINAL"
+        id: "zerar-adversario",
+        title: "Zerar Adversário",
+        cost: 4,
+        description: "Adversário escolhido recebe 0 pts nesse jogo, mesmo acertando.",
+        usage: "Apenas Fase de Grupos · máx. 2 usos no torneio"
+      },
+      {
+        id: "meia-adversario",
+        title: "Meia Adversário",
+        cost: 3,
+        description: "Divide pela metade a pontuação do adversário nesse jogo.",
+        usage: "Mata-Mata Inicial (16avos a Quartas) · máx. 2 usos no torneio"
       },
       {
         id: "coin-bet",
-        title: "Multiplicador de Moedas",
-        cost: 0,           // custo variável (2–5) escolhido pelo usuário
-        minBet: 2,
-        maxBet: 5,
-        description: "Aposte moedas no jogo. Resultado certo → dobra; placar exato → triplica.",
+        title: "Aposta de Moedas",
+        cost: 1,
+        description: "Aposte 1 moeda. Resultado certo → 2 moedas; placar exato → 3 moedas; errou → 0.",
         usage: "Disponível em todas as fases"
       }
     ];
@@ -6858,12 +6888,15 @@
         const lanterninhaTag = isLanterninha
           ? `<span class="lanterninha-tag" title="Lanterninha">🏮</span>`
           : "";
+        const aprovPct = entry.aproveitamento != null
+          ? `<span class="ranking-player-aproveit">${Math.round(Number(entry.aproveitamento) * 100)}% aproveit.</span>`
+          : "";
         return `
           <div class="ranking-player">
             ${avatarMarkup}
             <div>
               <p class="ranking-player-name">${escapeHtml(entry.nickname)}${lanterninhaTag}</p>
-              <p class="ranking-player-real${isCurrent ? " ranking-player-you" : ""}">${isCurrent ? "Você • " : ""}${escapeHtml(entry.real_name)}</p>
+              <p class="ranking-player-real${isCurrent ? " ranking-player-you" : ""}">${isCurrent ? "Você • " : ""}${escapeHtml(entry.real_name)}${aprovPct ? " " + aprovPct : ""}</p>
             </div>
           </div>
         `;
@@ -9164,24 +9197,36 @@
     }
 
     function getPhaseAvailability(phase, buffId) {
-      const normalized = (phase || "").toUpperCase();
+      const normalized = (phase || "").toUpperCase().trim();
 
-      if (buffId === "coin-bet") return true; // disponível em todas as fases
+      // Disponível em todas as fases
+      if (buffId === "coin-bet") return true;
 
+      // Empate Protegido: bloqueado só na Final e Disputa de 3°
       if (buffId === "draw-protected") {
-        return normalized !== "FINAL" && normalized !== "DISPUTA 3º LUGAR";
+        return normalized !== "FINAL" && !normalized.startsWith("DISPUTA 3");
       }
 
-      return ["FASE DE GRUPOS", "16 AVOS DE FINAL", "OITAVAS DE FINAL", "QUARTAS DE FINAL"].includes(normalized);
+      // Palpite Duplo: grupos, 16avos, oitavas, quartas
+      if (buffId === "palpite-duplo") {
+        return ["FASE DE GRUPOS", "16 AVOS DE FINAL", "OITAVAS DE FINAL", "QUARTAS DE FINAL"].includes(normalized);
+      }
+
+      // Zerar Adversário: apenas fase de grupos
+      if (buffId === "zerar-adversario") {
+        return normalized === "FASE DE GRUPOS";
+      }
+
+      // Meia Adversário: mata-mata inicial (16avos, oitavas, quartas)
+      if (buffId === "meia-adversario") {
+        return ["16 AVOS DE FINAL", "OITAVAS DE FINAL", "QUARTAS DE FINAL"].includes(normalized);
+      }
+
+      return false;
     }
 
     function hasConflictingMultiplier(activeBuffs, buffId) {
-      if (buffId === "points-x2") {
-        return activeBuffs.some((buff) => buff.id === "points-x3");
-      }
-      if (buffId === "points-x3") {
-        return activeBuffs.some((buff) => buff.id === "points-x2");
-      }
+      // Não há mais conflito entre multiplicadores (palpite-duplo é o único)
       return false;
     }
 
@@ -9202,7 +9247,7 @@
           const enoughCoins = isCoinBet ? currentCoins >= (buff.minBet || 2) : currentCoins >= buff.cost;
           const hasConflict = hasConflictingMultiplier(activeBuffs, buff.id);
           const requiresLogin = !currentUser?.username;
-          const noTargetsAvailable = buff.id === "cancel-rival" && availableTargets.length === 0;
+          const noTargetsAvailable = (buff.id === "zerar-adversario" || buff.id === "meia-adversario") && availableTargets.length === 0;
           const disabled = !alreadyActive && (!phaseAllowed || !enoughCoins || hasConflict || requiresLogin || noTargetsAvailable);
 
           let stateText = "";
@@ -9216,7 +9261,13 @@
           } else if (requiresLogin) {
             stateText = "Faça login para usar moedas";
           } else if (!phaseAllowed) {
-            stateText = buff.id === "draw-protected" ? "Indisponível após a semi-final" : "Indisponível após as quartas de final";
+            const phaseMessages = {
+              "draw-protected":   "Indisponível na Final e Disputa de 3°",
+              "palpite-duplo":    "Disponível até as Quartas de Final",
+              "zerar-adversario": "Apenas na Fase de Grupos",
+              "meia-adversario":  "Apenas no Mata-Mata Inicial (até Quartas)",
+            };
+            stateText = phaseMessages[buff.id] || "Indisponível nesta fase";
           } else if (hasConflict) {
             stateText = "Não pode combinar x2 e x3";
           } else if (!enoughCoins) {
@@ -9266,8 +9317,11 @@
 
     function openBuffTargetModal() {
       const targets = getAvailableTargets();
+      const activeBuffEntry = buffCatalog.find((b) => b.id === pendingBuffId);
+      const buffLabel = activeBuffEntry?.title || "Buff";
+
       if (targets.length === 0) {
-        showBuffFeedback("Nenhum adversário disponível para anular agora.", "error");
+        showBuffFeedback("Nenhum adversário disponível.", "error");
         return;
       }
 
@@ -9277,21 +9331,24 @@
 
       buffTargetList.querySelectorAll(".buff-target-item").forEach((button) => {
         button.addEventListener("click", async () => {
-          if (!activeBuffFixture || pendingBuffId !== "cancel-rival") return;
+          const currentPendingBuff = pendingBuffId;
+          if (!activeBuffFixture || !currentPendingBuff) return;
+          // Aceita os dois buffs que usam alvo
+          if (currentPendingBuff !== "zerar-adversario" && currentPendingBuff !== "meia-adversario") return;
           try {
             const applied = await applyBuffForFixture(activeBuffFixture, {
-              id: "cancel-rival",
+              id: currentPendingBuff,
               target: button.dataset.targetName,
             });
 
             if (!applied) {
-              showBuffFeedback("Moedas insuficientes para anular um adversário.", "error");
+              showBuffFeedback("Moedas insuficientes.", "error");
               closeBuffTargetModal();
               renderBuffList();
               return;
             }
 
-            showBuffFeedback(`Buff aplicado em ${button.dataset.targetName}.`, "success");
+            showBuffFeedback(`${buffLabel} aplicado em ${button.dataset.targetName}!`, "success");
             closeBuffTargetModal();
             renderBuffList();
           } catch (error) {
@@ -9315,14 +9372,14 @@
 
     function openCoinBetModal() {
       const currentCoins = getCurrentUserCoins();
-      // Reset selection state
-      coinBetAmounts?.querySelectorAll(".coin-bet-amount-btn").forEach((btn) => {
-        btn.classList.remove("is-selected");
-        const bet = Number(btn.dataset.bet);
-        btn.disabled = currentCoins < bet;
-      });
-      if (coinBetConfirm) coinBetConfirm.disabled = true;
-      if (coinBetBalance) coinBetBalance.textContent = `Saldo atual: ${"🪙".repeat(Math.min(currentCoins, 5))} ${currentCoins} moedas`;
+      const hasCoins = currentCoins >= 1;
+      if (coinBetConfirm) {
+        coinBetConfirm.disabled = !hasCoins;
+        coinBetConfirm.textContent = hasCoins ? "Confirmar aposta (1 🪙)" : "Moedas insuficientes";
+      }
+      if (coinBetBalance) {
+        coinBetBalance.textContent = `Saldo atual: 🪙 ${currentCoins} moeda${currentCoins !== 1 ? "s" : ""}`;
+      }
       coinBetModal?.classList.remove("is-hidden");
       coinBetModal?.setAttribute("aria-hidden", "false");
     }
@@ -9333,12 +9390,12 @@
       pendingBuffId = null;
     }
 
-    async function handleCoinBetApply(amount) {
+    async function handleCoinBetApply() {
       if (!activeBuffFixture || pendingBuffId !== "coin-bet") return;
       try {
         const applied = await applyBuffForFixture(activeBuffFixture, {
           id: "coin-bet",
-          target: String(amount),
+          target: "1",
         });
         if (!applied) {
           showBuffFeedback("Moedas insuficientes para apostar.", "error");
@@ -9346,7 +9403,7 @@
           renderBuffList();
           return;
         }
-        showBuffFeedback(`Apostando ${amount} moedas neste jogo! 🎯`, "success");
+        showBuffFeedback("Apostando 1 moeda neste jogo! 🎯", "success");
         closeCoinBetModal();
         renderBuffList();
       } catch (error) {
@@ -9403,11 +9460,10 @@
         try {
           const removedBuff = await cancelBuffForFixture(activeBuffFixture, buffId);
           if (removedBuff) {
-            if (buffId === "coin-bet" && existingBuff.target) {
-              const betAmt = Number(existingBuff.target);
-              showBuffFeedback(`Aposta cancelada e ${"🪙".repeat(betAmt)} devolvidas.`, "success");
+            if (buffId === "coin-bet") {
+              showBuffFeedback("Aposta cancelada e 🪙 devolvida.", "success");
             } else {
-              showBuffFeedback(`${buff.title} cancelado e ${"🪙".repeat(buff.cost)} devolvidas.`, "success");
+              showBuffFeedback(`${buff.title} cancelado — ${"🪙".repeat(buff.cost)} devolvida${buff.cost !== 1 ? "s" : ""}.`, "success");
             }
           }
         } catch (error) {
@@ -9420,7 +9476,8 @@
         return;
       }
 
-      if (buffId === "cancel-rival") {
+      // Buffs que precisam de alvo (adversário)
+      if (buffId === "zerar-adversario" || buffId === "meia-adversario") {
         pendingBuffId = buffId;
         openBuffTargetModal();
         return;
@@ -9452,14 +9509,20 @@
     // ── Predictions viewer ──────────────────────────────────────────
 
     const BUFF_LABEL_MAP = {
-      "draw-protected": "Empate Protegido",
-      "error-shield":   "Seguro de Erro",
-      "points-x2":      "x2",
-      "points-x3":      "x3",
-      "cancel-rival":   "Anulador",
+      "draw-protected":    "Empate Protegido",
+      "palpite-duplo":     "Palpite Duplo ×2",
+      "zerar-adversario":  "Zerou",
+      "meia-adversario":   "Meia",
+      "coin-bet":          "Apostou 1🪙",
+      // legado (registros antigos migrados)
+      "error-shield":      "Seguro de Erro",
+      "points-x2":         "×2",
+      "points-x3":         "×3",
+      "cancel-rival":      "Anulou",
     };
 
     function buffIdToLabel(rawId) {
+      // Legado: "coin-bet:X" com valor explícito
       if (rawId.startsWith("coin-bet:")) {
         const amt = rawId.split(":")[1];
         return `Apostou ${amt}🪙`;
@@ -9841,18 +9904,9 @@
       }
     });
 
-    coinBetAmounts?.addEventListener("click", (event) => {
-      const btn = event.target.closest(".coin-bet-amount-btn");
-      if (!btn || btn.disabled) return;
-      coinBetAmounts.querySelectorAll(".coin-bet-amount-btn").forEach((b) => b.classList.remove("is-selected"));
-      btn.classList.add("is-selected");
-      if (coinBetConfirm) coinBetConfirm.disabled = false;
-    });
-
+    // Coin-bet: seleção de valor removida — custo fixo de 1 moeda
     coinBetConfirm?.addEventListener("click", () => {
-      const selected = coinBetAmounts?.querySelector(".coin-bet-amount-btn.is-selected");
-      if (!selected) return;
-      void handleCoinBetApply(Number(selected.dataset.bet));
+      void handleCoinBetApply();
     });
 
     // ── Predictions modal events ───────────────────────────────────

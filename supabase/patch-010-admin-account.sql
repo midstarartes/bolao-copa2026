@@ -25,7 +25,7 @@ begin
     values (
       'ADMIN',
       'Administrador',
-      public.app_hash_password('2580'),
+      public.app_hash_password('SENHA_REDEFINIDA_VIA_PAINEL'),
       'preset',
       null,
       true,
@@ -41,7 +41,7 @@ begin
     set
       nickname = 'ADMIN',
       real_name = 'Administrador',
-      password_hash = public.app_hash_password('2580'),
+      password_hash = public.app_hash_password('SENHA_REDEFINIDA_VIA_PAINEL'),
       is_admin = true,
       is_blocked = false,
       coins = 0,

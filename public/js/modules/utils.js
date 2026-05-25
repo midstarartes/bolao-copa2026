@@ -151,11 +151,11 @@ export const scorePrediction = (match, prediction) => {
 
 export const buildAvatarMarkup = (user, extraClass = "") => {
   if (user.avatarType === "upload" && user.avatarValue) {
-    return `<div class="avatar ${extraClass}"><img src="${user.avatarValue}" alt="${user.nickname}" /></div>`;
+    return `<div class="avatar ${extraClass}"><img src="${escapeHtml(user.avatarValue)}" alt="${escapeHtml(user.nickname)}" /></div>`;
   }
   const preset = avatarPresets.find((item) => item.id === user.avatarValue) || avatarPresets[0];
   if (preset.imageUrl) {
-    return `<div class="avatar ${extraClass}" style="background:${preset.gradient}"><img src="${preset.imageUrl}" alt="${preset.name || user.nickname}" /></div>`;
+    return `<div class="avatar ${extraClass}" style="background:${preset.gradient}"><img src="${escapeHtml(preset.imageUrl)}" alt="${escapeHtml(preset.name || user.nickname)}" /></div>`;
   }
   return `<div class="avatar ${extraClass}" style="background:${preset.gradient}">${preset.emoji || ""}</div>`;
 };
