@@ -4245,6 +4245,44 @@
         0 0 16px rgba(255,255,255,0.12);
     }
 
+    /* Sem palpite: esconde o 0 e mostra "?" no lugar */
+    .fixture[data-saved="false"] .score:not(.is-editing) .score-value {
+      color: transparent;
+      text-shadow: none;
+    }
+
+    .score-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+      min-width: 0;
+    }
+
+    .score-no-pred {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      user-select: none;
+      font-size: clamp(2rem, 3.6vw, 3rem);
+      font-weight: 900;
+      line-height: 1;
+      letter-spacing: 0.03em;
+      color: rgba(255, 255, 255, 0.1);
+      text-shadow:
+        0 8px 20px rgba(0,0,0,0.62),
+        0 1px 0 rgba(255,255,255,0.14),
+        0 0 12px rgba(255,255,255,0.06);
+    }
+
+    /* Esconde o "?" quando há palpite salvo ou durante edição */
+    .score.is-saved .score-no-pred,
+    .score.is-editing .score-no-pred {
+      display: none;
+    }
+
     .score-separator {
       color: rgba(255, 255, 255, 0.1);
       font-size: clamp(1.5rem, 2.2vw, 2rem);
@@ -8385,9 +8423,15 @@
               </div>
               <div class="score">
                 <div class="score-inputs">
-                  <input class="score-value" type="number" min="0" max="99" value="0" disabled>
+                  <span class="score-wrap">
+                    <input class="score-value" type="number" min="0" max="99" value="0" disabled>
+                    <span class="score-no-pred" aria-hidden="true">?</span>
+                  </span>
                   <span class="score-separator">-</span>
-                  <input class="score-value" type="number" min="0" max="99" value="0" disabled>
+                  <span class="score-wrap">
+                    <input class="score-value" type="number" min="0" max="99" value="0" disabled>
+                    <span class="score-no-pred" aria-hidden="true">?</span>
+                  </span>
                 </div>
               </div>
             </div>
