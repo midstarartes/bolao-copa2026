@@ -113,7 +113,6 @@
       gap: 2px;
       padding: 8px 20px;
       justify-self: end;
-      align-self: start;
       background:
         linear-gradient(180deg, rgba(110, 205, 98, 0.22), rgba(44, 112, 37, 0.12) 24%, rgba(15, 73, 12, 0.9) 100%),
         linear-gradient(135deg, #1b5f18, #0f490c 52%, #082706);
@@ -600,7 +599,7 @@
 
     .header-eyebrow {
       display: flex;
-      align-items: center;
+      align-items: stretch;
       justify-content: space-between;
       gap: 12px;
       min-width: 0;
@@ -611,14 +610,13 @@
       align-items: center;
       justify-content: center;
       flex: 1 1 auto;
-      min-height: 24px;
-      padding: 4px 12px;
-      border-radius: 999px;
+      padding: 8px 12px;
+      border-radius: 16px;
       border: 1px solid rgba(255, 255, 255, 0.14);
       background:
-        linear-gradient(180deg, rgba(255, 236, 184, 0.24), rgba(173, 126, 18, 0.12) 28%, rgba(124, 81, 5, 0.82) 100%),
-        linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02) 42%, rgba(0,0,0,0.22));
-      color: #fff4cf;
+        linear-gradient(180deg, rgba(110, 205, 98, 0.24), rgba(44, 112, 37, 0.12) 28%, rgba(15, 73, 12, 0.88) 100%),
+        linear-gradient(135deg, #1b5f18, #0f490c 52%, #082706);
+      color: #d4f7cc;
       font-size: 0.64rem;
       font-weight: 900;
       letter-spacing: 0.12em;
@@ -693,6 +691,9 @@
       width: 100%;
       max-width: 100%;
       padding-top: 8px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      margin-bottom: 4px;
     }
 
     .top-nav {
@@ -1071,11 +1072,11 @@
 
     .sync-status-text {
       margin: 0;
-      color: rgba(226, 232, 240, 0.72);
+      color: rgba(226, 232, 240, 0.5);
       font-size: 0.68rem;
       font-weight: 700;
       line-height: 1.35;
-      text-align: left;
+      text-align: center;
       text-shadow: 0 3px 10px rgba(0, 0, 0, 0.32);
     }
 
