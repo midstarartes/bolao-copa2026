@@ -4418,7 +4418,15 @@
       }
 
       .rules-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 6px;
+      }
+
+      .rules-card {
+        min-height: 24px;
+        font-size: 0.56rem;
+        line-height: 1.2;
+        padding: 5px 6px;
       }
 
       .ranking-headings {
@@ -4801,9 +4809,10 @@
       }
 
       .rules-card {
-        min-height: 38px;
-        font-size: 0.62rem;
-        line-height: 1.15;
+        min-height: 22px;
+        font-size: 0.5rem;
+        line-height: 1.2;
+        padding: 4px 4px;
       }
 
       .rules-content {
