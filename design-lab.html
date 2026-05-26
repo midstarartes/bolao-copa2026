@@ -5099,6 +5099,29 @@
     .name-request-reject { background: rgba(220,64,64,0.2); color: #f07878; }
     .name-request-reject:hover { background: rgba(220,64,64,0.35); }
 
+    /* Zebra: badge de multiplicador no picker */
+    .zebra-mult-badge {
+      margin-left: auto;
+      flex-shrink: 0;
+      min-width: 28px;
+      height: 28px;
+      padding: 0 6px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #dc2626, #991b1b);
+      color: #fff;
+      font-size: 0.68rem;
+      font-weight: 900;
+      letter-spacing: 0.02em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow:
+        0 3px 10px rgba(220,38,38,0.55),
+        inset 0 1px 0 rgba(255,255,255,0.22);
+      text-shadow: 0 1px 3px rgba(0,0,0,0.35);
+      pointer-events: none;
+    }
+
     /* ── Missions tab: total de moedas ─────────────────────────── */
     .coins-total-card-hero {
       display: grid;
@@ -5622,7 +5645,18 @@
                     <p>Artilheiro da Copa → <span class="rules-points-positive">+4</span></p>
                     <p>Melhor campanha (fase de grupos) → <span class="rules-points-positive">+3</span></p>
                     <p>Total de gols — quem mais se aproximar → <span class="rules-points-positive">+4</span></p>
-                    <p>Zebra da Copa → <span class="rules-points-positive">+2</span> <span class="rules-note">por fase que o azarão avançar</span></p>
+                    <p>Zebra da Copa → <span class="rules-points-positive">fases × 2 × multiplicador</span></p>
+                  </div>
+                  <div class="rules-info">
+                    Cada seleção tem um multiplicador de <strong>×1 a ×4</strong> baseado no nível de azarão — visível no seletor. Quanto mais zebra, mais vale!
+                  </div>
+                  <div class="rules-example">
+                    <strong>×1</strong> Favoritinhos — USA, Noruega, Suécia…<br>
+                    <strong>×2</strong> Desconhecidos — Canadá, Escócia, Paraguai…<br>
+                    <strong>×3</strong> Grandes zebras — Austrália, Iraque, Bósnia…<br>
+                    <strong>×4</strong> Azarões totais — Haiti, Jordânia, Curaçao…
+                  </div>
+                  <div class="rules-lines">
                   </div>
                 </section>
 
@@ -9166,6 +9200,22 @@
       { name: "Uzbequistão", code: "uz" }
     ];
 
+    // Multiplicadores de dificuldade por seleção (Zebra)
+    const zebraMultiplierMap = {
+      // ×1 — favoritinhos
+      "Estados Unidos": 1, "Coreia do Sul": 1, "Equador": 1, "Turquia": 1,
+      "Áustria": 1, "Noruega": 1, "Suíça": 1, "Suécia": 1,
+      // ×2 — desconhecidos
+      "Canadá": 2, "Egito": 2, "Gana": 2, "Argélia": 2,
+      "República Tcheca": 2, "Paraguai": 2, "Escócia": 2, "Arábia Saudita": 2,
+      // ×3 — grandes zebras
+      "Austrália": 3, "Uzbequistão": 3, "Iraque": 3, "Irã": 3,
+      "Nova Zelândia": 3, "Bósnia e Herzegovina": 3, "África do Sul": 3, "Costa do Marfim": 3,
+      // ×4 — azarões totais
+      "Curaçao": 4, "Haiti": 4, "Catar": 4, "Panamá": 4,
+      "Tunísia": 4, "Jordânia": 4, "Cabo Verde": 4, "RD Congo": 4,
+    };
+
     // Times elegíveis para o palpite de Zebra (azarões do torneio)
     const zebraEligibleNames = new Set([
       "Paraguai", "Argélia", "Costa do Marfim", "Escócia", "Catar",
@@ -9187,15 +9237,20 @@
       return `<span class="extras-picker-flag--emoji" aria-hidden="true">${team.emoji || "🏳️"}</span>`;
     }
 
-    function renderTeamOptions(teams = worldCupTeams) {
+    function renderTeamOptions(teams = worldCupTeams, showMultiplier = false) {
       extrasPickerList.innerHTML = teams
         .map(
-          (team) => `
-            <button class="extras-picker-option" type="button" data-team-name="${team.name}" data-team-code="${team.code || ""}" data-team-emoji="${team.emoji || ""}">
-              <span class="extras-picker-flag">${getTeamFlagMarkup(team)}</span>
-              <span class="extras-picker-name">${team.name}</span>
-            </button>
-          `
+          (team) => {
+            const mult = showMultiplier ? (zebraMultiplierMap[team.name] ?? 1) : null;
+            const badge = mult ? `<span class="zebra-mult-badge">×${mult}</span>` : "";
+            return `
+              <button class="extras-picker-option" type="button" data-team-name="${team.name}" data-team-code="${team.code || ""}" data-team-emoji="${team.emoji || ""}">
+                <span class="extras-picker-flag">${getTeamFlagMarkup(team)}</span>
+                <span class="extras-picker-name">${team.name}</span>
+                ${badge}
+              </button>
+            `;
+          }
         )
         .join("");
 
@@ -9225,7 +9280,7 @@
           ? "Escolha o azarão do torneio"
           : "Selecione uma seleção";
       }
-      renderTeamOptions(isZebra ? zebraEligibleTeams : worldCupTeams);
+      renderTeamOptions(isZebra ? zebraEligibleTeams : worldCupTeams, isZebra);
       extrasPickerModal.classList.remove("is-hidden");
       extrasPickerModal.setAttribute("aria-hidden", "false");
     }
