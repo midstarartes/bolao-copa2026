@@ -9241,7 +9241,9 @@
       "Noruega", "Suíça", "Suécia"
     ]);
 
-    const zebraEligibleTeams = worldCupTeams.filter((t) => zebraEligibleNames.has(t.name));
+    const zebraEligibleTeams = worldCupTeams
+      .filter((t) => zebraEligibleNames.has(t.name))
+      .sort((a, b) => (zebraMultiplierMap[a.name] ?? 1) - (zebraMultiplierMap[b.name] ?? 1));
 
     function getTeamFlagMarkup(team) {
       if (team.code) {
