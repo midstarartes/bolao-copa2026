@@ -750,7 +750,9 @@
     .top-nav-button {
       position: relative;
       border: 0;
-      background: transparent;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.02) 40%, rgba(0,0,0,0.18) 100%),
+        linear-gradient(135deg, rgba(255,255,255,0.04), rgba(0,0,0,0.14));
       color: #eef2f7;
       text-transform: uppercase;
       letter-spacing: 0.14em;
@@ -760,7 +762,10 @@
       border-radius: 12px;
       text-align: center;
       text-shadow: 0 4px 12px rgba(0, 0, 0, 0.45);
-      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+      box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,0.14),
+        inset 0 1px 0 rgba(255,255,255,0.1),
+        0 4px 12px rgba(0,0,0,0.22);
       transition: background 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
       cursor: pointer;
     }
@@ -826,7 +831,7 @@
 
     .sub-nav-card {
       position: relative;
-      min-height: 30px;
+      min-height: 22px;
       border-radius: 11px;
       background: rgba(255, 255, 255, 0.015);
       box-shadow:
@@ -880,13 +885,13 @@
     /* Botão do dropdown customizado */
     .sub-nav-btn {
       width: 100%;
-      min-height: 30px;
-      padding: 6px 26px 6px 10px;
+      min-height: 22px;
+      padding: 4px 24px 4px 10px;
       border: 0;
       border-radius: 11px;
       background: transparent;
       color: #d9dde3;
-      font-size: 0.7rem;
+      font-size: 0.65rem;
       font-weight: 700;
       letter-spacing: 0.01em;
       text-align: center;
@@ -4405,9 +4410,9 @@
       }
 
       .sub-nav-btn {
-        min-height: 36px;
-        padding: 6px 20px 6px 8px;
-        font-size: 0.6rem;
+        min-height: 28px;
+        padding: 4px 20px 4px 8px;
+        font-size: 0.58rem;
         letter-spacing: 0.08em;
       }
 
@@ -4684,8 +4689,8 @@
       }
 
       .sub-nav-btn {
-        min-height: 34px;
-        font-size: 0.56rem;
+        min-height: 26px;
+        font-size: 0.54rem;
         padding-inline: 6px 18px;
       }
 
