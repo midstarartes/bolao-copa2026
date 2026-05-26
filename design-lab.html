@@ -5107,7 +5107,6 @@
       height: 28px;
       padding: 0 6px;
       border-radius: 14px;
-      background: linear-gradient(135deg, #dc2626, #991b1b);
       color: #fff;
       font-size: 0.68rem;
       font-weight: 900;
@@ -5115,11 +5114,26 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow:
-        0 3px 10px rgba(220,38,38,0.55),
-        inset 0 1px 0 rgba(255,255,255,0.22);
       text-shadow: 0 1px 3px rgba(0,0,0,0.35);
       pointer-events: none;
+    }
+    .zebra-mult-badge--1 {
+      background: linear-gradient(135deg, #dc2626, #991b1b);
+      box-shadow: 0 3px 10px rgba(220,38,38,0.55), inset 0 1px 0 rgba(255,255,255,0.22);
+    }
+    .zebra-mult-badge--2 {
+      background: linear-gradient(135deg, #ea7c1a, #b85a0a);
+      box-shadow: 0 3px 10px rgba(234,124,26,0.55), inset 0 1px 0 rgba(255,255,255,0.22);
+    }
+    .zebra-mult-badge--3 {
+      background: linear-gradient(135deg, #d4a017, #a07810);
+      box-shadow: 0 3px 10px rgba(212,160,23,0.55), inset 0 1px 0 rgba(255,255,255,0.22);
+      color: #1a1200;
+      text-shadow: 0 1px 2px rgba(255,255,255,0.15);
+    }
+    .zebra-mult-badge--4 {
+      background: linear-gradient(135deg, #16a34a, #0f6630);
+      box-shadow: 0 3px 10px rgba(22,163,74,0.55), inset 0 1px 0 rgba(255,255,255,0.22);
     }
 
     /* ── Missions tab: total de moedas ─────────────────────────── */
@@ -9242,7 +9256,7 @@
         .map(
           (team) => {
             const mult = showMultiplier ? (zebraMultiplierMap[team.name] ?? 1) : null;
-            const badge = mult ? `<span class="zebra-mult-badge">×${mult}</span>` : "";
+            const badge = mult ? `<span class="zebra-mult-badge zebra-mult-badge--${mult}">×${mult}</span>` : "";
             return `
               <button class="extras-picker-option" type="button" data-team-name="${team.name}" data-team-code="${team.code || ""}" data-team-emoji="${team.emoji || ""}">
                 <span class="extras-picker-flag">${getTeamFlagMarkup(team)}</span>
