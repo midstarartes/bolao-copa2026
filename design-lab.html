@@ -3748,6 +3748,38 @@
       background-clip: text;
     }
 
+    .score-action-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .score-action-buff-count {
+      min-width: 18px;
+      height: 18px;
+      padding: 0 5px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background:
+        radial-gradient(circle at 30% 30%, rgba(255, 245, 173, 0.98) 0%, rgba(255, 223, 90, 0.96) 26%, rgba(245, 185, 31, 0.95) 58%, rgba(167, 96, 5, 0.98) 100%);
+      color: #241400;
+      border: 1px solid rgba(255, 244, 180, 0.55);
+      box-shadow:
+        0 4px 12px rgba(250, 204, 21, 0.24),
+        inset 0 1px 0 rgba(255, 255, 255, 0.45);
+      font-size: 0.62rem;
+      font-weight: 900;
+      letter-spacing: 0;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+
+    .score-action-buff-count.is-hidden {
+      display: none;
+    }
+
     .badge {
       width: 68px;
       height: 68px;
@@ -8485,7 +8517,12 @@
             <div class="score-stack">
               <div class="score-actions">
                 <button class="score-action score-action--predict" type="button">Palpitar</button>
-                <button class="score-action score-action--buffs" type="button">Buffs</button>
+                <button class="score-action score-action--buffs" type="button">
+                  <span class="score-action-label">
+                    <span>Buffs</span>
+                    <span class="score-action-buff-count is-hidden" aria-hidden="true">0</span>
+                  </span>
+                </button>
               </div>
               <div class="score">
                 <div class="score-inputs">
@@ -9024,15 +9061,29 @@
       return allSelections[currentUser.username]?.[getFixtureId(fixture)] || [];
     }
 
+    function updateFixtureBuffBadges() {
+      document.querySelectorAll(".fixture").forEach((fixture) => {
+        const buffCountEl = fixture.querySelector(".score-action-buff-count");
+        if (!buffCountEl) return;
+
+        const count = getCurrentUserBuffsForFixture(fixture).length;
+        buffCountEl.textContent = String(count);
+        buffCountEl.classList.toggle("is-hidden", count === 0);
+        buffCountEl.setAttribute("aria-hidden", count === 0 ? "true" : "false");
+      });
+    }
+
     async function restoreBuffSelectionsForCurrentUser() {
       const currentUser = getCurrentUser();
       const allSelections = getBuffSelections();
 
       if (!currentUser?.username) {
+        updateFixtureBuffBadges();
         return {};
       }
 
       if (!BACKEND_ENABLED) {
+        updateFixtureBuffBadges();
         return allSelections[currentUser.username] || {};
       }
 
@@ -9040,6 +9091,7 @@
       if (!token) {
         allSelections[currentUser.username] = {};
         setBuffSelections(allSelections);
+        updateFixtureBuffBadges();
         return {};
       }
 
@@ -9049,6 +9101,7 @@
 
       if (error) {
         console.error(error);
+        updateFixtureBuffBadges();
         return allSelections[currentUser.username] || {};
       }
 
@@ -9066,6 +9119,7 @@
 
       allSelections[currentUser.username] = mappedSelections;
       setBuffSelections(allSelections);
+      updateFixtureBuffBadges();
       return mappedSelections;
     }
 
@@ -9078,6 +9132,7 @@
 
       allSelections[currentUser.username][getFixtureId(fixture)].push(buffData);
       setBuffSelections(allSelections);
+      updateFixtureBuffBadges();
     }
 
     function removeBuffFromFixture(fixture, buffId) {
@@ -9102,6 +9157,7 @@
       }
 
       setBuffSelections(allSelections);
+      updateFixtureBuffBadges();
       return removedBuff;
     }
 
@@ -10994,6 +11050,3 @@
   </script>
 </body>
 </html>
-
-
-

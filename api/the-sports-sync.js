@@ -623,27 +623,43 @@ function formatCooldownMessage(remainingMs) {
 module.exports = async function handler(req, res) {
   try {
     if (req.method === "GET") {
-      const adminToken = await resolveAdminTokenForRequest(req, {});
-      const results = await syncRelevantMatches(adminToken);
-      const updated = results.filter((entry) => entry.updated).length;
-      await recordApiSyncStatus(adminToken, {
-        source: "cron",
-        updatedCount: updated,
-        checkedCount: results.length,
-        success: true,
-        message:
-          updated > 0
-            ? `${updated} jogo(s) atualizado(s) automaticamente.`
-            : "Nenhum jogo relevante precisou de atualização automática.",
-        requestedBy: "github-actions",
-      });
-      return res.status(200).json({
-        ok: true,
-        mode: "cron",
-        updated,
-        checked: results.length,
-        results,
-      });
+      let adminToken = null;
+      try {
+        adminToken = await resolveAdminTokenForRequest(req, {});
+        const results = await syncRelevantMatches(adminToken);
+        const updated = results.filter((entry) => entry.updated).length;
+        await recordApiSyncStatus(adminToken, {
+          source: "cron",
+          updatedCount: updated,
+          checkedCount: results.length,
+          success: true,
+          message:
+            updated > 0
+              ? `${updated} jogo(s) atualizado(s) automaticamente.`
+              : "Nenhum jogo relevante precisou de atualização automática.",
+          requestedBy: "github-actions",
+        });
+        return res.status(200).json({
+          ok: true,
+          mode: "cron",
+          updated,
+          checked: results.length,
+          results,
+        });
+      } catch (error) {
+        if (adminToken) {
+          await recordApiSyncStatus(adminToken, {
+            source: "cron",
+            updatedCount: 0,
+            checkedCount: 0,
+            success: false,
+            message:
+              error?.message || "Falha inesperada durante a sincronização automática.",
+            requestedBy: "github-actions",
+          });
+        }
+        throw error;
+      }
     }
 
     if (req.method === "POST") {
