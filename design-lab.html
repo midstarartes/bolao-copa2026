@@ -9640,8 +9640,7 @@
           const alreadyActive = activeBuffs.some((entry) => entry.id === buff.id);
           const phaseAllowed = getPhaseAvailability(phase, buff.id);
           const isCoinBet = buff.id === "coin-bet";
-          // For coin-bet, minimum bet is 2, so check if user has at least 2 coins
-          const enoughCoins = isCoinBet ? currentCoins >= (buff.minBet || 2) : currentCoins >= buff.cost;
+          const enoughCoins = currentCoins >= buff.cost;
           const hasConflict = hasConflictingMultiplier(activeBuffs, buff.id);
           const requiresLogin = !currentUser?.username;
           const noTargetsAvailable = (buff.id === "zerar-adversario" || buff.id === "meia-adversario") && availableTargets.length === 0;
@@ -9651,7 +9650,7 @@
           if (alreadyActive) {
             const activeEntry = activeBuffs.find((entry) => entry.id === buff.id);
             if (isCoinBet && activeEntry?.target) {
-              stateText = `Apostando ${activeEntry.target} moedas • clique para cancelar`;
+              stateText = `Apostando 1 moeda • clique para cancelar`;
             } else {
               stateText = activeEntry?.target ? `Ativo em ${escapeHtml(activeEntry.target)} • clique para cancelar` : "Ativo neste jogo • clique para cancelar";
             }
@@ -9673,7 +9672,7 @@
             stateText = "Nenhum adversário disponível";
           }
 
-          const costLabel = isCoinBet ? "Custo: 🪙🪙–🪙🪙🪙🪙🪙 (escolha 2 a 5)" : `Custo: ${"🪙".repeat(buff.cost)}`;
+          const costLabel = isCoinBet ? "Custo: 🪙 1 moeda" : `Custo: ${"🪙".repeat(buff.cost)}`;
 
           return `
             <button class="buff-item${alreadyActive ? " is-active" : ""}" type="button" data-buff-id="${buff.id}" ${disabled ? "disabled" : ""}>
@@ -10995,7 +10994,6 @@
   </script>
 </body>
 </html>
-
 
 
 
