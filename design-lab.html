@@ -1720,7 +1720,7 @@
         linear-gradient(135deg, rgba(210, 66, 66, 0.14), rgba(255,255,255,0.02) 42%, rgba(56, 10, 10, 0.28));
     }
 
-    .ranking-card--lanterninha {
+    .ranking-card--danger-last {
       border-color: rgba(192, 132, 252, 0.34);
       background:
         linear-gradient(180deg, rgba(214, 143, 255, 0.22), rgba(156, 57, 221, 0.1) 18%, rgba(79, 20, 120, 0.08) 46%, rgba(29, 7, 46, 0.3) 100%),
@@ -1730,6 +1730,10 @@
         0 0 18px rgba(168, 85, 247, 0.14),
         inset 0 1px 0 rgba(255, 255, 255, 0.24),
         inset 0 -12px 20px rgba(0, 0, 0, 0.34);
+    }
+
+    .ranking-card--lanterninha {
+      position: relative;
     }
 
     .lanterninha-tag {
@@ -7295,6 +7299,7 @@
       if (position === 2) return "ranking-card--silver";
       if (position === 3) return "ranking-card--bronze";
       const relegationStart = Math.max(4, totalPlayers - 3);
+      if (position === totalPlayers && totalPlayers >= 4) return "ranking-card--danger-last";
       if (position >= relegationStart && position < totalPlayers) return "ranking-card--danger";
       return "";
     }
