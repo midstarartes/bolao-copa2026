@@ -1721,13 +1721,13 @@
     }
 
     .ranking-card--lanterninha {
-      border-color: rgba(251, 146, 60, 0.38);
+      border-color: rgba(192, 132, 252, 0.34);
       background:
-        linear-gradient(180deg, rgba(253, 186, 116, 0.22), rgba(234, 138, 38, 0.1) 18%, rgba(120, 58, 10, 0.08) 46%, rgba(50, 22, 4, 0.3) 100%),
-        linear-gradient(135deg, rgba(251, 146, 60, 0.14), rgba(255,255,255,0.02) 42%, rgba(90, 38, 6, 0.26));
+        linear-gradient(180deg, rgba(214, 143, 255, 0.22), rgba(156, 57, 221, 0.1) 18%, rgba(79, 20, 120, 0.08) 46%, rgba(29, 7, 46, 0.3) 100%),
+        linear-gradient(135deg, rgba(168, 85, 247, 0.18), rgba(255,255,255,0.02) 42%, rgba(65, 12, 95, 0.28));
       box-shadow:
         0 18px 34px rgba(0, 0, 0, 0.56),
-        0 0 18px rgba(251, 146, 60, 0.12),
+        0 0 18px rgba(168, 85, 247, 0.14),
         inset 0 1px 0 rgba(255, 255, 255, 0.24),
         inset 0 -12px 20px rgba(0, 0, 0, 0.34);
     }
@@ -3308,6 +3308,35 @@
     .buff-item:disabled {
       opacity: 0.46;
       cursor: not-allowed;
+    }
+
+    .buff-target-item:disabled,
+    .buff-target-item.is-unavailable {
+      opacity: 0.42;
+      cursor: not-allowed;
+      border-color: rgba(248, 113, 113, 0.22);
+      color: rgba(254, 202, 202, 0.9);
+      box-shadow:
+        0 10px 20px rgba(0,0,0,0.22),
+        inset 0 1px 0 rgba(255,255,255,0.06);
+    }
+
+    .buff-target-item:disabled:hover,
+    .buff-target-item.is-unavailable:hover {
+      transform: none;
+      border-color: rgba(248, 113, 113, 0.22);
+      box-shadow:
+        0 10px 20px rgba(0,0,0,0.22),
+        inset 0 1px 0 rgba(255,255,255,0.06);
+    }
+
+    .buff-target-item-state {
+      display: block;
+      margin-top: 4px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      color: rgba(252, 165, 165, 0.9);
     }
 
     .buff-item.is-active {
@@ -6618,6 +6647,7 @@
     let apiSyncStatusCache = null;
     let currentGamesPage = 1;
     let pendingBuffId = null;
+    let buffTargetOptionsByBuff = {};
     let lanterninhaUserId = null;
     const GAMES_PER_PAGE = 12;
     const EXTRAS_STORAGE_KEY = "designLabExtrasSelections";
@@ -7260,11 +7290,12 @@
       }).format(numericValue);
     }
 
-    function getRankingCardTone(position) {
+    function getRankingCardTone(position, totalPlayers) {
       if (position === 1) return "ranking-card--gold";
       if (position === 2) return "ranking-card--silver";
       if (position === 3) return "ranking-card--bronze";
-      if (position >= 9) return "ranking-card--danger";
+      const relegationStart = Math.max(4, totalPlayers - 3);
+      if (position >= relegationStart && position < totalPlayers) return "ranking-card--danger";
       return "";
     }
 
@@ -7302,7 +7333,7 @@
       rankingRows.innerHTML = slots
         .map(({ position, entry, isCurrent }) => {
           const isLanterninha = Boolean(lanterninhaId && entry.user_id === lanterninhaId);
-          const classes = ["ranking-card", getRankingCardTone(position)];
+          const classes = ["ranking-card", getRankingCardTone(position, slots.length)];
           if (isCurrent) classes.push("ranking-card--current");
           if (isLanterninha) classes.push("ranking-card--lanterninha");
 
@@ -7978,6 +8009,7 @@
               <div class="admin-user-meta">
                 <span class="admin-user-pill">Moedas: ${user.coins}</span>
                 <span class="admin-user-pill">Palpites: ${user.predictions_count}</span>
+                <span class="admin-user-pill">Último login: ${user.last_login_at ? escapeHtml(formatDateTimeShort(user.last_login_at)) : "Nunca"}</span>
                 ${user.has_bonus_prediction ? `<span class="admin-user-pill">Extras salvos</span>` : ``}
                 ${user.is_blocked ? `<span class="admin-user-pill is-blocked">Bloqueado</span>` : ``}
                 ${user.is_admin ? `<span class="admin-user-pill is-admin">Admin</span>` : ``}
@@ -9229,12 +9261,73 @@
     function getAvailableTargets() {
       const currentUser = getCurrentUser();
       const realUsers = getUsers()
-        .filter((user) => !currentUser?.username || user.username.toLowerCase() !== currentUser.username.toLowerCase())
+        .filter((user) =>
+          (!currentUser?.username || user.username.toLowerCase() !== currentUser.username.toLowerCase()) &&
+          !user.isAdmin &&
+          !user.isBlocked
+        )
         .map((user) => user.username);
 
       if (realUsers.length > 0) return realUsers;
       if (BACKEND_ENABLED) return [];
       return ["Carlos", "Fernanda", "João", "Marina", "Rafael"];
+    }
+
+    async function loadBuffTargetOptions(fixture) {
+      buffTargetOptionsByBuff = {
+        "zerar-adversario": [],
+        "meia-adversario": [],
+      };
+
+      if (!fixture) return buffTargetOptionsByBuff;
+
+      if (!BACKEND_ENABLED) {
+        const fallbackOptions = getAvailableTargets().map((nickname) => ({
+          nickname,
+          is_available: true,
+        }));
+        buffTargetOptionsByBuff["zerar-adversario"] = fallbackOptions;
+        buffTargetOptionsByBuff["meia-adversario"] = fallbackOptions;
+        return buffTargetOptionsByBuff;
+      }
+
+      const token = getBackendToken();
+      if (!token) return buffTargetOptionsByBuff;
+
+      const fixtureId = getFixtureId(fixture);
+      for (const buffId of ["zerar-adversario", "meia-adversario"]) {
+        const { data, error } = await supabase.rpc("app_get_buff_target_options", {
+          p_token: token,
+          p_match_id: fixtureId,
+          p_buff_id: buffId,
+        });
+
+        if (error) {
+          console.error(error);
+          buffTargetOptionsByBuff[buffId] = [];
+          continue;
+        }
+
+        buffTargetOptionsByBuff[buffId] = (data || []).map((entry) => ({
+          nickname: entry.nickname,
+          is_available: Boolean(entry.is_available),
+        }));
+      }
+
+      return buffTargetOptionsByBuff;
+    }
+
+    function getTargetOptionsForBuff(buffId) {
+      const options = buffTargetOptionsByBuff[buffId];
+      if (Array.isArray(options) && options.length > 0) return options;
+      return getAvailableTargets().map((nickname) => ({
+        nickname,
+        is_available: true,
+      }));
+    }
+
+    function hasSelectableTargetForBuff(buffId) {
+      return getTargetOptionsForBuff(buffId).some((entry) => entry.is_available);
     }
 
     const worldCupTeams = [
@@ -9699,7 +9792,9 @@
           const enoughCoins = currentCoins >= buff.cost;
           const hasConflict = hasConflictingMultiplier(activeBuffs, buff.id);
           const requiresLogin = !currentUser?.username;
-          const noTargetsAvailable = (buff.id === "zerar-adversario" || buff.id === "meia-adversario") && availableTargets.length === 0;
+          const noTargetsAvailable =
+            (buff.id === "zerar-adversario" || buff.id === "meia-adversario") &&
+            !hasSelectableTargetForBuff(buff.id);
           const disabled = !alreadyActive && (!phaseAllowed || !enoughCoins || hasConflict || requiresLogin || noTargetsAvailable);
 
           let stateText = "";
@@ -9754,6 +9849,7 @@
       activeBuffFixture = fixture;
       clearBuffFeedback();
       await restoreBuffSelectionsForCurrentUser();
+      await loadBuffTargetOptions(fixture);
       renderBuffList();
       buffsModal.classList.remove("is-hidden");
       buffsModal.setAttribute("aria-hidden", "false");
@@ -9764,25 +9860,40 @@
       buffsModal.setAttribute("aria-hidden", "true");
       activeBuffFixture = null;
       pendingBuffId = null;
+      buffTargetOptionsByBuff = {};
       clearBuffFeedback();
     }
 
-    function openBuffTargetModal() {
-      const targets = getAvailableTargets();
+    async function openBuffTargetModal() {
+      if (!activeBuffFixture || !pendingBuffId) return;
+      await loadBuffTargetOptions(activeBuffFixture);
+      const targets = getTargetOptionsForBuff(pendingBuffId);
       const activeBuffEntry = buffCatalog.find((b) => b.id === pendingBuffId);
       const buffLabel = activeBuffEntry?.title || "Buff";
 
-      if (targets.length === 0) {
+      if (!targets.some((entry) => entry.is_available)) {
         showBuffFeedback("Nenhum adversário disponível.", "error");
+        renderBuffList();
         return;
       }
 
       buffTargetList.innerHTML = targets
-        .map((name) => `<button class="buff-target-item" type="button" data-target-name="${escapeHtml(name)}"><span class="buff-target-name">${escapeHtml(name)}</span></button>`)
+        .map((target) => `
+          <button
+            class="buff-target-item${target.is_available ? "" : " is-unavailable"}"
+            type="button"
+            data-target-name="${escapeHtml(target.nickname)}"
+            ${target.is_available ? "" : "disabled"}
+          >
+            <span class="buff-target-name">${escapeHtml(target.nickname)}</span>
+            ${target.is_available ? "" : `<span class="buff-target-item-state">Indisponível neste jogo</span>`}
+          </button>
+        `)
         .join("");
 
       buffTargetList.querySelectorAll(".buff-target-item").forEach((button) => {
         button.addEventListener("click", async () => {
+          if (button.disabled) return;
           const currentPendingBuff = pendingBuffId;
           if (!activeBuffFixture || !currentPendingBuff) return;
           // Aceita os dois buffs que usam alvo
@@ -9800,11 +9911,13 @@
               return;
             }
 
+            await loadBuffTargetOptions(activeBuffFixture);
             showBuffFeedback(`${buffLabel} aplicado em ${button.dataset.targetName}!`, "success");
             closeBuffTargetModal();
             renderBuffList();
           } catch (error) {
             console.error(error);
+            await loadBuffTargetOptions(activeBuffFixture);
             showBuffFeedback(error.message || "Não foi possível aplicar esse buff.", "error");
             closeBuffTargetModal();
             renderBuffList();
@@ -9912,6 +10025,9 @@
         try {
           const removedBuff = await cancelBuffForFixture(activeBuffFixture, buffId);
           if (removedBuff) {
+            if (buffId === "zerar-adversario" || buffId === "meia-adversario") {
+              await loadBuffTargetOptions(activeBuffFixture);
+            }
             if (buffId === "coin-bet") {
               showBuffFeedback("Aposta cancelada e 🪙 devolvida.", "success");
             } else {
@@ -9931,7 +10047,7 @@
       // Buffs que precisam de alvo (adversário)
       if (buffId === "zerar-adversario" || buffId === "meia-adversario") {
         pendingBuffId = buffId;
-        openBuffTargetModal();
+        await openBuffTargetModal();
         return;
       }
 
