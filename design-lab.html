@@ -9756,8 +9756,14 @@
               ...(Number.isInteger(data.total_goals) ? { "total-gols": { type: "text", value: String(data.total_goals) } } : {}),
             };
             localStorage.setItem(EXTRAS_STORAGE_KEY, JSON.stringify(storedSelections));
+          } else if (!error) {
+            // Quando o backend está ativo, o banco é a fonte oficial dos extras.
+            // Isso evita mostrar no usuário um rascunho local antigo como se estivesse salvo.
+            storedSelections = {};
+            localStorage.removeItem(EXTRAS_STORAGE_KEY);
           } else if (error) {
             console.error(error);
+            storedSelections = {};
           }
         }
       }
