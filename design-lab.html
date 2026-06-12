@@ -7510,7 +7510,11 @@
       resultsAwayScore.value = Number.isInteger(match.score_away) ? String(match.score_away) : "";
       resultsExtraHome.value = Number.isInteger(match.extra_time_home) ? String(match.extra_time_home) : "";
       resultsExtraAway.value = Number.isInteger(match.extra_time_away) ? String(match.extra_time_away) : "";
-      resultsStatusSelect.value = match.status || "completed";
+      const persistedStatus = String(match.status || "").toLowerCase();
+      resultsStatusSelect.value =
+        persistedStatus === "completed" || persistedStatus === "cancelled"
+          ? persistedStatus
+          : "completed";
       fillResultsWinnerOptions(match);
       resultsSubtitle.textContent = `${match.phase_label || match.phase || "Partida"} • ${match.home_team} x ${match.away_team}`;
       resultsFeedback.textContent = "";
@@ -8686,6 +8690,11 @@
         return;
       }
 
+      let resolvedStatus = resultsStatusSelect.value || "completed";
+      if (resolvedStatus === "scheduled") {
+        resolvedStatus = "completed";
+      }
+
       try {
         const { error } = await supabase.rpc("app_admin_set_match_result", {
           p_token: getBackendToken(),
@@ -8695,7 +8704,7 @@
           p_extra_time_home: extraHome,
           p_extra_time_away: extraAway,
           p_winner_team: resultsWinnerSelect.value || null,
-          p_status: resultsStatusSelect.value || "completed",
+          p_status: resolvedStatus,
         });
         if (error) throw error;
 
