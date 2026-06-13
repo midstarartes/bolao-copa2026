@@ -3771,6 +3771,25 @@
         0 1px 0 rgba(255,255,255,0.08);
     }
 
+    .preds-row.is-result-miss {
+      background:
+        linear-gradient(180deg, rgba(248, 113, 113, 0.22), rgba(220, 38, 38, 0.1) 32%, rgba(69, 10, 10, 0.28) 100%),
+        rgba(255, 255, 255, 0.04);
+      border-color: rgba(248, 113, 113, 0.42);
+      box-shadow:
+        0 12px 22px rgba(0, 0, 0, 0.28),
+        0 0 18px rgba(248, 113, 113, 0.12),
+        inset 0 1px 0 rgba(255,255,255,0.1);
+    }
+
+    .preds-row.is-result-miss .preds-nickname {
+      color: #fee2e2;
+    }
+
+    .preds-row.is-result-miss .preds-score {
+      color: #fff1f2;
+    }
+
     .preds-avatar {
       width: 34px;
       height: 34px;
@@ -3832,6 +3851,45 @@
       white-space: nowrap;
       letter-spacing: 0.03em;
       text-align: right;
+    }
+
+    .preds-score-side {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .preds-score-flag {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      display: inline-grid;
+      place-items: center;
+      overflow: hidden;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.16);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      flex-shrink: 0;
+    }
+
+    .preds-score-flag img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .preds-score-flag-fallback {
+      font-size: 0.46rem;
+      font-weight: 900;
+      letter-spacing: 0;
+      color: rgba(238, 242, 247, 0.78);
+    }
+
+    .preds-score-separator {
+      display: inline-block;
+      margin: 0 4px;
+      color: rgba(238, 242, 247, 0.72);
     }
 
     .score-action--buffs {
@@ -10185,6 +10243,63 @@
       return escapeHtml(avatarValue || "⚽");
     }
 
+    function getScoreOutcome(homeScore, awayScore) {
+      const home = Number(homeScore);
+      const away = Number(awayScore);
+      if (!Number.isFinite(home) || !Number.isFinite(away)) return null;
+      if (home === away) return "draw";
+      return home > away ? "home" : "away";
+    }
+
+    function getPredictionResultState(match, row) {
+      const isCompleted =
+        String(match?.status || "").toLowerCase() === "completed" &&
+        match?.score_home != null &&
+        match?.score_away != null;
+
+      if (!isCompleted) return "";
+
+      const predictedHome = Number(row?.home_score);
+      const predictedAway = Number(row?.away_score);
+      const officialHome = Number(match.score_home);
+      const officialAway = Number(match.score_away);
+
+      if (
+        Number.isFinite(predictedHome) &&
+        Number.isFinite(predictedAway) &&
+        predictedHome === officialHome &&
+        predictedAway === officialAway
+      ) {
+        return "exact";
+      }
+
+      const predictedOutcome = getScoreOutcome(row?.home_score, row?.away_score);
+      const officialOutcome = getScoreOutcome(match.score_home, match.score_away);
+      if (predictedOutcome && officialOutcome && predictedOutcome !== officialOutcome) {
+        return "miss";
+      }
+
+      return "result";
+    }
+
+    function buildPredictionScoreFlag(code, teamName) {
+      const flagUrl = getFlagUrl(code);
+      if (flagUrl) {
+        return `<span class="preds-score-flag"><img src="${flagUrl}" alt="${escapeHtml(teamName || code || "Seleção")}" loading="lazy"></span>`;
+      }
+      return `<span class="preds-score-flag"><span class="preds-score-flag-fallback">${escapeHtml(code || "?")}</span></span>`;
+    }
+
+    function buildPredictionScoreHtml(match, row) {
+      const homeFlag = buildPredictionScoreFlag(match?.home_code, match?.home_team);
+      const awayFlag = buildPredictionScoreFlag(match?.away_code, match?.away_team);
+      return `
+        <span class="preds-score-side">${homeFlag}<span>${escapeHtml(row.home_score)}</span></span>
+        <span class="preds-score-separator">–</span>
+        <span class="preds-score-side"><span>${escapeHtml(row.away_score)}</span>${awayFlag}</span>
+      `;
+    }
+
     async function openMatchPredictionsModal(matchId) {
       if (!predsModal) return;
       const match = getMatchRecordById(matchId);
@@ -10233,10 +10348,11 @@
         const html = `<div class="preds-list">${rows.map((row) => {
           const isMe = row.nickname?.toLowerCase() === currentUser.nickname?.toLowerCase() ||
                        row.nickname?.toLowerCase() === currentUser.username?.toLowerCase();
-          const isCompleted = row.match_status === "completed";
-          const hitClass = isCompleted
-            ? (row.exact_hit ? " is-exact-hit" : row.result_hit ? " is-result-hit" : "")
-            : "";
+          const resultState = getPredictionResultState(match, row);
+          const hitClass =
+            resultState === "exact" ? " is-exact-hit" :
+            resultState === "miss" ? " is-result-miss" :
+            "";
           const buffTags = (row.buff_ids || [])
             .map((b) => `<span class="preds-buff-tag">${escapeHtml(buffIdToLabel(b))}</span>`)
             .join("");
@@ -10247,7 +10363,7 @@
                 <div class="preds-nickname">${escapeHtml(row.nickname)}${isMe ? " (você)" : ""}</div>
                 ${buffTags ? `<div class="preds-buffs">${buffTags}</div>` : ""}
               </div>
-              <div class="preds-score">${row.home_score} – ${row.away_score}</div>
+              <div class="preds-score">${buildPredictionScoreHtml(match, row)}</div>
             </div>
           `;
         }).join("")}</div>`;
