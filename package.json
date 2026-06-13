@@ -3,6 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "scripts": {
-    "build": "node scripts/build-vercel.mjs"
+    "build": "node scripts/build-vercel.mjs",
+    "test": "node scripts/test-api-match-selection.mjs"
   }
 }

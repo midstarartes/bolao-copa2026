@@ -53,6 +53,7 @@ const TEAM_ALIAS_MAP = {
   PAN: ["Panamá", "Panama"],
   PAR: ["Paraguai", "Paraguay"],
   POR: ["Portugal"],
+  QAT: ["Catar", "Qatar"],
   RSA: ["África do Sul", "South Africa"],
   SCO: ["Escócia", "Scotland"],
   SEN: ["Senegal"],
@@ -96,6 +97,44 @@ function getTeamCodeFromApiName(name = "") {
 
 function getMatchApiDateKey(match) {
   return String(match?.starts_at || "").split("T")[0] || "";
+}
+
+function getApiEventTeamCodes(event) {
+  return {
+    home: getTeamCodeFromApiName(event?.strHomeTeam || ""),
+    away: getTeamCodeFromApiName(event?.strAwayTeam || ""),
+  };
+}
+
+function doesApiTeamMatchExpected({ expectedCode, expectedName, apiCode, apiName }) {
+  if (isPlaceholderTeamName(expectedName)) return false;
+  const normalizedExpectedCode = String(expectedCode || "").toUpperCase();
+
+  if (normalizedExpectedCode && apiCode === normalizedExpectedCode) {
+    return true;
+  }
+
+  return normalizeText(apiName || "") === normalizeText(expectedName || "");
+}
+
+function getApiEventTeamMatchQuality(match, event) {
+  const apiCodes = getApiEventTeamCodes(event);
+  const homeMatches = doesApiTeamMatchExpected({
+    expectedCode: match?.home_code,
+    expectedName: match?.home_team,
+    apiCode: apiCodes.home,
+    apiName: event?.strHomeTeam,
+  });
+  const awayMatches = doesApiTeamMatchExpected({
+    expectedCode: match?.away_code,
+    expectedName: match?.away_team,
+    apiCode: apiCodes.away,
+    apiName: event?.strAwayTeam,
+  });
+
+  if (homeMatches && awayMatches) return "exact-sides";
+  if (homeMatches || awayMatches) return "partial";
+  return "none";
 }
 
 function getApiEventTimestamp(event) {
@@ -203,7 +242,12 @@ function findBestApiEventForMatch(match, events) {
   if (!match || !Array.isArray(events) || !events.length) return null;
 
   const scored = events
-    .map((event) => ({ event, score: scoreApiEventForMatch(match, event) }))
+    .map((event) => ({
+      event,
+      score: scoreApiEventForMatch(match, event),
+      teamMatchQuality: getApiEventTeamMatchQuality(match, event),
+    }))
+    .filter((entry) => entry.teamMatchQuality === "exact-sides")
     .sort((left, right) => right.score - left.score);
 
   const best = scored[0];
@@ -620,7 +664,7 @@ function formatCooldownMessage(remainingMs) {
   return `A sincronização já foi solicitada há pouco tempo. Tente novamente em cerca de ${remainingMinutes} minuto(s).`;
 }
 
-module.exports = async function handler(req, res) {
+async function handler(req, res) {
   try {
     if (req.method === "GET") {
       let adminToken = null;
@@ -764,4 +808,11 @@ module.exports = async function handler(req, res) {
       message: error?.message || "Falha inesperada na sincronização da API.",
     });
   }
+}
+
+module.exports = handler;
+module.exports.__test = {
+  findBestApiEventForMatch,
+  getApiEventTeamMatchQuality,
+  scoreApiEventForMatch,
 };
