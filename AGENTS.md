@@ -1,0 +1,663 @@
+# AGENTS.md
+
+## 1. Visão geral do projeto
+
+Este projeto é um bolão da Copa do Mundo 2026 com interface web, autenticação própria via Supabase, ranking em tempo real, palpites por jogo, palpites extras, sistema de moedas, buffs, histórico de desempenho, painel administrativo e sincronização de resultados oficiais via API externa.
+
+O estado atual do projeto indica que a aplicação principal está concentrada em um único arquivo frontend grande, [design-lab.html](C:\Users\dunor\OneDrive\Área de Trabalho\PROGRAMAÇÃO\bolao-copa2026\design-lab.html), enquanto as regras críticas de negócio estão centralizadas em funções SQL do Supabase.
+
+## 2. Objetivo do bolão
+
+Permitir que participantes:
+
+- criem conta;
+- registrem palpites por partida;
+- registrem palpites extras do torneio;
+- usem moedas e buffs estratégicos;
+- acompanhem ranking e histórico;
+- comparem palpites após o fechamento de cada jogo.
+
+Também permitir que um administrador:
+
+- gerencie usuários;
+- ajuste moedas;
+- altere palpites e extras manualmente;
+- lance resultados oficiais manualmente;
+- acompanhe auditoria;
+- use a API como apoio, mantendo o admin como fallback oficial.
+
+## 3. Stack usada
+
+- Frontend: HTML + CSS + JavaScript vanilla.
+- Backend lógico: Supabase via tabelas, RPCs, RLS e patches SQL.
+- API externa de resultados: TheSportsDB.
+- Função serverless: Vercel Function em `api/the-sports-sync.js`.
+- Deploy: Vercel.
+- Automação de sincronização: GitHub Actions.
+- Build: script Node.js simples via `npm run build`.
+
+## 4. Como rodar localmente
+
+O que foi confirmado nos arquivos:
+
+- Não existe script `dev` em [package.json](C:\Users\dunor\OneDrive\Área de Trabalho\PROGRAMAÇÃO\bolao-copa2026\package.json).
+- Existe script `build`:
+  - `npm run build`
+- O build copia os arquivos para `dist` via [scripts/build-vercel.mjs](C:\Users\dunor\OneDrive\Área de Trabalho\PROGRAMAÇÃO\bolao-copa2026\scripts\build-vercel.mjs).
+- O [index.html](C:\Users\dunor\OneDrive\Área de Trabalho\PROGRAMAÇÃO\bolao-copa2026\index.html) redireciona para `design-lab.html`.
+
+Forma local confirmada:
+
+- abrir [design-lab.html](C:\Users\dunor\OneDrive\Área de Trabalho\PROGRAMAÇÃO\bolao-copa2026\design-lab.html) no navegador para testar a interface;
+- ou gerar `dist` com `npm run build`.
+
+Forma ideal de preview local: `a confirmar`.
+Não há servidor local configurado explicitamente no projeto.
+
+## 5. Como funciona o deploy
+
+O deploy é preparado para a Vercel.
+
+Arquivos envolvidos:
+
+- [vercel.json](C:\Users\dunor\OneDrive\Área de Trabalho\PROGRAMAÇÃO\bolao-copa2026\vercel.json)
+- [package.json](C:\Users\dunor\OneDrive\Área de Trabalho\PROGRAMAÇÃO\bolao-copa2026\package.json)
+- [scripts/build-vercel.mjs](C:\Users\dunor\OneDrive\Área de Trabalho\PROGRAMAÇÃO\bolao-copa2026\scripts\build-vercel.mjs)
+
+Fluxo confirmado:
+
+1. A Vercel executa `npm run build`.
+2. O script monta a pasta `dist`.
+3. Os arquivos estáticos principais são copiados para `dist`.
+4. A função `api/the-sports-sync.js` é tratada como rota serverless pela Vercel.
+
+## 6. Como funciona o GitHub
+
+O repositório usa GitHub como origem principal de versão.
+
+O que foi confirmado:
+
+- branch principal atual: `main`;
+- existe workflow em [.github/workflows/sync-results.yml](C:\Users\dunor\OneDrive\Área de Trabalho\PROGRAMAÇÃO\bolao-copa2026\.github\workflows\sync-results.yml);
+- esse workflow agenda sincronizações automáticas da API e também pode ser executado manualmente com `workflow_dispatch`.
+
+Últimos commits lidos durante a análise:
+
+- `463fde0 Destaca palpites por resultado no modal`
+- `cea769d Corrige pareamento de resultados da API`
+- `2b74be6 Destaca acertos na lista de palpites por jogo`
+- `e850d38 Evita mostrar extras locais como se estivessem salvos`
+- `969ef06 Corrige status padrão no lançamento manual de resultados`
+- `db0d5b1 Refina destaque do pódio e remove divisor do top 8`
+- `7ddc98c Refina cores dos quatro últimos no ranking`
+- `516be2e Ajusta cores da zona de rebaixamento no ranking`
+- `eac3433 fix: endurecer cron da API e persistir falhas`
+- `7297324 Corrige aposta de moedas com saldo 1`
+
+## 7. Como funciona a Vercel
+
+O projeto está preparado para:
+
+- hospedar o frontend estático;
+- expor a rota `/api/the-sports-sync`;
+- usar variáveis de ambiente para Supabase, API externa, admin e cron.
+
+Variáveis observadas no código da função:
+
+- `SUPABASE_URL`
+- `SUPABASE_ANON_KEY`
+- `THE_SPORTS_DB_API_KEY`
+- `THE_SPORTS_DB_WORLD_CUP_LEAGUE_ID`
+- `ADMIN_USERNAME`
+- `ADMIN_PASSWORD`
+- `CRON_SECRET`
+
+## 8. Como funciona o Supabase
+
+O Supabase é o backend real do sistema.
+
+Ele concentra:
+
+- cadastro e login;
+- sessões;
+- partidas;
+- palpites;
+- buffs;
+- extras;
+- ranking;
+- histórico;
+- status de sincronização da API;
+- auditoria admin;
+- diversas RPCs consumidas diretamente pelo frontend.
+
+Arquivos principais:
+
+- [supabase/schema.sql](C:\Users\dunor\OneDrive\Área de Trabalho\PROGRAMAÇÃO\bolao-copa2026\supabase\schema.sql)
+- [supabase/patch-010-admin-account.sql](C:\Users\dunor\OneDrive\Área de Trabalho\PROGRAMAÇÃO\bolao-copa2026\supabase\patch-010-admin-account.sql)
+- [supabase/patch-011-admin-audit.sql](C:\Users\dunor\OneDrive\Área de Trabalho\PROGRAMAÇÃO\bolao-copa2026\supabase\patch-011-admin-audit.sql)
+- [supabase/patch-015-api-sync-status.sql](C:\Users\dunor\OneDrive\Área de Trabalho\PROGRAMAÇÃO\bolao-copa2026\supabase\patch-015-api-sync-status.sql)
+- [supabase/patch-026-match-predictions-viewer.sql](C:\Users\dunor\OneDrive\Área de Trabalho\PROGRAMAÇÃO\bolao-copa2026\supabase\patch-026-match-predictions-viewer.sql)
+- [supabase/patch-029-new-scoring-system.sql](C:\Users\dunor\OneDrive\Área de Trabalho\PROGRAMAÇÃO\bolao-copa2026\supabase\patch-029-new-scoring-system.sql)
+- [supabase/patch-030-zebra-multiplier.sql](C:\Users\dunor\OneDrive\Área de Trabalho\PROGRAMAÇÃO\bolao-copa2026\supabase\patch-030-zebra-multiplier.sql)
+- [supabase/patch-031-fix-mission-progress-columns.sql](C:\Users\dunor\OneDrive\Área de Trabalho\PROGRAMAÇÃO\bolao-copa2026\supabase\patch-031-fix-mission-progress-columns.sql)
+
+## 9. Estrutura de pastas e arquivos importantes
+
+- `.github/`
+  - workflows do GitHub Actions.
+- `.vercel/`
+  - artefatos locais da Vercel, se presentes.
+- `api/`
+  - função serverless da API de sincronização.
+- `dist/`
+  - saída do build.
+- `public/`
+  - assets e uma estrutura frontend mais antiga/modular.
+- `scripts/`
+  - scripts utilitários de build e teste.
+- `supabase/`
+  - schema, seed e patches SQL do projeto.
+- `design-lab.html`
+  - aplicação principal atual.
+- `index.html`
+  - redirecionador para `design-lab.html`.
+- `package.json`
+  - scripts do projeto.
+- `vercel.json`
+  - configuração de deploy e headers.
+- `README.md`
+  - documentação antiga, parcialmente desatualizada.
+- `manifest.json`
+  - manifesto PWA.
+
+## 10. Principais telas e componentes
+
+Pelo que foi confirmado em [design-lab.html](C:\Users\dunor\OneDrive\Área de Trabalho\PROGRAMAÇÃO\bolao-copa2026\design-lab.html), as principais áreas são:
+
+- tela principal do bolão;
+- aba `Jogos`;
+- aba `Extras`;
+- aba `Moedas`;
+- aba `Ranking`;
+- aba `Regras`;
+- aba `Admin`;
+- modal de login/cadastro;
+- modal de buffs;
+- modal de palpites por jogo;
+- modal/lista de “ver palpites”;
+- painel de resultados oficiais;
+- painel admin completo.
+
+## 11. Fluxo de autenticação
+
+Fluxo confirmado:
+
+1. Usuário se cadastra por RPC `app_register_user`.
+2. Usuário faz login por RPC `app_login_user`.
+3. O banco cria uma sessão em `app_sessions`.
+4. O frontend passa a trabalhar com um token de sessão.
+5. As RPCs usam `app_get_user_by_token` para validar a sessão.
+6. Logout via `app_logout_user`.
+
+O frontend também possui cache local de sessão para manter estado no navegador.
+
+## 12. Fluxo de usuário comum
+
+Fluxo normal confirmado:
+
+1. cadastrar ou logar;
+2. ver jogos disponíveis;
+3. registrar ou editar palpites antes do fechamento;
+4. registrar palpites extras antes do fechamento global;
+5. acompanhar moedas, missões e buffs;
+6. usar buffs em jogos elegíveis;
+7. ver ranking e histórico;
+8. após o fechamento de um jogo, abrir “ver palpites” para comparar palpites.
+
+## 13. Fluxo de administrador
+
+Fluxo admin confirmado:
+
+1. login com conta marcada como `is_admin`;
+2. acesso à aba `Admin`;
+3. gerenciamento de usuários;
+4. ajuste de moedas;
+5. edição manual de palpites e extras;
+6. aplicação/remoção manual de buffs;
+7. lançamento manual de resultados oficiais;
+8. consulta de auditoria;
+9. uso da sincronização via API como apoio;
+10. alteração da própria senha admin.
+
+## 14. Regras de palpites
+
+Regras confirmadas:
+
+- palpite normal por jogo;
+- fechamento 30 minutos antes do início da partida;
+- edição permitida até esse mesmo prazo;
+- admin não participa como competidor;
+- extras são salvos em tabela separada;
+- extras respeitam `bonus_lock_at` em `app_settings`.
+
+Visibilidade de palpites dos outros:
+
+- somente após o fechamento do mercado do jogo, via `app_get_match_predictions`.
+
+## 15. Regras de pontuação
+
+Fonte principal confirmada:
+
+- [supabase/patch-029-new-scoring-system.sql](C:\Users\dunor\OneDrive\Área de Trabalho\PROGRAMAÇÃO\bolao-copa2026\supabase\patch-029-new-scoring-system.sql)
+
+Resumo confirmado:
+
+- Fase de grupos:
+  - placar exato: `+1.0`
+  - acertar resultado: `+0.5`
+  - errar: `-0.1`
+  - ausência: `-0.2`
+- Mata-mata inicial:
+  - placar exato: `+2.0`
+  - acertar classificado/vencedor: `+1.0`
+  - errar: `-0.2`
+  - ausência: `-0.2`
+- Mata-mata decisivo:
+  - placar exato: `+3.0`
+  - acertar classificado/vencedor: `+2.0`
+  - errar: `-0.5`
+  - ausência: `-0.5`
+
+Extras:
+
+- a pontuação dos extras é calculada por `app_score_bonus_prediction`;
+- a zebra usa multiplicador por dificuldade em [patch-030-zebra-multiplier.sql](C:\Users\dunor\OneDrive\Área de Trabalho\PROGRAMAÇÃO\bolao-copa2026\supabase\patch-030-zebra-multiplier.sql).
+
+## 16. Regras de ranking
+
+O ranking é calculado no banco por RPC.
+
+Pontos confirmados:
+
+- o frontend consome `app_get_leaderboard`;
+- o cálculo considera palpites concluídos e extras;
+- admin e usuários bloqueados ficam fora do ranking competitivo;
+- a ordem de desempate atual vem do SQL, não do frontend.
+
+Desempates atuais: `a confirmar` em detalhe fino no estado final consolidado, porque houve reescritas em patches.
+
+## 17. Regras de partidas, resultados e status
+
+Tabela central: `matches`.
+
+Campos observados:
+
+- identificação do jogo;
+- número da partida;
+- fase;
+- grupo;
+- data/hora;
+- times e códigos;
+- placar oficial;
+- prorrogação;
+- vencedor/quem avança;
+- status;
+- informações de provedor/API.
+
+Status confirmados no ecossistema:
+
+- `scheduled`
+- `completed`
+- `cancelled`
+- `live` ou equivalentes tratados pela API: `a confirmar` no banco final
+
+## 18. Travas, prazos e validações
+
+Confirmados:
+
+- palpites normais fecham 30 minutos antes do jogo;
+- buffs do jogo também respeitam o fechamento do mercado do jogo;
+- extras fecham em `bonus_lock_at`;
+- admin não pode competir;
+- nickname único;
+- troca de senha do perfil exige senha atual;
+- várias RPCs validam token e permissão admin;
+- `match_predictions` só abre depois do fechamento do jogo para palpitar.
+
+## 19. Tabelas do banco e finalidade de cada uma
+
+Confirmadas em [supabase/schema.sql](C:\Users\dunor\OneDrive\Área de Trabalho\PROGRAMAÇÃO\bolao-copa2026\supabase\schema.sql):
+
+- `app_users`
+  - usuários, perfil, admin, bloqueio, moedas, flags.
+- `app_sessions`
+  - sessões/autenticação por token.
+- `app_settings`
+  - configurações do sistema, incluindo lock dos extras e status da API.
+- `matches`
+  - calendário e resultados oficiais.
+- `predictions`
+  - palpites normais por jogo.
+- `match_buffs`
+  - buffs usados por usuário em cada jogo.
+- `bonus_predictions`
+  - palpites extras do torneio.
+- `chat_messages`
+  - mensagens do chat, se ainda estiver em uso.
+- `admin_audit_log`
+  - trilha de auditoria administrativa, criada em patch.
+
+## 20. Policies, functions, triggers, views e patches SQL importantes
+
+### Triggers confirmados
+
+- `trg_app_users_updated_at`
+- `trg_matches_updated_at`
+- `trg_predictions_updated_at`
+
+### RLS confirmado
+
+As tabelas principais têm RLS habilitado:
+
+- `app_users`
+- `matches`
+- `predictions`
+- `match_buffs`
+- `bonus_predictions`
+- `chat_messages`
+- `app_settings`
+
+### Policies confirmadas no schema base
+
+- políticas de leitura pública para as tabelas principais.
+
+Observação importante:
+
+- o projeto depende bastante de RPCs `security definer`, então a leitura pública convive com funções SQL protegidas por token e validação de admin.
+
+### Functions importantes confirmadas
+
+- `app_hash_password`
+- `app_get_user_by_token`
+- `app_register_user`
+- `app_login_user`
+- `app_logout_user`
+- `app_save_prediction`
+- `app_save_bonus_prediction`
+- `app_get_match_buffs`
+- `app_apply_match_buff`
+- `app_cancel_match_buff`
+- `app_send_chat_message`
+- `app_prediction_exact_hit`
+- `app_prediction_result_hit`
+- `app_prediction_points`
+- `app_prediction_score_context`
+- `app_get_leaderboard`
+- `app_get_user_history`
+- `app_get_match_predictions`
+- `app_get_current_user_mission_progress`
+- `app_update_current_user_profile`
+- `app_update_current_user_state`
+- `app_admin_list_users`
+- `app_admin_update_user`
+- `app_admin_delete_user`
+- `app_admin_set_user_prediction`
+- `app_admin_set_user_bonus_prediction`
+- `app_admin_set_user_buff`
+- `app_admin_remove_user_buff`
+- `app_admin_set_user_coins`
+- `app_admin_adjust_user_coins`
+- `app_admin_set_match_result`
+- `app_admin_clear_match_result`
+- `app_admin_get_audit_log`
+- `app_admin_set_api_sync_status`
+- `app_admin_set_bonus_results`
+- `app_settle_pending_coin_bets`
+
+Views materializadas ou SQL views: `a confirmar`.
+Não foram confirmadas views explícitas na leitura já feita.
+
+### Patches mais importantes
+
+- `patch-010-admin-account.sql`
+- `patch-011-admin-audit.sql`
+- `patch-015-api-sync-status.sql`
+- `patch-023-fix-profile-update-ambiguity.sql`
+- `patch-026-match-predictions-viewer.sql`
+- `patch-029-new-scoring-system.sql`
+- `patch-030-zebra-multiplier.sql`
+- `patch-031-fix-mission-progress-columns.sql`
+
+## 21. APIs, serviços e integrações
+
+### Supabase
+
+Principal backend do sistema.
+
+### TheSportsDB
+
+Usada para puxar resultados oficiais.
+
+### Vercel Function
+
+[api/the-sports-sync.js](C:\Users\dunor\OneDrive\Área de Trabalho\PROGRAMAÇÃO\bolao-copa2026\api\the-sports-sync.js) faz:
+
+- leitura de jogos relevantes;
+- consulta à API;
+- pareamento entre evento externo e jogo interno;
+- atualização do resultado oficial;
+- persistência do status da sincronização.
+
+### GitHub Actions
+
+Workflow em [.github/workflows/sync-results.yml](C:\Users\dunor\OneDrive\Área de Trabalho\PROGRAMAÇÃO\bolao-copa2026\.github\workflows\sync-results.yml) agenda as chamadas automáticas à API.
+
+## 22. Padrões visuais
+
+Padrões confirmados visualmente no código:
+
+- interface escura;
+- textura pontilhada no fundo;
+- estética de cards metálicos/brilhantes;
+- tabs com aparência de botões;
+- ranking com destaque visual forte para topo e parte de baixo;
+- foco grande em visual “gameificado”;
+- design responsivo com bastante ajuste manual no próprio HTML/CSS.
+
+## 23. Decisões técnicas existentes
+
+Decisões confirmadas:
+
+- concentrar o frontend principal em um único arquivo `design-lab.html`;
+- deixar a lógica de negócio sensível no Supabase;
+- usar RPCs em vez de backend REST próprio tradicional;
+- usar TheSportsDB como apoio automático;
+- manter admin como fallback oficial para resultados;
+- usar GitHub Actions para disparar a sincronização automática;
+- manter um conjunto legado em `public/js`, mas não como fonte principal.
+
+## 24. Pontos sensíveis que não devem ser alterados sem cuidado
+
+- nomes das RPCs do Supabase, porque o frontend chama várias diretamente;
+- lógica de `app_prediction_score_context`, porque ela afeta ranking, histórico, buffs e missões;
+- regras do patch 029, porque elas redefinem o sistema atual do bolão;
+- status e resultado oficial das partidas;
+- `bonus_lock_at` e travas de prazo;
+- diferenciação entre usuário comum e admin;
+- payload de sincronização da API e credenciais da Vercel;
+- qualquer mudança estrutural no `design-lab.html`, porque ele concentra muita responsabilidade.
+
+## 25. Problemas conhecidos
+
+Confirmados ou fortemente indicados pelos arquivos:
+
+- o [README.md](C:\Users\dunor\OneDrive\Área de Trabalho\PROGRAMAÇÃO\bolao-copa2026\README.md) parece desatualizado;
+- existem trechos com problemas de encoding/mojibake em documentação e arquivos antigos;
+- coexistem uma arquitetura antiga modular e uma arquitetura atual monolítica;
+- isso aumenta risco de confusão sobre qual é a fonte real de verdade;
+- algumas funções do schema base foram substituídas por patches posteriores;
+- por isso, nunca assumir que `schema.sql` sozinho representa o estado final.
+
+## 26. Próximos passos recomendados
+
+- consolidar documentação atualizada do projeto;
+- mapear exatamente quais patches são obrigatórios no estado final de produção;
+- validar se todos os arquivos legados em `public/js` ainda precisam existir;
+- documentar melhor o fluxo de deploy e variáveis;
+- considerar separar no futuro partes críticas do `design-lab.html`, se isso for feito com muito cuidado;
+- revisar encoding dos textos.
+
+## 27. Histórico resumido das últimas alterações
+
+Baseado nos últimos commits lidos:
+
+- destaque de palpites por resultado no modal;
+- correção do pareamento de resultados da API;
+- destaque de acertos na lista de palpites por jogo;
+- ajuste para não fingir que extras locais foram salvos;
+- correção de status padrão no lançamento manual de resultados;
+- refinamento visual do pódio e da parte de baixo do ranking;
+- endurecimento do cron da API;
+- correção do buff de aposta de moedas com saldo 1.
+
+## 28. Lista dos arquivos mais importantes e função de cada um
+
+- [design-lab.html](C:\Users\dunor\OneDrive\Área de Trabalho\PROGRAMAÇÃO\bolao-copa2026\design-lab.html)
+  - aplicação principal atual.
+- [index.html](C:\Users\dunor\OneDrive\Área de Trabalho\PROGRAMAÇÃO\bolao-copa2026\index.html)
+  - redireciona para a aplicação principal.
+- [package.json](C:\Users\dunor\OneDrive\Área de Trabalho\PROGRAMAÇÃO\bolao-copa2026\package.json)
+  - scripts de build e teste.
+- [vercel.json](C:\Users\dunor\OneDrive\Área de Trabalho\PROGRAMAÇÃO\bolao-copa2026\vercel.json)
+  - configuração de deploy e segurança.
+- [api/the-sports-sync.js](C:\Users\dunor\OneDrive\Área de Trabalho\PROGRAMAÇÃO\bolao-copa2026\api\the-sports-sync.js)
+  - sincronização automática de resultados oficiais.
+- [scripts/build-vercel.mjs](C:\Users\dunor\OneDrive\Área de Trabalho\PROGRAMAÇÃO\bolao-copa2026\scripts\build-vercel.mjs)
+  - gera a pasta `dist`.
+- [supabase/schema.sql](C:\Users\dunor\OneDrive\Área de Trabalho\PROGRAMAÇÃO\bolao-copa2026\supabase\schema.sql)
+  - base das tabelas e funções iniciais.
+- [supabase/patch-029-new-scoring-system.sql](C:\Users\dunor\OneDrive\Área de Trabalho\PROGRAMAÇÃO\bolao-copa2026\supabase\patch-029-new-scoring-system.sql)
+  - regra de pontuação atual.
+- [supabase/patch-030-zebra-multiplier.sql](C:\Users\dunor\OneDrive\Área de Trabalho\PROGRAMAÇÃO\bolao-copa2026\supabase\patch-030-zebra-multiplier.sql)
+  - regra atual da zebra/extras.
+- [supabase/patch-031-fix-mission-progress-columns.sql](C:\Users\dunor\OneDrive\Área de Trabalho\PROGRAMAÇÃO\bolao-copa2026\supabase\patch-031-fix-mission-progress-columns.sql)
+  - conserto de missão/moedas após mudança de regra.
+- [.github/workflows/sync-results.yml](C:\Users\dunor\OneDrive\Área de Trabalho\PROGRAMAÇÃO\bolao-copa2026\.github\workflows\sync-results.yml)
+  - agenda e dispara sincronização automática.
+- [README.md](C:\Users\dunor\OneDrive\Área de Trabalho\PROGRAMAÇÃO\bolao-copa2026\README.md)
+  - documentação histórica, possivelmente desatualizada.
+
+## 29. Instruções obrigatórias para próximas sessões do Codex
+
+- Antes de alterar qualquer regra, identificar se a fonte de verdade está no frontend, no `schema.sql` ou em algum patch posterior.
+- Não confiar no `README.md` como documentação final sem validar no código atual.
+- Assumir que o frontend principal é `design-lab.html`, salvo prova em contrário.
+- Sempre revisar os patches do Supabase relacionados ao tema antes de mexer em lógica de negócio.
+- Em mudanças de ranking, pontuação, buffs, missões ou histórico, revisar obrigatoriamente:
+  - `app_prediction_score_context`
+  - `app_get_leaderboard`
+  - `app_get_user_history`
+  - `app_get_current_user_mission_progress`
+- Em mudanças de resultados oficiais, revisar:
+  - `app_admin_set_match_result`
+  - `app_admin_clear_match_result`
+  - `api/the-sports-sync.js`
+  - workflow do GitHub Actions
+- Em mudanças visuais, validar desktop e mobile.
+- Em mudanças administrativas, validar que a conta admin continua fora do bolão competitivo.
+- Em qualquer sessão nova, começar com:
+  - `git status`
+  - leitura dos últimos commits
+  - leitura do `AGENTS.md`
+- Quando algo não estiver claramente confirmado nos arquivos, marcar como `a confirmar` em vez de assumir.
+
+## 30. Regras obrigatórias para o Codex
+
+- Sempre ler o `AGENTS.md` antes de iniciar qualquer tarefa.
+- Sempre rodar `git status` antes de alterar arquivos.
+- Sempre analisar commits recentes ao iniciar uma nova sessão ou quando o usuário estiver usando outro PC.
+- Não alterar regras de pontuação, ranking, palpites, banco de dados, autenticação, permissões, Supabase ou deploy sem explicar o impacto antes.
+- Antes de alterar muitos arquivos, apresentar um plano curto.
+- Ao terminar qualquer tarefa, atualizar o `AGENTS.md`.
+- Toda alteração feita deve ser registrada no `AGENTS.md`, explicando:
+  - o que foi alterado;
+  - por que foi alterado;
+  - quais arquivos foram modificados;
+  - qual impacto a mudança tem no bolão;
+  - se afeta pontuação, ranking, palpites, usuários, Supabase, API, visual, Vercel ou GitHub;
+  - quais testes ou verificações foram feitos;
+  - quais pendências ficaram.
+- Antes de qualquer commit, verificar se o `AGENTS.md` foi atualizado.
+- Se o usuário pedir para commitar ou subir para o GitHub, primeiro conferir se o `AGENTS.md` está atualizado.
+- Se o `AGENTS.md` não estiver atualizado, atualizá-lo antes do commit.
+- Nunca fazer commit ou push sem incluir no `AGENTS.md` um resumo fiel das mudanças da sessão.
+- Não apagar contexto antigo importante; quando necessário, resumir e mover para uma seção de histórico.
+- Se houver dúvida sobre alguma regra do bolão, perguntar antes de alterar.
+
+## 31. Trava de commit do AGENTS.md
+
+O projeto possui uma trava versionada em `.githooks/pre-commit`.
+
+Objetivo:
+
+- impedir commit se `AGENTS.md` não existir;
+- impedir commit quando houver arquivos staged do projeto sem `AGENTS.md` staged junto;
+- permitir commit quando somente `AGENTS.md` estiver staged;
+- orientar explicitamente a atualizar o `AGENTS.md` antes do commit.
+
+### Como ativar em um PC novo
+
+Comando direto:
+
+```bash
+git config core.hooksPath .githooks
+```
+
+Script auxiliar deste projeto:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\install-githooks.ps1
+```
+
+### Regra operacional
+
+Antes de qualquer commit:
+
+1. atualizar o `AGENTS.md`;
+2. rodar `git add AGENTS.md`;
+3. confirmar que a trava está ativa neste PC.
+
+## 32. Registro de mudanças do AGENTS.md
+
+### Sessão 2026-06-15 - trava prática para commits sem memória atualizada
+
+- O que foi alterado:
+  - criação de hook versionado `.githooks/pre-commit`;
+  - criação do script `scripts/install-githooks.ps1`;
+  - documentação da trava no `AGENTS.md`;
+  - documentação curta da trava no `README.md`.
+- Por que foi alterado:
+  - evitar commits sem atualização da memória oficial do projeto.
+- Arquivos modificados:
+  - `.githooks/pre-commit`
+  - `scripts/install-githooks.ps1`
+  - `AGENTS.md`
+  - `README.md`
+- Impacto no bolão:
+  - nenhum impacto funcional no sistema do bolão;
+  - impacto apenas no fluxo de trabalho Git local.
+- Áreas afetadas:
+  - GitHub / Git local;
+  - documentação do projeto.
+- Testes ou verificações feitos:
+  - leitura do estado atual com `git status`;
+  - revisão do `AGENTS.md` e `README.md`;
+  - implementação da lógica de bloqueio por staging do `AGENTS.md`;
+  - ativação local do hook com `git config core.hooksPath .githooks`;
+  - teste real por `git commit` em repositórios temporários, validando:
+    - bloqueio sem `AGENTS.md`;
+    - bloqueio com arquivo do projeto staged sem `AGENTS.md` staged;
+    - liberação quando somente `AGENTS.md` está staged;
+    - liberação quando `AGENTS.md` e outro arquivo estão staged.
+- Pendências:
+  - repetir a ativação em cada PC novo usado no projeto.

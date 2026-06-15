@@ -1,0 +1,34 @@
+#!/bin/sh
+
+set -eu
+
+if [ ! -f "AGENTS.md" ]; then
+  echo ""
+  echo "Commit bloqueado: o arquivo AGENTS.md não existe na raiz do projeto."
+  echo "Crie ou restaure o AGENTS.md antes de commitar."
+  echo ""
+  exit 1
+fi
+
+staged_files="$(git diff --cached --name-only --diff-filter=ACMR)"
+
+if [ -z "$staged_files" ]; then
+  exit 0
+fi
+
+staged_non_agents="$(printf '%s\n' "$staged_files" | grep -v '^AGENTS\.md$' || true)"
+
+if [ -z "$staged_non_agents" ]; then
+  exit 0
+fi
+
+if ! printf '%s\n' "$staged_files" | grep -q '^AGENTS\.md$'; then
+  echo ""
+  echo "Commit bloqueado."
+  echo "Você alterou arquivos do projeto, mas não atualizou/stageou o AGENTS.md."
+  echo "Atualize o AGENTS.md com o resumo da sessão, rode git add AGENTS.md e tente novamente."
+  echo ""
+  exit 1
+fi
+
+exit 0

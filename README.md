@@ -1,6 +1,6 @@
-# Bolão Copa 2026
+# Bolao Copa 2026
 
-Sistema completo de bolão da Copa do Mundo 2026, feito em `HTML + CSS + JavaScript`, com foco em simplicidade, custo zero, responsividade e deploy estático.
+Sistema completo de bolao da Copa do Mundo 2026, feito em `HTML + CSS + JavaScript`, com foco em simplicidade, custo zero, responsividade e deploy estatico.
 
 ## Stack escolhida
 
@@ -10,58 +10,58 @@ Sistema completo de bolão da Copa do Mundo 2026, feito em `HTML + CSS + JavaScr
 - Tempo real leve: `Supabase Realtime`
 - Armazenamento de avatar: `Supabase Storage`
 - Deploy: `GitHub Pages`, `Vercel` ou `Netlify`
-- Fonte de dados esportivos: `TheSportsDB` como integração sugerida + fallback manual no admin / SQL seed
+- Fonte de dados esportivos: `TheSportsDB` como integracao sugerida + fallback manual no admin / SQL seed
 
-## O que já vem pronto
+## O que ja vem pronto
 
 - Login por apelido sem e-mail
 - Cadastro com nome, senha e avatar
-- 20 avatares padrão com tema futebol
+- 20 avatares padrao com tema futebol
 - Upload leve de foto
 - Ranking geral com desempate
 - Palpites por jogo
-- Palpites extras pré-copa
-- Fechamento automático 30 minutos antes
-- Liberação de visualização dos palpites após o fechamento
+- Palpites extras pre-copa
+- Fechamento automatico 30 minutos antes
+- Liberacao de visualizacao dos palpites apos o fechamento
 - Chat geral
 - Banner de avisos
 - Painel administrativo
 - Tema claro/escuro
 - Dados mock para testes imediatos
-- Estrutura de backend em SQL para produção
+- Estrutura de backend em SQL para producao
 
 ## Estrutura
 
 ```text
 world-cup-bolao-2026/
-├─ index.html
-├─ public/
-│  ├─ css/
-│  │  └─ styles.css
-│  ├─ data/
-│  ├─ assets/
-│  │  └─ avatars/
-│  └─ js/
-│     ├─ app.js
-│     └─ modules/
-│        ├─ api.js
-│        ├─ config.js
-│        ├─ mock-data.js
-│        └─ utils.js
-└─ supabase/
-   ├─ schema.sql
-   └─ seed.sql
+|- index.html
+|- public/
+|  |- css/
+|  |  `- styles.css
+|  |- data/
+|  |- assets/
+|  |  `- avatars/
+|  `- js/
+|     |- app.js
+|     `- modules/
+|        |- api.js
+|        |- config.js
+|        |- mock-data.js
+|        `- utils.js
+`- supabase/
+   |- schema.sql
+   `- seed.sql
 ```
 
 ## Rodando localmente
 
-Como o projeto é estático, você pode abrir com um servidor local simples.
+Como o projeto e estatico, voce pode abrir com um servidor local simples.
 
-### Opção 1: VS Code Live Server
+### Opcao 1: VS Code Live Server
 
 Abra a pasta e rode `index.html` com Live Server.
 
-### Opção 2: Python
+### Opcao 2: Python
 
 ```bash
 python -m http.server 5500
@@ -73,9 +73,9 @@ Depois acesse:
 
 ## Teste imediato com mock
 
-Sem configurar nada, o sistema já funciona em modo local mock.
+Sem configurar nada, o sistema ja funciona em modo local mock.
 
-Usuários de teste:
+Usuarios de teste:
 
 - `capitao` / `1234`
 - `maria10` / `1234`
@@ -83,7 +83,7 @@ Usuários de teste:
 
 Os dados ficam salvos no `localStorage`.
 
-## Configurando produção com Supabase
+## Configurando producao com Supabase
 
 ### 1. Criar projeto
 
@@ -102,12 +102,12 @@ No painel Storage, crie um bucket chamado:
 
 `avatars`
 
-Sugestão:
+Sugestao:
 
-- Público para simplificar
+- Publico para simplificar
 - Limite de upload no frontend: 2MB
 
-### 4. Atualizar configuração
+### 4. Atualizar configuracao
 
 Edite [`public/js/modules/config.js`](./public/js/modules/config.js):
 
@@ -120,22 +120,22 @@ export const SUPABASE_CONFIG = {
 };
 ```
 
-Observação:
+Observacao:
 
-- A `anon key` do Supabase é pública por natureza em apps frontend.
-- O controle real vem das funções RPC e das regras de acesso.
+- A `anon key` do Supabase e publica por natureza em apps frontend.
+- O controle real vem das funcoes RPC e das regras de acesso.
 
 ### 5. Integrar RPCs no frontend
 
-O projeto já está preparado com a camada `api.js`.
+O projeto ja esta preparado com a camada `api.js`.
 
 No momento:
 
-- O modo `mock` está funcional
+- O modo `mock` esta funcional
 - O modo `Supabase` ja esta conectado aos RPCs e tabelas principais
 - Depois de preencher `url` e `anonKey`, o frontend passa a usar o banco real
 
-As funções SQL já previstas no backend são:
+As funcoes SQL ja previstas no backend sao:
 
 - `app_register_user`
 - `app_login_user`
@@ -148,9 +148,9 @@ As funções SQL já previstas no backend são:
 - `app_admin_delete_message`
 - `app_admin_set_banner`
 
-## Sugestão de integração de resultados
+## Sugestao de integracao de resultados
 
-### Estratégia recomendada
+### Estrategia recomendada
 
 1. Sincronizar agenda e resultados de API gratuita
 2. Salvar no Supabase
@@ -166,14 +166,14 @@ Motivos:
 
 - possui plano gratuito
 - simples para consumo por `fetch`
-- boa para atualização leve de eventos
+- boa para atualizacao leve de eventos
 
 ### Fallback
 
 Se a API estiver fora ou incompleta:
 
 - admin atualiza manualmente placar/vencedor
-- ou usa importação SQL/JSON no Supabase
+- ou usa importacao SQL/JSON no Supabase
 
 ## Regras implementadas
 
@@ -186,26 +186,26 @@ Se a API estiver fora ou incompleta:
 ### Mata-mata
 
 - Placar exato no tempo normal: `+1.5`
-- Prorrogação exata: `+0.5`
+- Prorrogacao exata: `+0.5`
 - Resultado correto no tempo normal: `+0.5`
-- Acerto de quem avança: `+0.5`
-- Erro de quem avança: `-0.5`
+- Acerto de quem avanca: `+0.5`
+- Erro de quem avanca: `-0.5`
 
 ### Extras
 
-- Campeão: `+5`
+- Campeao: `+5`
 - Vice: `+3`
-- 3º lugar: `+2`
-- 4º lugar: `+2`
+- 3o lugar: `+2`
+- 4o lugar: `+2`
 - Artilheiro: `+1.5`
 - Melhor campanha na fase de grupos: `+2`
 - Total de gols: `+1` para quem chegar mais perto
 
 ## Funcionalidades admin previstas
 
-- Bloquear / desbloquear usuário
+- Bloquear / desbloquear usuario
 - Resetar senha
-- Excluir usuário
+- Excluir usuario
 - Alterar nome e avatar
 - Publicar banner de aviso
 - Atualizar resultados
@@ -215,38 +215,64 @@ Se a API estiver fora ou incompleta:
 
 ### GitHub Pages
 
-- Suba a pasta em um repositório
+- Suba a pasta em um repositorio
 - Ative GitHub Pages apontando para a branch principal
 - Se usar Supabase, mantenha as chaves em `config.js`
 
 ### Vercel
 
-- Importe o repositório
+- Importe o repositorio
 - Framework preset: `Other`
-- Output: raiz estática
+- Output: raiz estatica
 
 ### Netlify
 
-- Importe o repositório
+- Importe o repositorio
 - Publish directory: `.`
 - Sem build command
 
-## Limitações atuais da entrega
+## Limitacoes atuais da entrega
 
-- O frontend já está funcional em modo mock
-- O schema e seed do Supabase já estão prontos
-- A camada `SupabaseApiClient` ficou como ponto de conexão final para plugar produção real
-- A tabela completa oficial da Copa 2026 ainda depende da confirmação oficial/API, então o projeto usa um template completo de estrutura do torneio com partidas programáveis e exemplos preenchidos
+- O frontend ja esta funcional em modo mock
+- O schema e seed do Supabase ja estao prontos
+- A camada `SupabaseApiClient` ficou como ponto de conexao final para plugar producao real
+- A tabela completa oficial da Copa 2026 ainda depende da confirmacao oficial/API, entao o projeto usa um template completo de estrutura do torneio com partidas programaveis e exemplos preenchidos
 
-## Próximo passo recomendado
+## Proximo passo recomendado
 
-Se quiser colocar em uso real imediatamente, a ordem ideal é:
+Se quiser colocar em uso real imediatamente, a ordem ideal e:
 
 1. Configurar o Supabase
 2. Ligar `SupabaseApiClient`
-3. Importar tabela oficial dos jogos assim que a agenda estiver disponível
+3. Importar tabela oficial dos jogos assim que a agenda estiver disponivel
 4. Publicar no Vercel ou Netlify
 
-## Licença
+## Licenca
 
-Uso livre para bolão privado entre amigos.
+Uso livre para bolao privado entre amigos.
+
+## Trava de commit do AGENTS.md
+
+Este projeto possui uma trava de `pre-commit` versionada em `.githooks/` para evitar commits sem atualizar a memoria oficial do projeto.
+
+Ela serve para:
+
+- bloquear commit se `AGENTS.md` nao existir;
+- bloquear commit quando houver arquivos do projeto staged sem o `AGENTS.md` staged junto;
+- orientar a atualizar o `AGENTS.md` antes do commit.
+
+### Como ativar em um PC novo
+
+Rode:
+
+```bash
+git config core.hooksPath .githooks
+```
+
+Ou, neste projeto, execute:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\install-githooks.ps1
+```
+
+Antes de cada commit, o `AGENTS.md` deve estar atualizado e incluido no commit.
