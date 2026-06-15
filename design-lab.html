@@ -3538,6 +3538,15 @@
       width: 100%;
     }
 
+    .fixture-official-score {
+      color: #ef4444;
+      font-style: normal;
+    }
+
+    .fixture-official-score-num {
+      font-weight: 900;
+    }
+
     /* ── Countdown states ──────────────────────────────────────── */
     .fixture-countdown--yellow {
       color: #facc15;
@@ -8052,6 +8061,7 @@
         const status = fixture.dataset.status || "scheduled";
         const timeEl = fixture.querySelector(".fixture-time");
         if (!timeEl || !startsAtStr) return;
+        if (fixture.dataset.hasOfficialResult === "true") return;
 
         const startsAt = new Date(startsAtStr).getTime();
         if (Number.isNaN(startsAt)) return;
@@ -8762,9 +8772,13 @@
       const matchGroup = match.group_name || "";
       const homeCode = match.home_code || "";
       const awayCode = match.away_code || "";
+      const hasOfficialResult = match.score_home != null && match.score_away != null;
+      const fixtureFooterMarkup = hasOfficialResult
+        ? `CONCLUÍDO | <span class="fixture-official-score">${escapeHtml(homeCode)} <span class="fixture-official-score-num">${escapeHtml(match.score_home)}</span>-<span class="fixture-official-score-num">${escapeHtml(match.score_away)}</span> ${escapeHtml(awayCode)}</span>`
+        : formatFixtureTime(match.starts_at);
 
       return `
-        <article class="fixture" data-fixture-id="${match.id}" data-phase="${matchPhase}" data-group="${matchGroup}" data-game-date="${getFixtureDateKey(match.starts_at)}" data-starts-at="${match.starts_at || ""}" data-status="${match.status || "scheduled"}" data-saved="false">
+        <article class="fixture" data-fixture-id="${match.id}" data-phase="${matchPhase}" data-group="${matchGroup}" data-game-date="${getFixtureDateKey(match.starts_at)}" data-starts-at="${match.starts_at || ""}" data-status="${match.status || "scheduled"}" data-has-official-result="${hasOfficialResult ? "true" : "false"}" data-saved="false">
           <div class="fixture-row">
             <div>
               <div class="badge-code">${homeCode}</div>
@@ -8807,7 +8821,7 @@
               </div>
             </div>
           </div>
-          <div class="fixture-time">${formatFixtureTime(match.starts_at)}</div>
+          <div class="fixture-time">${fixtureFooterMarkup}</div>
         </article>
       `;
     }

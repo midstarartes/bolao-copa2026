@@ -634,6 +634,34 @@ Antes de qualquer commit:
 
 ## 32. Registro de mudanças do AGENTS.md
 
+### Sessao 2026-06-15 - resultado oficial no rodape dos cards de jogos
+
+- O que foi alterado:
+  - cards da aba Jogos passam a esconder data/hora quando o jogo tem resultado oficial (`score_home` e `score_away`);
+  - no lugar da data/hora aparece `CONCLUÍDO | AAA X-X BBB`;
+  - o trecho do placar oficial fica vermelho e apenas os numeros ficam em negrito;
+  - o timer/countdown ignora cards que ja possuem resultado oficial para nao sobrescrever o texto.
+- Por que foi alterado:
+  - deixar mais claro para todos os usuarios quais jogos ja foram concluidos e qual foi o placar oficial.
+- Arquivos modificados:
+  - `design-lab.html`
+  - `AGENTS.md`
+- Impacto no bolao:
+  - alteracao visual/informativa na aba Jogos;
+  - vale para jogos ja lancados e proximos jogos assim que o ADMIN salvar resultado oficial;
+  - nao altera pontuacao, ranking, historico, missoes, palpites, usuarios, Supabase, RLS ou SQL.
+- Areas afetadas:
+  - visual: afetado;
+  - regras de negocio, Supabase, API, GitHub e Vercel: sem alteracao funcional nesta tarefa.
+- Testes ou verificacoes feitos:
+  - `git status`;
+  - leitura do `AGENTS.md`;
+  - leitura dos commits recentes;
+  - `npm.cmd run build`;
+  - `git diff --check`.
+- Pendencias:
+  - validar visualmente no site publicado em jogos ja concluidos apos deploy.
+
 ### Sessao 2026-06-15 - troca rapida protegida entre LORDEWEL e ADMIN
 
 - O que foi alterado:
