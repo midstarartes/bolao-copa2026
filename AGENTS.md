@@ -641,7 +641,8 @@ Antes de qualquer commit:
   - criacao de botao visual abaixo do card de login/logout para troca entre perfis;
   - o botao mostra `ADMIN` somente quando o usuario logado e `LORDEWEL`;
   - o botao mostra `LORDEWEL` somente quando o usuario logado e `ADMIN`;
-  - a rota valida o token atual no Supabase antes de autenticar o perfil destino.
+  - a rota valida o token atual no Supabase antes de autenticar o perfil destino;
+  - correcao da chave anon fallback da nova Function para bater com a chave usada pelo frontend.
 - Por que foi alterado:
   - facilitar a alternancia operacional entre usuario pessoal e administrador sem expor o botao para outros participantes.
 - Arquivos modificados:
@@ -663,9 +664,10 @@ Antes de qualquer commit:
   - leitura dos commits recentes;
   - `node --check api/quick-switch-user.js`;
   - `npm.cmd run build`;
-  - configuracao da variavel `QUICK_SWITCH_PERSONAL_PASSWORD` na Vercel Production.
+  - configuracao da variavel `QUICK_SWITCH_PERSONAL_PASSWORD` na Vercel Production;
+  - teste controlado em producao da troca `LORDEWEL` -> `ADMIN` -> `LORDEWEL`, sem imprimir tokens.
 - Pendencias:
-  - validar em producao logado como `LORDEWEL` e como `ADMIN`.
+  - validar visualmente no navegador logado como `LORDEWEL` e como `ADMIN`.
 
 ### Sessao 2026-06-15 - API desativada e resultados manuais como fonte principal
 

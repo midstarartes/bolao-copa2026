@@ -2,7 +2,7 @@ const SUPABASE_URL =
   process.env.SUPABASE_URL || "https://zoktbengtliqczjlemdk.supabase.co";
 const SUPABASE_ANON_KEY =
   process.env.SUPABASE_ANON_KEY ||
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhc2UiLCJyZWYiOiJ6b2t0YmVuZ3RsaXFjempsZW1kayIsInJvbGUiOiJhbm9uIiwiaWF0IjoxNzc4MTYyMzgwLCJleHAiOjIwOTM3MzgzODB9.sltr6vztakKxqeMjljCOMtlN3_eIl_jItY-xegxjeWE";
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpva3RiZW5ndGxpcWN6amxlbWRrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgxNjIzODAsImV4cCI6MjA5MzczODM4MH0.sltr6vztakKxqeMjljCOMtlN3_eIl_jItY-xegxjeWE";
 
 const ADMIN_USERNAME = process.env.ADMIN_USERNAME || "ADMIN";
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "";
