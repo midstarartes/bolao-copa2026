@@ -10,6 +10,8 @@ const THE_SPORTS_DB_WORLD_CUP_LEAGUE_ID =
 const ADMIN_USERNAME = process.env.ADMIN_USERNAME || "";
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "";
 const CRON_SECRET = process.env.CRON_SECRET || "";
+const API_SYNC_DISABLED_MESSAGE =
+  "Sincronizacao por API desativada. Lance os resultados oficiais manualmente pelo painel ADMIN.";
 
 const TEAM_ALIAS_MAP = {
   ALG: ["Argélia", "Algeria"],
@@ -665,6 +667,12 @@ function formatCooldownMessage(remainingMs) {
 }
 
 async function handler(req, res) {
+  return res.status(410).json({
+    ok: false,
+    disabled: true,
+    message: API_SYNC_DISABLED_MESSAGE,
+  });
+
   try {
     if (req.method === "GET") {
       let adminToken = null;

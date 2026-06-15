@@ -2,7 +2,7 @@
 
 ## 1. Visão geral do projeto
 
-Este projeto é um bolão da Copa do Mundo 2026 com interface web, autenticação própria via Supabase, ranking em tempo real, palpites por jogo, palpites extras, sistema de moedas, buffs, histórico de desempenho, painel administrativo e sincronização de resultados oficiais via API externa.
+Este projeto é um bolão da Copa do Mundo 2026 com interface web, autenticação própria via Supabase, ranking em tempo real, palpites por jogo, palpites extras, sistema de moedas, buffs, histórico de desempenho e painel administrativo. No estado atual, os resultados oficiais devem ser lançados manualmente pelo ADMIN; a sincronização por API externa foi desativada para não interferir no bolão.
 
 O estado atual do projeto indica que a aplicação principal está concentrada em um único arquivo frontend grande, [design-lab.html](C:\Users\dunor\OneDrive\Área de Trabalho\PROGRAMAÇÃO\bolao-copa2026\design-lab.html), enquanto as regras críticas de negócio estão centralizadas em funções SQL do Supabase.
 
@@ -24,16 +24,16 @@ Também permitir que um administrador:
 - altere palpites e extras manualmente;
 - lance resultados oficiais manualmente;
 - acompanhe auditoria;
-- use a API como apoio, mantendo o admin como fallback oficial.
+- mantenha o lançamento manual como fonte principal de verdade dos resultados.
 
 ## 3. Stack usada
 
 - Frontend: HTML + CSS + JavaScript vanilla.
 - Backend lógico: Supabase via tabelas, RPCs, RLS e patches SQL.
-- API externa de resultados: TheSportsDB.
-- Função serverless: Vercel Function em `api/the-sports-sync.js`.
+- API externa de resultados: TheSportsDB, atualmente desativada.
+- Função serverless: Vercel Function em `api/the-sports-sync.js`, atualmente respondendo como desativada e sem gravar resultados.
 - Deploy: Vercel.
-- Automação de sincronização: GitHub Actions.
+- Automação de sincronização: GitHub Actions mantido apenas como workflow manual/no-op, sem agenda automática.
 - Build: script Node.js simples via `npm run build`.
 
 ## 4. Como rodar localmente
@@ -79,7 +79,7 @@ O que foi confirmado:
 
 - branch principal atual: `main`;
 - existe workflow em [.github/workflows/sync-results.yml](C:\Users\dunor\OneDrive\Área de Trabalho\PROGRAMAÇÃO\bolao-copa2026\.github\workflows\sync-results.yml);
-- esse workflow agenda sincronizações automáticas da API e também pode ser executado manualmente com `workflow_dispatch`.
+- esse workflow foi desativado como automação: não possui mais `schedule` e, quando executado manualmente com `workflow_dispatch`, apenas informa que a sincronização por API está desativada.
 
 Últimos commits lidos durante a análise:
 
@@ -99,7 +99,7 @@ O que foi confirmado:
 O projeto está preparado para:
 
 - hospedar o frontend estático;
-- expor a rota `/api/the-sports-sync`;
+- expor a rota `/api/the-sports-sync`, atualmente bloqueada para impedir gravações por API;
 - usar variáveis de ambiente para Supabase, API externa, admin e cron.
 
 Variáveis observadas no código da função:
@@ -436,21 +436,21 @@ Principal backend do sistema.
 
 ### TheSportsDB
 
-Usada para puxar resultados oficiais.
+Integracao externa que ja foi usada como apoio para puxar resultados oficiais, mas esta desativada no estado atual. A fonte principal de resultado correto agora e o lancamento manual pelo ADMIN.
 
 ### Vercel Function
 
 [api/the-sports-sync.js](C:\Users\dunor\OneDrive\Área de Trabalho\PROGRAMAÇÃO\bolao-copa2026\api\the-sports-sync.js) faz:
 
-- leitura de jogos relevantes;
-- consulta à API;
-- pareamento entre evento externo e jogo interno;
-- atualização do resultado oficial;
-- persistência do status da sincronização.
+- atualmente responde que a sincronizacao por API esta desativada;
+- nao consulta a TheSportsDB;
+- nao grava resultados no Supabase;
+- nao altera ranking, pontuacao, palpites ou historico;
+- deve ser reativada somente com revisao cuidadosa do provedor/API, do pareamento e da protecao contra sobrescrever resultado manual.
 
 ### GitHub Actions
 
-Workflow em [.github/workflows/sync-results.yml](C:\Users\dunor\OneDrive\Área de Trabalho\PROGRAMAÇÃO\bolao-copa2026\.github\workflows\sync-results.yml) agenda as chamadas automáticas à API.
+Workflow em [.github/workflows/sync-results.yml](C:\Users\dunor\OneDrive\Área de Trabalho\PROGRAMAÇÃO\bolao-copa2026\.github\workflows\sync-results.yml) esta desativado como automacao. Ele nao agenda chamadas automaticas e, quando rodado manualmente, apenas registra no log que a API esta desativada.
 
 ## 22. Padrões visuais
 
@@ -519,6 +519,7 @@ Baseado nos últimos commits lidos:
 - refinamento visual do pódio e da parte de baixo do ranking;
 - endurecimento do cron da API;
 - correção do buff de aposta de moedas com saldo 1.
+- desativacao segura da sincronizacao por API para que os resultados manuais do ADMIN sejam a fonte principal.
 
 ## 28. Lista dos arquivos mais importantes e função de cada um
 
@@ -531,7 +532,7 @@ Baseado nos últimos commits lidos:
 - [vercel.json](C:\Users\dunor\OneDrive\Área de Trabalho\PROGRAMAÇÃO\bolao-copa2026\vercel.json)
   - configuração de deploy e segurança.
 - [api/the-sports-sync.js](C:\Users\dunor\OneDrive\Área de Trabalho\PROGRAMAÇÃO\bolao-copa2026\api\the-sports-sync.js)
-  - sincronização automática de resultados oficiais.
+  - rota de sincronizacao por API atualmente desativada; nao deve gravar resultados.
 - [scripts/build-vercel.mjs](C:\Users\dunor\OneDrive\Área de Trabalho\PROGRAMAÇÃO\bolao-copa2026\scripts\build-vercel.mjs)
   - gera a pasta `dist`.
 - [supabase/schema.sql](C:\Users\dunor\OneDrive\Área de Trabalho\PROGRAMAÇÃO\bolao-copa2026\supabase\schema.sql)
@@ -543,7 +544,7 @@ Baseado nos últimos commits lidos:
 - [supabase/patch-031-fix-mission-progress-columns.sql](C:\Users\dunor\OneDrive\Área de Trabalho\PROGRAMAÇÃO\bolao-copa2026\supabase\patch-031-fix-mission-progress-columns.sql)
   - conserto de missão/moedas após mudança de regra.
 - [.github/workflows/sync-results.yml](C:\Users\dunor\OneDrive\Área de Trabalho\PROGRAMAÇÃO\bolao-copa2026\.github\workflows\sync-results.yml)
-  - agenda e dispara sincronização automática.
+  - workflow manual/no-op; nao agenda sincronizacao automatica.
 - [README.md](C:\Users\dunor\OneDrive\Área de Trabalho\PROGRAMAÇÃO\bolao-copa2026\README.md)
   - documentação histórica, possivelmente desatualizada.
 
@@ -628,6 +629,43 @@ Antes de qualquer commit:
 3. confirmar que a trava está ativa neste PC.
 
 ## 32. Registro de mudanças do AGENTS.md
+
+### Sessao 2026-06-15 - API desativada e resultados manuais como fonte principal
+
+- O que foi alterado:
+  - desativacao segura da rota `/api/the-sports-sync`;
+  - remocao do agendamento automatico do GitHub Actions;
+  - remocao dos botoes visuais de sincronizar/buscar resultado pela API;
+  - remocao da exibicao de ultima sincronizacao na aba Jogos;
+  - atualizacao desta memoria oficial do projeto.
+- Por que foi alterado:
+  - impedir que a API externa interfira, sobrescreva ou gere conflito com resultados oficiais lancados manualmente;
+  - manter o painel ADMIN como fonte principal de verdade dos resultados neste momento.
+- Arquivos modificados:
+  - `api/the-sports-sync.js`
+  - `.github/workflows/sync-results.yml`
+  - `design-lab.html`
+  - `AGENTS.md`
+- Impacto no bolao:
+  - resultados oficiais passam a depender do lancamento manual pelo ADMIN;
+  - pontuacao, ranking, historico e acertos continuam sendo atualizados pelo fluxo manual existente;
+  - a API nao grava mais resultados e nao deve alterar placares.
+- Areas afetadas:
+  - API: afetada, agora desativada;
+  - Vercel: afetada somente na rota serverless, que responde como desativada;
+  - GitHub: afetado no workflow, que nao agenda mais chamadas;
+  - Visual: afetado pela retirada dos atalhos/status da API;
+  - Supabase, pontuacao, ranking, palpites e usuarios: nao foram alterados.
+- Testes ou verificacoes feitos:
+  - `git status` antes das alteracoes;
+  - leitura dos commits recentes;
+  - revisao do fluxo de API, workflow, frontend e AGENTS;
+  - `node --check api/the-sports-sync.js`;
+  - `npm.cmd run build`;
+  - revisao de `git diff --stat` e diff dos arquivos funcionais alterados.
+- Pendencias:
+  - fazer deploy na Vercel apos commit/push para a desativacao valer em producao;
+  - se no futuro for contratar/pagar outra API, reativar apenas com protecao explicita para nao sobrescrever resultado manual sem validacao.
 
 ### Sessão 2026-06-15 - trava prática para commits sem memória atualizada
 

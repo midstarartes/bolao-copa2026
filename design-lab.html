@@ -5555,17 +5555,12 @@
 
         </nav>
 
-        <div class="sync-status-bar" id="sync-status-bar">
-          <p class="sync-status-text" id="sync-status-text">Última sincronização: A copa ainda não começou.</p>
-        </div>
-
         <div class="admin-results-bar" id="admin-results-bar">
           <div class="admin-results-copy">
             <p class="admin-results-label">Painel de resultados oficiais</p>
-            <p class="admin-results-hint">Use esse atalho para lançar o placar oficial e atualizar ranking e histórico em tempo real. A API fica como apoio e o admin continua sendo o fallback oficial.</p>
+            <p class="admin-results-hint">Use esse atalho para lançar o placar oficial manualmente e atualizar ranking e histórico em tempo real.</p>
           </div>
           <div class="results-actions">
-            <button class="admin-results-trigger admin-results-trigger--api" id="admin-results-api-trigger" type="button">Sincronizar jogos de hoje pela API</button>
             <button class="admin-results-trigger" id="admin-results-trigger" type="button">Lançar resultado oficial</button>
           </div>
         </div>
@@ -6386,7 +6381,6 @@
         </div>
         <div class="results-feedback" id="results-feedback"></div>
         <div class="results-actions">
-          <button class="results-api" id="results-fetch-api" type="button">Buscar da API</button>
           <button class="results-clear" id="results-clear" type="button">Apagar resultado</button>
           <button class="results-save" id="results-save" type="submit">Salvar resultado oficial</button>
         </div>
@@ -10618,10 +10612,6 @@
       openResultsModal();
     });
 
-    adminResultsApiTrigger?.addEventListener("click", () => {
-      void syncTodayMatchesFromApi();
-    });
-
     hydrateMissionCards();
 
     missionCards.forEach((card) => {
@@ -10694,10 +10684,6 @@
 
     resultsMatchSelect?.addEventListener("change", () => {
       fillResultsForm(resultsMatchSelect.value);
-    });
-
-    resultsFetchApi?.addEventListener("click", () => {
-      void syncSelectedMatchFromApi();
     });
 
     resultsForm?.addEventListener("submit", (event) => {
@@ -11357,7 +11343,6 @@
     await fetchCurrentUserFromBackend();
     updateLoginButton();
     updateCoinsCard();
-    await loadApiSyncStatus();
     await restorePredictionsForCurrentUser();
     await restoreExtrasSelections();
     refreshMissionCards();

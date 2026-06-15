@@ -1,59 +1,18 @@
-name: Sincronizar resultados da Copa
+name: Sincronizar resultados da Copa (desativado)
 
 concurrency:
   group: sync-resultados-copa
   cancel-in-progress: false
 
 on:
-  schedule:
-    # Horários em UTC. Em Brasília (UTC-3), roda a cada 5 min de 12h30 até 04h00.
-    - cron: "30-59/5 15 * * *"
-    - cron: "*/5 16-23 * * *"
-    - cron: "*/5 0-6 * * *"
-    - cron: "0 7 * * *"
   workflow_dispatch:
 
 jobs:
-  sync-results:
+  sync-results-disabled:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 2
     steps:
-      - name: Chamar sincronizacao da API
-        env:
-          SYNC_URL: https://bolao-copa2026-alpha.vercel.app/api/the-sports-sync
-          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+      - name: Sincronizacao automatica desativada
         run: |
-          set -euo pipefail
-
-          if [ -z "$CRON_SECRET" ]; then
-            echo "ERRO: Secret CRON_SECRET nao configurado no GitHub."
-            exit 1
-          fi
-
-          echo "Chamando sincronizacao automatica..."
-          response=$(curl -sS --max-time 30 -w "\n%{http_code}" \
-            -H "Authorization: Bearer $CRON_SECRET" \
-            "${SYNC_URL}?ts=$(date +%s)" || echo -e "\nCURL_FAIL")
-
-          body=$(echo "$response" | sed '$d')
-          status=$(echo "$response" | tail -n 1)
-
-          echo "HTTP status: $status"
-          echo "$body"
-
-          if [ "$status" = "CURL_FAIL" ]; then
-            echo "ERRO: Nao foi possivel conectar ao endpoint."
-            exit 1
-          fi
-
-          if [ "$status" -ge 500 ]; then
-            echo "ERRO: Endpoint retornou erro $status."
-            exit 1
-          fi
-
-          if [ "$status" -lt 200 ] || [ "$status" -ge 300 ]; then
-            echo "Falha na sincronizacao automatica (status $status)."
-            exit 1
-          fi
-
-          echo "Sincronizacao concluida com sucesso."
+          echo "A sincronizacao automatica por API esta desativada."
+          echo "Os resultados oficiais devem ser lancados manualmente pelo painel ADMIN."
