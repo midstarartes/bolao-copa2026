@@ -111,6 +111,8 @@ Variáveis observadas no código da função:
 - `ADMIN_USERNAME`
 - `ADMIN_PASSWORD`
 - `CRON_SECRET`
+- `QUICK_SWITCH_PERSONAL_USERNAME`
+- `QUICK_SWITCH_PERSONAL_PASSWORD`
 
 ## 8. Como funciona o Supabase
 
@@ -533,6 +535,8 @@ Baseado nos últimos commits lidos:
   - configuração de deploy e segurança.
 - [api/the-sports-sync.js](C:\Users\dunor\OneDrive\Área de Trabalho\PROGRAMAÇÃO\bolao-copa2026\api\the-sports-sync.js)
   - rota de sincronizacao por API atualmente desativada; nao deve gravar resultados.
+- [api/quick-switch-user.js](C:\Users\dunor\OneDrive\Área de Trabalho\PROGRAMAÇÃO\bolao-copa2026\api\quick-switch-user.js)
+  - troca rapida protegida entre `LORDEWEL` e `ADMIN`, validando a sessao atual antes de autenticar o perfil destino.
 - [scripts/build-vercel.mjs](C:\Users\dunor\OneDrive\Área de Trabalho\PROGRAMAÇÃO\bolao-copa2026\scripts\build-vercel.mjs)
   - gera a pasta `dist`.
 - [supabase/schema.sql](C:\Users\dunor\OneDrive\Área de Trabalho\PROGRAMAÇÃO\bolao-copa2026\supabase\schema.sql)
@@ -629,6 +633,39 @@ Antes de qualquer commit:
 3. confirmar que a trava está ativa neste PC.
 
 ## 32. Registro de mudanças do AGENTS.md
+
+### Sessao 2026-06-15 - troca rapida protegida entre LORDEWEL e ADMIN
+
+- O que foi alterado:
+  - criacao da rota serverless `api/quick-switch-user.js`;
+  - criacao de botao visual abaixo do card de login/logout para troca entre perfis;
+  - o botao mostra `ADMIN` somente quando o usuario logado e `LORDEWEL`;
+  - o botao mostra `LORDEWEL` somente quando o usuario logado e `ADMIN`;
+  - a rota valida o token atual no Supabase antes de autenticar o perfil destino.
+- Por que foi alterado:
+  - facilitar a alternancia operacional entre usuario pessoal e administrador sem expor o botao para outros participantes.
+- Arquivos modificados:
+  - `design-lab.html`
+  - `api/quick-switch-user.js`
+  - `AGENTS.md`
+- Impacto no bolao:
+  - melhora de fluxo administrativo;
+  - nao altera pontuacao, ranking, palpites, moedas, buffs ou resultados;
+  - afeta autenticacao apenas para a troca controlada entre `LORDEWEL` e `ADMIN`.
+- Areas afetadas:
+  - autenticacao: afetada de forma pontual;
+  - Vercel: exige variavel segura `QUICK_SWITCH_PERSONAL_PASSWORD`;
+  - visual: adiciona botao de troca quando aplicavel;
+  - Supabase: nao houve patch SQL nem mudanca de banco.
+- Testes ou verificacoes feitos:
+  - `git status`;
+  - leitura do `AGENTS.md`;
+  - leitura dos commits recentes;
+  - `node --check api/quick-switch-user.js`;
+  - `npm.cmd run build`;
+  - configuracao da variavel `QUICK_SWITCH_PERSONAL_PASSWORD` na Vercel Production.
+- Pendencias:
+  - validar em producao logado como `LORDEWEL` e como `ADMIN`.
 
 ### Sessao 2026-06-15 - API desativada e resultados manuais como fonte principal
 

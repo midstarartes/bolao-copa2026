@@ -200,6 +200,45 @@
       display: block;
     }
 
+    .account-switcher {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 6px;
+      min-width: 116px;
+    }
+
+    .quick-switch-button {
+      display: none;
+      width: 100%;
+      min-height: 30px;
+      border: 1px solid rgba(255, 222, 120, 0.36);
+      border-radius: 10px;
+      background:
+        linear-gradient(180deg, rgba(255, 230, 150, 0.22), rgba(118, 74, 8, 0.88)),
+        linear-gradient(135deg, #a16207, #5c3604);
+      color: #fff7d6;
+      font: inherit;
+      font-size: 0.66rem;
+      font-weight: 900;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      cursor: pointer;
+      box-shadow:
+        0 10px 18px rgba(0, 0, 0, 0.36),
+        inset 0 1px 0 rgba(255, 255, 255, 0.22);
+    }
+
+    .quick-switch-button.is-visible {
+      display: inline-grid;
+      place-items: center;
+    }
+
+    .quick-switch-button:disabled {
+      cursor: wait;
+      opacity: 0.7;
+    }
+
     .coins-card {
       min-width: 116px;
       min-height: 58px;
@@ -5443,13 +5482,16 @@
           <span class="coins-card-label">Moedas</span>
         </div>
         <span class="header-edition">Edição especial entre amigos</span>
-        <a class="login-card" href="#" aria-label="Login">
-          <span class="login-card-avatar" id="login-card-avatar" aria-hidden="true"></span>
-          <div class="login-card-text">
-            <span class="login-card-user" id="login-card-user"></span>
-            <span class="login-card-label" id="login-card-label">Login</span>
-          </div>
-        </a>
+        <div class="account-switcher">
+          <a class="login-card" href="#" aria-label="Login">
+            <span class="login-card-avatar" id="login-card-avatar" aria-hidden="true"></span>
+            <div class="login-card-text">
+              <span class="login-card-user" id="login-card-user"></span>
+              <span class="login-card-label" id="login-card-label">Login</span>
+            </div>
+          </a>
+          <button class="quick-switch-button" id="quick-switch-button" type="button" aria-live="polite"></button>
+        </div>
       </div>
       <h1>BOLÃO COPA <img class="header-logo" src="https://commons.wikimedia.org/wiki/Special:FilePath/2026%20FIFA%20World%20Cup%20emblem.svg" alt="Logo oficial da Copa do Mundo 2026"></h1>
       <p>Vá até a aba &ldquo;REGRAS&rdquo; para entender como funcionará tudo</p>
@@ -6611,6 +6653,7 @@
     const loginTrigger = document.querySelector(".login-card");
     const loginCardUser = document.getElementById("login-card-user");
     const loginCardLabel = document.getElementById("login-card-label");
+    const quickSwitchButton = document.getElementById("quick-switch-button");
     const authModal = document.getElementById("auth-modal");
     const authClose = document.getElementById("auth-close");
     const toggleRegister = document.getElementById("toggle-register");
@@ -6776,6 +6819,8 @@
     const THE_SPORTS_DB_WORLD_CUP_LEAGUE_ID = "4429";
     const THE_SPORTS_DB_CACHE_KEY = "designLabTheSportsDbCache";
     const THE_SPORTS_DB_CACHE_TTL_MS = 20 * 60 * 1000;
+    const QUICK_SWITCH_ADMIN_USER = "ADMIN";
+    const QUICK_SWITCH_PERSONAL_USER = "LORDEWEL";
     const SUPABASE_URL = "https://zoktbengtliqczjlemdk.supabase.co";
     const SUPABASE_ANON_KEY =
       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpva3RiZW5ndGxpcWN6amxlbWRrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgxNjIzODAsImV4cCI6MjA5MzczODM4MH0.sltr6vztakKxqeMjljCOMtlN3_eIl_jItY-xegxjeWE";
@@ -7194,6 +7239,68 @@
       if (missionsTabCoins) missionsTabCoins.textContent = currentCoins;
       if (buffsCoins) {
         buffsCoins.textContent = `Moedas: ${getCurrentUserCoins()}`;
+      }
+    }
+
+    function getQuickSwitchTarget(user = getCurrentUser()) {
+      const username = String(user?.username || "").trim().toUpperCase();
+      if (username === QUICK_SWITCH_PERSONAL_USER && !user?.isAdmin) return QUICK_SWITCH_ADMIN_USER;
+      if (username === QUICK_SWITCH_ADMIN_USER && user?.isAdmin) return QUICK_SWITCH_PERSONAL_USER;
+      return "";
+    }
+
+    function updateQuickSwitchButton() {
+      if (!quickSwitchButton) return;
+      const target = getQuickSwitchTarget();
+      if (!target) {
+        quickSwitchButton.classList.remove("is-visible");
+        quickSwitchButton.textContent = "";
+        quickSwitchButton.disabled = false;
+        return;
+      }
+
+      quickSwitchButton.textContent = target;
+      quickSwitchButton.dataset.target = target;
+      quickSwitchButton.classList.add("is-visible");
+      quickSwitchButton.disabled = false;
+    }
+
+    async function quickSwitchAccount() {
+      const target = getQuickSwitchTarget();
+      const token = getBackendToken();
+      if (!target || !token || !BACKEND_ENABLED || !quickSwitchButton) return;
+
+      const previousLabel = quickSwitchButton.textContent;
+      quickSwitchButton.disabled = true;
+      quickSwitchButton.textContent = "Entrando...";
+
+      try {
+        const response = await fetch("/api/quick-switch-user", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ target, token }),
+        });
+
+        const payload = await response.json();
+        if (!response.ok || !payload?.ok || !payload?.token || !payload?.user) {
+          throw new Error(payload?.message || "Nao foi possivel trocar de perfil agora.");
+        }
+
+        closeProfilePopup();
+        closeModal();
+        closeWelcomeModal();
+        setBackendToken(payload.token);
+        localStorage.removeItem(EXTRAS_STORAGE_KEY);
+        await fetchBackendUsers();
+        setCurrentUser(mapBackendUser(payload.user));
+        applyGameFilters(true);
+        refreshMissionCards();
+      } catch (error) {
+        console.error(error);
+        quickSwitchButton.textContent = previousLabel;
+        alert(error.message || "Nao foi possivel trocar de perfil agora.");
+      } finally {
+        updateQuickSwitchButton();
       }
     }
 
@@ -11129,6 +11236,7 @@
       }
 
       updateCoinsCard();
+      updateQuickSwitchButton();
       updateLanterninhaIndicators();
     }
 
@@ -11193,6 +11301,11 @@
         return;
       }
       openModal();
+    });
+
+    quickSwitchButton?.addEventListener("click", (event) => {
+      event.preventDefault();
+      void quickSwitchAccount();
     });
 
     authClose.addEventListener("click", closeModal);
