@@ -522,6 +522,10 @@ Baseado nos últimos commits lidos:
 - endurecimento do cron da API;
 - correção do buff de aposta de moedas com saldo 1.
 - desativacao segura da sincronizacao por API para que os resultados manuais do ADMIN sejam a fonte principal.
+- correcao manual no Supabase em producao:
+  - `jogo-20` AUT x JOR: `starts_at = 2026-06-17T04:00:00.000Z`;
+  - `jogo-36` TUN x JPN: `starts_at = 2026-06-21T04:00:00.000Z`;
+  - motivo: estavam com um dia a menos e fechavam palpites antes da hora correta.
 
 ## 28. Lista dos arquivos mais importantes e função de cada um
 

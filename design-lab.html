@@ -5513,7 +5513,7 @@
       <nav class="top-nav" id="top-nav" aria-label="Menu principal">
         <button class="top-nav-button is-active" type="button" data-tab-target="tab-jogos">Jogos</button>
         <button class="top-nav-button" type="button" data-tab-target="tab-extras">Extras<span class="top-nav-badge" id="extras-nav-badge">8</span></button>
-        <button class="top-nav-button" type="button" data-tab-target="tab-moedas">Moedas</button>
+        <button class="top-nav-button" type="button" data-tab-target="tab-moedas">Moedas<span class="top-nav-badge is-hidden" id="missions-nav-badge">0</span></button>
         <button class="top-nav-button" type="button" data-tab-target="tab-ranking">Ranking</button>
         <button class="top-nav-button" type="button" data-tab-target="tab-regras">Regras</button>
         <button class="top-nav-button top-nav-button--admin" type="button" data-tab-target="tab-admin">Admin</button>
@@ -6649,6 +6649,7 @@
     const coinsCardValue = document.getElementById("coins-card-value");
     const missionsTabCoins = document.getElementById("missions-tab-coins");
     const extrasNavBadge = document.getElementById("extras-nav-badge");
+    const missionsNavBadge = document.getElementById("missions-nav-badge");
     const statusFilter = document.getElementById("filter-status");
     const phaseFilter = document.getElementById("filter-phase");
     const groupFilter = document.getElementById("filter-group");
@@ -9215,6 +9216,26 @@
       return fallbackDefinition ? { current: 0, total: fallbackDefinition.total || 1 } : null;
     }
 
+    function getPendingMissionClaimsCount() {
+      const currentUser = getCurrentUser();
+      if (!currentUser?.username || currentUser.isAdmin) return 0;
+
+      const userRecord = getUserRecord(currentUser.username);
+      return missionOrder.reduce((total, missionId) => {
+        const progress = getMissionProgress(missionId);
+        const claimed = Boolean(userRecord?.missionClaims?.[missionId]);
+        if (!progress || claimed) return total;
+        return progress.current >= progress.total ? total + 1 : total;
+      }, 0);
+    }
+
+    function updateMissionsBadge() {
+      if (!missionsNavBadge) return;
+      const pendingCount = getPendingMissionClaimsCount();
+      missionsNavBadge.textContent = String(pendingCount);
+      missionsNavBadge.classList.toggle("is-hidden", pendingCount === 0);
+    }
+
     function refreshMissionCards() {
       const currentUser = getCurrentUser();
       missionCards.forEach((card) => {
@@ -9258,6 +9279,7 @@
           claimButton.disabled = true;
         }
       });
+      updateMissionsBadge();
     }
 
     async function claimMission(missionId) {
@@ -9305,6 +9327,7 @@
         if (!updatedUser) return;
         setCurrentUser(updatedUser);
       }
+      refreshMissionCards();
     }
 
     function openWelcomeModal() {
@@ -9474,6 +9497,10 @@
     async function cancelBuffForFixture(fixture, buffId) {
       const currentUser = getCurrentUser();
       if (!currentUser?.username || !fixture) return null;
+
+      if (isFixtureClosedForBuffChanges(fixture)) {
+        throw new Error("Jogo fechado. Não é possível cancelar buff deste jogo.");
+      }
 
       if (!BACKEND_ENABLED) {
         const removedBuff = removeBuffFromFixture(fixture, buffId);
@@ -10024,6 +10051,18 @@
       return false;
     }
 
+    function isFixtureClosedForBuffChanges(fixture) {
+      if (!fixture) return true;
+      const status = String(fixture.dataset.status || "").toLowerCase();
+      const hasOfficialResult = fixture.dataset.hasOfficialResult === "true";
+      const startsAt = new Date(fixture.dataset.startsAt || "").getTime();
+      const marketClosed = Number.isFinite(startsAt)
+        ? Date.now() >= startsAt - 30 * 60 * 1000
+        : true;
+
+      return hasOfficialResult || status === "completed" || status === "cancelled" || marketClosed;
+    }
+
     function hasConflictingMultiplier(activeBuffs, buffId) {
       // Não há mais conflito entre multiplicadores (pontuação-dobrada é o único)
       return false;
@@ -10035,6 +10074,7 @@
       const phase = activeBuffFixture?.dataset.phase || "";
       const activeBuffs = getCurrentUserBuffsForFixture(activeBuffFixture);
       const availableTargets = getAvailableTargets();
+      const buffsLocked = isFixtureClosedForBuffChanges(activeBuffFixture);
 
       buffsCoins.textContent = `Moedas: ${currentCoins}`;
       buffsList.innerHTML = buffCatalog
@@ -10048,18 +10088,22 @@
           const noTargetsAvailable =
             (buff.id === "zerar-adversario" || buff.id === "meia-adversario") &&
             !hasSelectableTargetForBuff(buff.id);
-          const disabled = !alreadyActive && (!phaseAllowed || !enoughCoins || hasConflict || requiresLogin || noTargetsAvailable);
+          const disabled = buffsLocked || (!alreadyActive && (!phaseAllowed || !enoughCoins || hasConflict || requiresLogin || noTargetsAvailable));
 
           let stateText = "";
           if (alreadyActive) {
             const activeEntry = activeBuffs.find((entry) => entry.id === buff.id);
-            if (isCoinBet && activeEntry?.target) {
+            if (buffsLocked) {
+              stateText = activeEntry?.target ? `Usado em ${escapeHtml(activeEntry.target)} • bloqueado` : "Usado neste jogo • bloqueado";
+            } else if (isCoinBet && activeEntry?.target) {
               stateText = `Apostando 1 moeda • clique para cancelar`;
             } else {
               stateText = activeEntry?.target ? `Ativo em ${escapeHtml(activeEntry.target)} • clique para cancelar` : "Ativo neste jogo • clique para cancelar";
             }
           } else if (requiresLogin) {
             stateText = "Faça login para usar moedas";
+          } else if (buffsLocked) {
+            stateText = "Jogo fechado";
           } else if (!phaseAllowed) {
             const phaseMessages = {
               "draw-protected":   "Indisponível na Final e Disputa de 3°",
@@ -10273,6 +10317,17 @@
 
       const activeBuffs = getCurrentUserBuffsForFixture(activeBuffFixture);
       const existingBuff = activeBuffs.find((entry) => entry.id === buffId);
+
+      if (isFixtureClosedForBuffChanges(activeBuffFixture)) {
+        showBuffFeedback(
+          existingBuff
+            ? "Buff usado neste jogo. Cancelamento bloqueado após o fechamento."
+            : "Jogo fechado para uso de buffs.",
+          "error"
+        );
+        renderBuffList();
+        return;
+      }
 
       if (existingBuff) {
         try {
