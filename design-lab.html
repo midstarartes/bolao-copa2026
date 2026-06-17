@@ -5139,6 +5139,17 @@
     /* Avatar no ranking */
     .ranking-player { display: flex; align-items: center; gap: 8px; }
     .ranking-player .user-avatar { flex-shrink: 0; }
+    .ranking-avatar-zoom {
+      border: 0;
+      padding: 0;
+      background: transparent;
+      cursor: zoom-in;
+    }
+    .ranking-avatar-zoom:focus-visible {
+      outline: 2px solid rgba(255, 224, 120, 0.9);
+      outline-offset: 3px;
+      border-radius: 999px;
+    }
 
     /* ── Avatar picker (no cadastro) ─────────────────────────────── */
     .avatar-picker-btn {
@@ -5163,6 +5174,24 @@
       max-height: 80vh;
       overflow-y: auto;
       box-shadow: 0 24px 56px rgba(0,0,0,0.6);
+    }
+    .avatar-viewer-panel {
+      width: min(92vw, 760px);
+      max-height: 88vh;
+      padding: 18px;
+      overflow: visible;
+      background: rgba(9, 11, 16, 0.96);
+    }
+    .avatar-viewer-image {
+      display: block;
+      max-width: 100%;
+      max-height: min(72vh, 720px);
+      width: auto;
+      height: auto;
+      margin: 0 auto;
+      border-radius: 16px;
+      object-fit: contain;
+      box-shadow: 0 24px 54px rgba(0,0,0,0.65);
     }
     .avatar-modal-head {
       display: flex; align-items: center; justify-content: space-between;
@@ -6537,6 +6566,16 @@
     </div>
   </div>
 
+  <div class="avatar-modal is-hidden" id="avatar-viewer-modal" aria-hidden="true">
+    <div class="avatar-modal-panel avatar-viewer-panel" role="dialog" aria-modal="true" aria-labelledby="avatar-viewer-title">
+      <div class="avatar-modal-head">
+        <h2 id="avatar-viewer-title">Foto do participante</h2>
+        <button class="avatar-modal-close" id="avatar-viewer-close" type="button" aria-label="Fechar">×</button>
+      </div>
+      <img class="avatar-viewer-image" id="avatar-viewer-image" src="" alt="">
+    </div>
+  </div>
+
   <!-- ── Profile popup ──────────────────────────────────────────── -->
   <div class="profile-overlay is-hidden" id="profile-overlay"></div>
   <div class="profile-popup is-hidden" id="profile-popup" role="dialog" aria-modal="true" aria-labelledby="profile-popup-title">
@@ -6683,6 +6722,9 @@
     const avatarEmojisGrid = document.getElementById("avatar-emojis-grid");
     const avatarUploadArea = document.getElementById("avatar-upload-area");
     const avatarFileInput = document.getElementById("avatar-file-input");
+    const avatarViewerModal = document.getElementById("avatar-viewer-modal");
+    const avatarViewerClose = document.getElementById("avatar-viewer-close");
+    const avatarViewerImage = document.getElementById("avatar-viewer-image");
 
     // Profile popup
     const profileOverlay = document.getElementById("profile-overlay");
@@ -7318,10 +7360,31 @@
     function getAvatarMarkup(avatarType, avatarValue, sizeClass = "user-avatar--sm") {
       const cls = `user-avatar ${sizeClass}`;
       if (avatarType === "upload" && avatarValue) {
-        return `<span class="${cls}"><img src="${escapeHtml(avatarValue)}" alt="Avatar" loading="lazy"></span>`;
+        const safeSrc = escapeHtml(avatarValue);
+        return `
+          <button class="ranking-avatar-zoom" type="button" data-avatar-zoom-src="${safeSrc}" aria-label="Ampliar foto do participante">
+            <span class="${cls}"><img src="${safeSrc}" alt="Avatar" loading="lazy"></span>
+          </button>
+        `;
       }
       const emoji = avatarValue || "⚽";
       return `<span class="${cls}" aria-hidden="true">${escapeHtml(emoji)}</span>`;
+    }
+
+    function openAvatarViewer(src, altText = "Foto do participante") {
+      if (!avatarViewerModal || !avatarViewerImage || !src) return;
+      avatarViewerImage.src = src;
+      avatarViewerImage.alt = altText;
+      avatarViewerModal.classList.remove("is-hidden");
+      avatarViewerModal.setAttribute("aria-hidden", "false");
+    }
+
+    function closeAvatarViewer() {
+      if (!avatarViewerModal || !avatarViewerImage) return;
+      avatarViewerModal.classList.add("is-hidden");
+      avatarViewerModal.setAttribute("aria-hidden", "true");
+      avatarViewerImage.removeAttribute("src");
+      avatarViewerImage.alt = "";
     }
 
     function setAvatarElement(el, avatarType, avatarValue) {
@@ -11167,6 +11230,15 @@
 
     avatarModalClose?.addEventListener("click", closeAvatarModal);
     avatarModal?.addEventListener("click", (e) => { if (e.target === avatarModal) closeAvatarModal(); });
+    avatarViewerClose?.addEventListener("click", closeAvatarViewer);
+    avatarViewerModal?.addEventListener("click", (e) => { if (e.target === avatarViewerModal) closeAvatarViewer(); });
+    rankingRows?.addEventListener("click", (e) => {
+      const button = e.target.closest(".ranking-avatar-zoom");
+      if (!button) return;
+      const src = button.dataset.avatarZoomSrc;
+      const nickname = button.closest(".ranking-player")?.querySelector(".ranking-player-name")?.textContent?.trim() || "participante";
+      openAvatarViewer(src, `Foto de ${nickname}`);
+    });
 
     avatarEmojisGrid?.addEventListener("click", (e) => {
       const btn = e.target.closest(".avatar-emoji-btn");
@@ -11195,6 +11267,9 @@
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape" && teamModal && !teamModal.classList.contains("is-hidden")) {
         closeTeamModal();
+      }
+      if (e.key === "Escape" && avatarViewerModal && !avatarViewerModal.classList.contains("is-hidden")) {
+        closeAvatarViewer();
       }
     });
 

@@ -522,6 +522,7 @@ Baseado nos últimos commits lidos:
 - endurecimento do cron da API;
 - correção do buff de aposta de moedas com saldo 1.
 - desativacao segura da sincronizacao por API para que os resultados manuais do ADMIN sejam a fonte principal.
+- ampliacao de fotos enviadas por usuarios na aba Ranking via modal visual.
 - correcao manual no Supabase em producao:
   - `jogo-20` AUT x JOR: `starts_at = 2026-06-17T04:00:00.000Z`;
   - `jogo-36` TUN x JPN: `starts_at = 2026-06-21T04:00:00.000Z`;
@@ -637,6 +638,32 @@ Antes de qualquer commit:
 3. confirmar que a trava está ativa neste PC.
 
 ## 32. Registro de mudanças do AGENTS.md
+
+### Sessao 2026-06-17 - ampliacao de fotos no ranking
+
+- O que foi alterado:
+  - fotos enviadas por usuarios no ranking agora podem ser ampliadas ao clicar na miniatura;
+  - foi criado um modal visual com fundo escurecido, imagem proporcional e fechamento por `X`, clique fora ou tecla `Esc`;
+  - avatares sem foto enviada continuam com o comportamento anterior e nao abrem modal.
+- Por que foi alterado:
+  - permitir ver melhor a foto dos participantes diretamente na aba Ranking.
+- Arquivos modificados:
+  - `design-lab.html`
+  - `AGENTS.md`
+- Impacto no bolao:
+  - alteracao apenas visual/UX na aba Ranking;
+  - nao altera ranking, pontuacao, dados dos usuarios, upload de imagens, Supabase, API, moedas, buffs ou palpites.
+- Areas afetadas:
+  - visual: afetado;
+  - Vercel/GitHub: afetados apenas pela publicacao da alteracao;
+  - Supabase e regras de negocio: sem alteracao.
+- Testes ou verificacoes feitos:
+  - `git status`;
+  - leitura do `AGENTS.md`;
+  - leitura dos commits recentes;
+  - `npm.cmd run build`.
+- Pendencias:
+  - validar visualmente no site publicado com usuario que tenha foto enviada no ranking.
 
 ### Sessao 2026-06-15 - resultado oficial no rodape dos cards de jogos
 
