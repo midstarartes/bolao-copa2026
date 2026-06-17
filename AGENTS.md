@@ -523,6 +523,7 @@ Baseado nos últimos commits lidos:
 - correção do buff de aposta de moedas com saldo 1.
 - desativacao segura da sincronizacao por API para que os resultados manuais do ADMIN sejam a fonte principal.
 - ampliacao de fotos enviadas por usuarios na aba Ranking via modal visual.
+- ajuste do modal de fotos do ranking para exibir imagem bem maior, mantendo proporcao.
 - correcao manual no Supabase em producao:
   - `jogo-20` AUT x JOR: `starts_at = 2026-06-17T04:00:00.000Z`;
   - `jogo-36` TUN x JPN: `starts_at = 2026-06-21T04:00:00.000Z`;
@@ -645,6 +646,7 @@ Antes de qualquer commit:
   - fotos enviadas por usuarios no ranking agora podem ser ampliadas ao clicar na miniatura;
   - foi criado um modal visual com fundo escurecido, imagem proporcional e fechamento por `X`, clique fora ou tecla `Esc`;
   - avatares sem foto enviada continuam com o comportamento anterior e nao abrem modal.
+  - ajuste posterior ampliou o tamanho maximo do modal/imagem para ocupar mais a tela sem distorcer.
 - Por que foi alterado:
   - permitir ver melhor a foto dos participantes diretamente na aba Ranking.
 - Arquivos modificados:
