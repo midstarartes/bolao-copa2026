@@ -640,6 +640,34 @@ Antes de qualquer commit:
 
 ## 32. Registro de mudanças do AGENTS.md
 
+### Sessao 2026-06-18 - detalhamento admin de pontos no ranking
+
+- O que foi alterado:
+  - no ranking, quando o usuario logado e ADMIN, a pontuacao total de cada participante vira um botao clicavel;
+  - ao clicar, abre um modal com o detalhamento dos pontos daquele jogador por jogo concluido;
+  - o modal usa a RPC existente `app_get_user_history` com `p_user_id`, que ja permite consulta por admin;
+  - o detalhamento mostra palpite, resultado oficial, pontos positivos/negativos, status e buffs aplicados quando houver.
+- Por que foi alterado:
+  - facilitar a auditoria administrativa da pontuacao de cada participante sem precisar consultar o banco manualmente.
+- Arquivos modificados:
+  - `design-lab.html`
+  - `AGENTS.md`
+- Impacto no bolao:
+  - alteracao de visual/UX administrativa;
+  - nao altera calculo de pontuacao, ranking, palpites, usuarios, Supabase, API, moedas, buffs, resultados ou regras de fechamento.
+- Areas afetadas:
+  - ranking/admin: afetado visualmente para ADMIN;
+  - Supabase: sem patch novo, apenas consumo de RPC existente;
+  - regras de negocio, API, GitHub e Vercel: sem alteracao funcional nesta tarefa.
+- Testes ou verificacoes feitos:
+  - `git status`;
+  - leitura do `AGENTS.md`;
+  - leitura dos commits recentes;
+  - `npm.cmd run build`;
+  - `git diff --check`.
+- Pendencias:
+  - validar no navegador logado como ADMIN clicando na pontuacao total de alguns usuarios do ranking.
+
 ### Sessao 2026-06-18 - abertura automatica na pagina do proximo jogo
 
 - O que foi alterado:

@@ -1949,6 +1949,48 @@
       color: #fde68a;
     }
 
+    .ranking-points-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      width: 100%;
+      border: 0;
+      background: transparent;
+      color: inherit;
+      font: inherit;
+      letter-spacing: inherit;
+      text-shadow: inherit;
+      cursor: pointer;
+      padding: 4px 6px;
+      border-radius: 10px;
+      transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+    }
+
+    .ranking-points-button:hover,
+    .ranking-points-button:focus-visible {
+      background: rgba(253, 230, 138, 0.08);
+      box-shadow:
+        0 0 14px rgba(253, 230, 138, 0.12),
+        inset 0 0 0 1px rgba(253, 230, 138, 0.18);
+      outline: none;
+      transform: translateY(-1px);
+    }
+
+    .ranking-points-button::after {
+      content: "ver";
+      padding: 1px 6px;
+      border-radius: 999px;
+      border: 1px solid rgba(253, 230, 138, 0.22);
+      background: rgba(253, 230, 138, 0.08);
+      color: rgba(253, 230, 138, 0.74);
+      font-size: 0.52rem;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-shadow: none;
+    }
+
     .ranking-placeholder {
       color: rgba(226, 232, 240, 0.5);
     }
@@ -3759,6 +3801,46 @@
 
     .preds-body {
       padding: 14px 16px 0;
+    }
+
+    .points-detail-panel {
+      width: min(760px, calc(100vw - 32px));
+    }
+
+    .points-detail-body {
+      display: grid;
+      gap: 12px;
+      padding-top: 16px;
+    }
+
+    .points-detail-summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(253, 230, 138, 0.12);
+      background:
+        linear-gradient(180deg, rgba(253, 230, 138, 0.10), rgba(253, 230, 138, 0.03)),
+        rgba(255,255,255,0.03);
+      color: rgba(226, 232, 240, 0.8);
+      font-size: 0.76rem;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+    }
+
+    .points-detail-total {
+      color: #fde68a;
+      font-size: 0.94rem;
+      font-weight: 900;
+      text-shadow: 0 0 10px rgba(253, 230, 138, 0.2);
+      white-space: nowrap;
+    }
+
+    .points-detail-list {
+      display: grid;
+      gap: 10px;
     }
 
     .preds-loading,
@@ -6427,6 +6509,20 @@
       </div>
     </div>
   </div>
+  <div class="preds-modal is-hidden" id="points-detail-modal" aria-hidden="true">
+    <div class="preds-panel points-detail-panel" role="dialog" aria-modal="true" aria-labelledby="points-detail-title">
+      <div class="preds-head">
+        <div>
+          <h2 class="preds-title" id="points-detail-title">Detalhamento de pontos</h2>
+          <p class="preds-subtitle" id="points-detail-subtitle"></p>
+        </div>
+        <button class="preds-close" id="points-detail-close" type="button" aria-label="Fechar">×</button>
+      </div>
+      <div class="preds-body points-detail-body" id="points-detail-body">
+        <p class="preds-loading">Carregando...</p>
+      </div>
+    </div>
+  </div>
   <div class="results-modal is-hidden" id="results-modal" aria-hidden="true">
     <div class="results-panel" role="dialog" aria-modal="true" aria-labelledby="results-title">
       <div class="results-head">
@@ -6697,6 +6793,11 @@
     const predsTitle = document.getElementById("preds-title");
     const predsSubtitle = document.getElementById("preds-subtitle");
     const predsBody = document.getElementById("preds-body");
+    const pointsDetailModal = document.getElementById("points-detail-modal");
+    const pointsDetailClose = document.getElementById("points-detail-close");
+    const pointsDetailTitle = document.getElementById("points-detail-title");
+    const pointsDetailSubtitle = document.getElementById("points-detail-subtitle");
+    const pointsDetailBody = document.getElementById("points-detail-body");
     const coinsCardValue = document.getElementById("coins-card-value");
     const missionsTabCoins = document.getElementById("missions-tab-coins");
     const extrasNavBadge = document.getElementById("extras-nav-badge");
@@ -7651,7 +7752,10 @@
           const exactMarkup = `<p class="ranking-metric">${Number(entry.exact_scores ?? 0)}</p>`;
           const bonusPoints = Number(entry.bonus_points ?? 0);
           const bonusSuffix = bonusPoints > 0 ? ` <small style="opacity:.6;font-size:.75em">(+${formatRankingPoints(bonusPoints)} extra)</small>` : "";
-          const pointsMarkup = `<p class="ranking-metric ranking-metric--points">${formatRankingPoints(entry.total_points ?? 0)}${bonusSuffix}</p>`;
+          const pointsContent = `${formatRankingPoints(entry.total_points ?? 0)}${bonusSuffix}`;
+          const pointsMarkup = currentUser?.isAdmin && entry.user_id
+            ? `<p class="ranking-metric ranking-metric--points"><button class="ranking-points-button" type="button" data-points-user-id="${escapeHtml(entry.user_id)}" data-points-nickname="${escapeHtml(entry.nickname || "")}" data-points-real-name="${escapeHtml(entry.real_name || "")}" data-points-total="${escapeHtml(String(entry.total_points ?? 0))}">${pointsContent}</button></p>`
+            : `<p class="ranking-metric ranking-metric--points">${pointsContent}</p>`;
           // Divisor apenas após o pódio
           const dividerMarkup = position === 3 && slots.length > position
             ? `<div class="ranking-divider" aria-hidden="true"></div>`
@@ -7967,6 +8071,105 @@
         console.error(error);
         userHistoryCache = [];
         renderUserHistory([]);
+      }
+    }
+
+    function closePointsDetailModal() {
+      pointsDetailModal?.classList.add("is-hidden");
+      pointsDetailModal?.setAttribute("aria-hidden", "true");
+      if (pointsDetailBody) pointsDetailBody.innerHTML = `<p class="preds-loading">Carregando...</p>`;
+    }
+
+    function renderPointsDetailEntries(entries, totalPoints) {
+      if (!pointsDetailBody) return;
+      const completedEntries = (entries || []).filter((entry) =>
+        entry.match_status === "completed"
+        && entry.official_home != null
+        && entry.official_away != null
+      );
+
+      if (!completedEntries.length) {
+        pointsDetailBody.innerHTML = `
+          <div class="points-detail-summary">
+            <span>Total atual no ranking</span>
+            <strong class="points-detail-total">${formatRankingPoints(totalPoints)} pts</strong>
+          </div>
+          <p class="preds-empty">Ainda não há jogos concluídos com pontuação para este jogador.</p>
+        `;
+        return;
+      }
+
+      const rowsMarkup = completedEntries
+        .map((entry) => {
+          const missed = entry.was_predicted === false;
+          const pointsState = getHistoryPointsState(entry.points_awarded, entry.match_status, entry.was_predicted);
+          const status = getHistoryStatusLabel(entry);
+          const homeTeam = fixTeamEncoding(entry.home_team);
+          const awayTeam = fixTeamEncoding(entry.away_team);
+          const phaseLabel = fixTeamEncoding(entry.phase_label || "Partida");
+          const officialScore = `${entry.official_home}–${entry.official_away}`;
+          const predictedScore = missed ? "Sem palpite" : `${entry.predicted_home}–${entry.predicted_away}`;
+          const pointsText = `${Number(entry.points_awarded) > 0 ? "+" : ""}${formatRankingPoints(entry.points_awarded)} pts`;
+          const extraPillsHtml = (!missed && entry.applied_buffs)
+            ? `<div class="history-buffs-row">${
+                entry.applied_buffs.split(",").map((buff) => `<span class="history-buff-pill">${escapeHtml(buff.trim())}</span>`).join("")
+              }</div>`
+            : "";
+
+          return `
+            <article class="history-card${missed ? " is-missed" : ""}">
+              <div class="history-card-left">
+                <p class="history-card-title">Jogo ${escapeHtml(String(entry.match_number ?? ""))} · ${escapeHtml(homeTeam)} × ${escapeHtml(awayTeam)}</p>
+                <p class="history-card-meta">${escapeHtml(phaseLabel)} · ${formatFixtureTime(entry.starts_at)}</p>
+                <div class="history-scores-row">
+                  <span class="history-score-lbl">Palpite</span>
+                  <span class="history-score-val">${escapeHtml(predictedScore)}</span>
+                  <span class="history-score-arrow">→</span>
+                  <span class="history-score-lbl">Resultado</span>
+                  <span class="history-score-val">${escapeHtml(officialScore)}</span>
+                </div>
+                ${extraPillsHtml}
+              </div>
+              <div class="history-card-right">
+                <div class="history-points ${pointsState}">${pointsText}</div>
+                <span class="history-status ${status.className}">${status.label}</span>
+              </div>
+            </article>
+          `;
+        })
+        .join("");
+
+      pointsDetailBody.innerHTML = `
+        <div class="points-detail-summary">
+          <span>Total atual no ranking</span>
+          <strong class="points-detail-total">${formatRankingPoints(totalPoints)} pts</strong>
+        </div>
+        <div class="points-detail-list">${rowsMarkup}</div>
+      `;
+    }
+
+    async function openAdminPointsDetailModal({ userId, nickname, realName, totalPoints }) {
+      const currentUser = getCurrentUser();
+      if (!currentUser?.isAdmin || !userId || !BACKEND_ENABLED) return;
+
+      if (pointsDetailTitle) pointsDetailTitle.textContent = `Pontos de ${nickname || "jogador"}`;
+      if (pointsDetailSubtitle) pointsDetailSubtitle.textContent = realName || "Detalhamento por jogo concluído";
+      if (pointsDetailBody) pointsDetailBody.innerHTML = `<p class="preds-loading">Carregando detalhamento...</p>`;
+      pointsDetailModal?.classList.remove("is-hidden");
+      pointsDetailModal?.setAttribute("aria-hidden", "false");
+
+      try {
+        const { data, error } = await supabase.rpc("app_get_user_history", {
+          p_token: getBackendToken(),
+          p_user_id: userId,
+        });
+        if (error) throw error;
+        renderPointsDetailEntries(data || [], Number(totalPoints ?? 0));
+      } catch (error) {
+        console.error(error);
+        if (pointsDetailBody) {
+          pointsDetailBody.innerHTML = `<p class="preds-empty">${escapeHtml(error.message || "Não foi possível carregar o detalhamento.")}</p>`;
+        }
       }
     }
 
@@ -10971,6 +11174,12 @@
       if (event.target === predsModal) closeMatchPredictionsModal();
     });
 
+    pointsDetailClose?.addEventListener("click", closePointsDetailModal);
+
+    pointsDetailModal?.addEventListener("click", (event) => {
+      if (event.target === pointsDetailModal) closePointsDetailModal();
+    });
+
     resultsClose?.addEventListener("click", closeResultsModal);
 
     resultsModal?.addEventListener("click", (event) => {
@@ -11291,6 +11500,17 @@
     avatarViewerClose?.addEventListener("click", closeAvatarViewer);
     avatarViewerModal?.addEventListener("click", (e) => { if (e.target === avatarViewerModal) closeAvatarViewer(); });
     rankingRows?.addEventListener("click", (e) => {
+      const pointsButton = e.target.closest(".ranking-points-button");
+      if (pointsButton) {
+        void openAdminPointsDetailModal({
+          userId: pointsButton.dataset.pointsUserId,
+          nickname: pointsButton.dataset.pointsNickname,
+          realName: pointsButton.dataset.pointsRealName,
+          totalPoints: pointsButton.dataset.pointsTotal,
+        });
+        return;
+      }
+
       const button = e.target.closest(".ranking-avatar-zoom");
       if (!button) return;
       const src = button.dataset.avatarZoomSrc;
@@ -11328,6 +11548,9 @@
       }
       if (e.key === "Escape" && avatarViewerModal && !avatarViewerModal.classList.contains("is-hidden")) {
         closeAvatarViewer();
+      }
+      if (e.key === "Escape" && pointsDetailModal && !pointsDetailModal.classList.contains("is-hidden")) {
+        closePointsDetailModal();
       }
     });
 
@@ -11467,6 +11690,7 @@
       closeCoinBetModal();
       closeMatchPredictionsModal();
       closeResultsModal();
+      closePointsDetailModal();
       closeExtrasPicker();
       closeExtrasTextModal();
       selectedAdminUser = null;
