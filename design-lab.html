@@ -914,6 +914,18 @@
       background-color: #0e0e14;
     }
 
+    option.has-official-result {
+      background-color: #123d27;
+      color: #d9ffe6;
+      font-weight: 900;
+    }
+
+    option.has-official-result:checked,
+    option.has-official-result:focus {
+      background-color: #17633a;
+      color: #ffffff;
+    }
+
     optgroup {
       background-color: #0b0b12;
       color: rgba(180, 195, 220, 0.55);
@@ -7745,17 +7757,31 @@
       return matchRecords.find((match) => match.id === matchId) || null;
     }
 
+    function getDisplayTeamName(name) {
+      return fixTeamEncoding(name);
+    }
+
+    function matchHasOfficialResult(match) {
+      return match?.score_home != null && match?.score_away != null;
+    }
+
     function formatMatchSelectLabel(match) {
       const number = match.match_number ? `JOGO ${match.match_number}` : String(match.id || "").toUpperCase();
-      const teams = `${match.home_team} x ${match.away_team}`;
-      const phase = match.phase_label || match.phase || "Partida";
-      return `${number} • ${phase} • ${teams}`;
+      const teams = `${getDisplayTeamName(match.home_team)} x ${getDisplayTeamName(match.away_team)}`;
+      const phase = fixTeamEncoding(match.phase_label || match.phase || "Partida");
+      const resultMark = matchHasOfficialResult(match) ? "✓ " : "";
+      return `${resultMark}${number} • ${phase} • ${teams}`;
+    }
+
+    function buildMatchSelectOption(match) {
+      const className = matchHasOfficialResult(match) ? " class=\"has-official-result\"" : "";
+      return `<option value="${escapeHtml(match.id)}"${className}>${escapeHtml(formatMatchSelectLabel(match))}</option>`;
     }
 
     function populateResultsMatchOptions() {
       if (!resultsMatchSelect) return;
       resultsMatchSelect.innerHTML = matchRecords
-        .map((match) => `<option value="${match.id}">${formatMatchSelectLabel(match)}</option>`)
+        .map((match) => buildMatchSelectOption(match))
         .join("");
     }
 
@@ -7764,11 +7790,11 @@
       const winner = match.winner_team || "";
       const options = [
         { value: "", label: "Automático pelo placar" },
-        { value: match.home_team, label: match.home_team },
-        { value: match.away_team, label: match.away_team },
+        { value: match.home_team, label: getDisplayTeamName(match.home_team) },
+        { value: match.away_team, label: getDisplayTeamName(match.away_team) },
       ];
       resultsWinnerSelect.innerHTML = options
-        .map((option) => `<option value="${option.value}"${winner === option.value ? " selected" : ""}>${option.label}</option>`)
+        .map((option) => `<option value="${escapeHtml(option.value)}"${winner === option.value ? " selected" : ""}>${escapeHtml(option.label)}</option>`)
         .join("");
     }
 
@@ -7787,7 +7813,7 @@
           ? persistedStatus
           : "completed";
       fillResultsWinnerOptions(match);
-      resultsSubtitle.textContent = `${match.phase_label || match.phase || "Partida"} • ${match.home_team} x ${match.away_team}`;
+      resultsSubtitle.textContent = `${fixTeamEncoding(match.phase_label || match.phase || "Partida")} • ${getDisplayTeamName(match.home_team)} x ${getDisplayTeamName(match.away_team)}`;
       resultsFeedback.textContent = "";
       resultsFeedback.className = "results-feedback";
     }
@@ -8222,7 +8248,7 @@
 
     function fillAdminMatchOptions() {
       const options = matchRecords
-        .map((match) => `<option value="${match.id}">${formatMatchSelectLabel(match)}</option>`)
+        .map((match) => buildMatchSelectOption(match))
         .join("");
       if (adminPredictionMatch) adminPredictionMatch.innerHTML = options;
       if (adminBuffMatch) adminBuffMatch.innerHTML = options;
@@ -8238,12 +8264,12 @@
 
       const options = [
         { value: "", label: "Automático pelo placar" },
-        { value: match.home_team, label: match.home_team },
-        { value: match.away_team, label: match.away_team },
+        { value: match.home_team, label: getDisplayTeamName(match.home_team) },
+        { value: match.away_team, label: getDisplayTeamName(match.away_team) },
       ];
 
       selectElement.innerHTML = options
-        .map((option) => `<option value="${option.value}"${option.value === selectedValue ? " selected" : ""}>${option.label}</option>`)
+        .map((option) => `<option value="${escapeHtml(option.value)}"${option.value === selectedValue ? " selected" : ""}>${escapeHtml(option.label)}</option>`)
         .join("");
     }
 

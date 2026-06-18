@@ -640,6 +640,33 @@ Antes de qualquer commit:
 
 ## 32. Registro de mudanças do AGENTS.md
 
+### Sessao 2026-06-18 - correcao visual do lancamento de resultados admin
+
+- O que foi alterado:
+  - a lista de jogos do modal `Resultado oficial` agora corrige nomes com encoding quebrado na apresentacao;
+  - jogos que ja possuem resultado oficial (`score_home` e `score_away`) recebem marcador `✓` no texto da opcao;
+  - essas opcoes tambem recebem fundo verde no dropdown para facilitar identificar jogos ja lancados;
+  - os selects administrativos de jogo reutilizam a mesma formatacao corrigida.
+- Por que foi alterado:
+  - alguns nomes de selecoes apareciam com mojibake, como `TchÃ©quia` e `Ãfrica do Sul`;
+  - o ADMIN precisava visualizar rapidamente quais jogos ja tiveram resultado oficial lancado.
+- Arquivos modificados:
+  - `design-lab.html`
+  - `AGENTS.md`
+- Impacto no bolao:
+  - alteracao visual/de apresentacao no painel ADMIN;
+  - nao altera pontuacao, ranking, palpites, usuarios, Supabase, API, moedas, buffs ou resultados salvos.
+- Areas afetadas:
+  - visual/admin: afetado;
+  - Supabase, API, GitHub, Vercel e regras de negocio: sem alteracao funcional.
+- Testes ou verificacoes feitos:
+  - `git status`;
+  - leitura do `AGENTS.md`;
+  - leitura dos commits recentes;
+  - `npm.cmd run build`.
+- Pendencias:
+  - validar visualmente no navegador se o dropdown nativo aplica o fundo verde em todos os ambientes; o marcador `✓` permanece como fallback visual.
+
 ### Sessao 2026-06-17 - ampliacao de fotos no ranking
 
 - O que foi alterado:
