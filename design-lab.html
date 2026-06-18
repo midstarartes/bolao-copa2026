@@ -6869,6 +6869,7 @@
     let userHistoryCache = [];
     let apiSyncStatusCache = null;
     let currentGamesPage = 1;
+    let shouldFocusNextUpcomingGamePage = true;
     let pendingBuffId = null;
     let buffTargetOptionsByBuff = {};
     let lanterninhaUserId = null;
@@ -8122,6 +8123,36 @@
       });
     }
 
+    function hasDefaultGameFilters() {
+      return (statusFilter?.value || "all") === "all"
+        && (phaseFilter?.value || "all") === "all"
+        && (groupFilter?.value || "all") === "all";
+    }
+
+    function getNextUpcomingMatchIndex(matches) {
+      const now = Date.now();
+      return matches.findIndex((match) => {
+        const startsAt = new Date(match.starts_at).getTime();
+        const status = String(match.status || "").toLowerCase();
+        return Number.isFinite(startsAt)
+          && startsAt >= now
+          && status !== "completed"
+          && status !== "cancelled"
+          && !matchHasOfficialResult(match);
+      });
+    }
+
+    function focusNextUpcomingGamePage(matches) {
+      if (!shouldFocusNextUpcomingGamePage) return;
+      shouldFocusNextUpcomingGamePage = false;
+      if (!hasDefaultGameFilters()) return;
+
+      const nextMatchIndex = getNextUpcomingMatchIndex(matches);
+      if (nextMatchIndex >= 0) {
+        currentGamesPage = Math.floor(nextMatchIndex / GAMES_PER_PAGE) + 1;
+      }
+    }
+
     function renderGamesPagination(totalItems) {
       if (!gamesPagination) return;
       const totalPages = Math.max(1, Math.ceil(totalItems / GAMES_PER_PAGE));
@@ -8231,6 +8262,7 @@
 
     async function renderCurrentGamesPage() {
       filteredMatchRecords = getFilteredMatchesData();
+      focusNextUpcomingGamePage(filteredMatchRecords);
       const totalPages = Math.max(1, Math.ceil(filteredMatchRecords.length / GAMES_PER_PAGE));
       currentGamesPage = Math.min(Math.max(1, currentGamesPage), totalPages);
       const startIndex = (currentGamesPage - 1) * GAMES_PER_PAGE;

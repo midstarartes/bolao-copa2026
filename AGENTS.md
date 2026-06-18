@@ -640,6 +640,32 @@ Antes de qualquer commit:
 
 ## 32. Registro de mudanças do AGENTS.md
 
+### Sessao 2026-06-18 - abertura automatica na pagina do proximo jogo
+
+- O que foi alterado:
+  - a aba Jogos agora calcula, na primeira renderizacao da lista, qual pagina contem o proximo jogo futuro sem resultado oficial;
+  - se os filtros estiverem no padrao (`STATUS`, `FASE`, `GRUPO`), a pagina inicial passa a ser a pagina desse proximo jogo;
+  - depois da primeira renderizacao, paginacao e filtros continuam respeitando a escolha manual do usuario.
+- Por que foi alterado:
+  - evitar que usuarios abram o bolao sempre nos primeiros jogos ja concluidos, como Mexico x Africa do Sul;
+  - facilitar o acesso direto aos proximos jogos a palpitar.
+- Arquivos modificados:
+  - `design-lab.html`
+  - `AGENTS.md`
+- Impacto no bolao:
+  - alteracao apenas de navegacao/UX na aba Jogos;
+  - nao altera pontuacao, ranking, palpites, usuarios, Supabase, API, moedas, buffs, resultados ou regras de fechamento.
+- Areas afetadas:
+  - visual/navegacao: afetado;
+  - regras de negocio, Supabase, API, GitHub e Vercel: sem alteracao funcional nesta tarefa.
+- Testes ou verificacoes feitos:
+  - `git status`;
+  - leitura do `AGENTS.md`;
+  - leitura dos commits recentes;
+  - `npm.cmd run build`.
+- Pendencias:
+  - validar no site publicado se a aba Jogos abre diretamente na pagina do proximo jogo conforme o calendario atual.
+
 ### Sessao 2026-06-18 - correcao visual do lancamento de resultados admin
 
 - O que foi alterado:
