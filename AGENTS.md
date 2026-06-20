@@ -640,6 +640,31 @@ Antes de qualquer commit:
 
 ## 32. Registro de mudanças do AGENTS.md
 
+### Sessao 2026-06-20 - ajuste mobile do Meu Historico no ranking
+
+- O que foi alterado:
+  - os cards da area `Meu historico` na aba Ranking receberam ajustes responsivos para telas de celular;
+  - no mobile, o card passa a controlar melhor a largura do conteudo e do selo/status da direita;
+  - os textos, espacamentos e badges do historico foram reduzidos apenas em breakpoints pequenos para evitar corte lateral.
+- Por que foi alterado:
+  - em celulares, o status/resultado do historico estava ficando cortado na lateral direita da tela.
+- Arquivos modificados:
+  - `design-lab.html`
+  - `AGENTS.md`
+- Impacto no bolao:
+  - alteracao apenas visual/responsiva na aba Ranking;
+  - nao altera pontuacao, ranking, historico calculado, palpites, usuarios, Supabase, API, Vercel ou GitHub.
+- Areas afetadas:
+  - visual/mobile: afetado;
+  - regras de negocio, banco de dados, API e deploy: sem alteracao funcional.
+- Testes ou verificacoes feitos:
+  - `git status`;
+  - leitura do `AGENTS.md`;
+  - leitura dos commits recentes;
+  - `npm.cmd run build`.
+- Pendencias:
+  - validar visualmente no celular apos o deploy publicado.
+
 ### Sessao 2026-06-18 - detalhamento admin de pontos no ranking
 
 - O que foi alterado:

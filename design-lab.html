@@ -4774,6 +4774,41 @@
         font-size: 0.66rem;
       }
 
+      .history-shell,
+      .history-list,
+      .history-card {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+      }
+
+      .history-card {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 10px 10px 12px;
+      }
+
+      .history-card-right {
+        max-width: 108px;
+        min-width: 0;
+      }
+
+      .history-points {
+        min-width: 58px;
+        padding-inline: 8px;
+      }
+
+      .history-status {
+        max-width: 108px;
+        justify-content: center;
+        white-space: normal;
+        text-align: center;
+        line-height: 1.15;
+        overflow-wrap: anywhere;
+      }
+
       .history-grid,
       .results-grid,
       .admin-results-bar,
@@ -5076,6 +5111,62 @@
         min-height: 56px;
         padding: 0 8px;
         border-radius: 14px;
+      }
+
+      .history-heading {
+        padding-inline: 4px;
+        font-size: 0.82rem;
+      }
+
+      .history-list {
+        gap: 8px;
+      }
+
+      .history-card {
+        grid-template-columns: minmax(0, 1fr) minmax(58px, 88px);
+        gap: 6px;
+        padding: 9px 8px 9px 10px;
+        border-radius: 13px;
+      }
+
+      .history-card-title {
+        font-size: 0.72rem;
+        letter-spacing: 0.035em;
+      }
+
+      .history-card-meta {
+        font-size: 0.6rem;
+      }
+
+      .history-scores-row {
+        gap: 4px;
+      }
+
+      .history-score-lbl {
+        font-size: 0.58rem;
+        letter-spacing: 0.045em;
+      }
+
+      .history-score-val {
+        font-size: 0.72rem;
+      }
+
+      .history-card-right {
+        max-width: 88px;
+        gap: 4px;
+      }
+
+      .history-points {
+        min-width: 50px;
+        padding: 3px 6px;
+        font-size: 0.64rem;
+      }
+
+      .history-status {
+        max-width: 88px;
+        padding: 2px 6px;
+        font-size: 0.54rem;
+        letter-spacing: 0.035em;
       }
 
       .fixture-row {
