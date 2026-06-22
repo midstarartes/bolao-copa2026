@@ -640,6 +640,39 @@ Antes de qualquer commit:
 
 ## 32. Registro de mudanças do AGENTS.md
 
+### Sessao 2026-06-22 - reorganizacao visual do painel ADMIN
+
+- O que foi alterado:
+  - a aba ADMIN foi reorganizada em tres subabas internas: `Palpites / Buffs`, `Config. Gerais` e `Resultados / Auditoria`;
+  - foi criado um seletor compacto e compartilhado de participante, com busca, filtro, lista limitada e resumo do usuario selecionado;
+  - as areas de palpite normal, palpites extras, moedas, buffs e historico de buffs foram agrupadas em accordions;
+  - configuracoes gerais de conta, solicitacoes de troca de nome e senha do ADMIN foram separadas da area operacional de palpites;
+  - resultados finais e auditoria foram movidos para uma area propria, com listas longas usando rolagem interna;
+  - a subaba ADMIN ativa fica salva em `sessionStorage` durante a sessao do navegador.
+- Por que foi alterado:
+  - reduzir a altura e a carga visual do painel ADMIN, facilitando a gestao em desktop e celular.
+- Arquivos modificados:
+  - `design-lab.html`
+  - `AGENTS.md`
+- Impacto no bolao:
+  - alteracao estrutural e visual do painel administrativo;
+  - nao altera regras de pontuacao, ranking, palpites, moedas, buffs, resultados, Supabase, RPCs, permissoes ou banco de dados.
+- Areas afetadas:
+  - visual/admin: afetado;
+  - JavaScript: apenas controle de subabas, accordions e resumo do usuario selecionado;
+  - Supabase, API, Vercel, GitHub e regras de negocio: sem alteracao funcional.
+- Testes ou verificacoes feitos:
+  - `git status`;
+  - leitura do `AGENTS.md`;
+  - leitura dos commits recentes;
+  - mapeamento dos IDs/listeners da aba ADMIN;
+  - verificacao de IDs duplicados;
+  - `git diff --check`;
+  - `npm.cmd run build`.
+- Pendencias:
+  - revisar visualmente no navegador como ADMIN em desktop e celular;
+  - validar manualmente as acoes administrativas antes de publicar.
+
 ### Sessao 2026-06-20 - ajuste mobile do Meu Historico no ranking
 
 - O que foi alterado:

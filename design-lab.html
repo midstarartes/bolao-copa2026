@@ -2217,6 +2217,204 @@
       padding-top: 8px;
     }
 
+    .admin-internal-nav {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      align-items: stretch;
+    }
+
+    .admin-section-tab {
+      min-height: 44px;
+      padding: 10px 12px;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 14px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.03) 18%, rgba(0,0,0,0.26) 100%),
+        rgba(255,255,255,0.03);
+      color: rgba(248, 250, 252, 0.82);
+      font-size: 0.72rem;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      box-shadow:
+        0 10px 18px rgba(0,0,0,0.24),
+        inset 0 1px 0 rgba(255,255,255,0.10);
+    }
+
+    .admin-section-tab.is-active {
+      color: #fff;
+      border-color: rgba(255,255,255,0.16);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.22), rgba(255,255,255,0.06) 18%, rgba(0,0,0,0.36) 100%),
+        linear-gradient(135deg, rgba(10,10,12,0.98), rgba(17,17,20,0.96) 52%, rgba(0,0,0,0.98));
+      box-shadow:
+        0 14px 26px rgba(0,0,0,0.4),
+        inset 0 1px 0 rgba(255,255,255,0.22);
+    }
+
+    .admin-section-panel {
+      display: none;
+    }
+
+    .admin-section-panel.is-active {
+      display: block;
+    }
+
+    .admin-user-dock {
+      gap: 12px;
+    }
+
+    .admin-panel-head--inline {
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .admin-selected-summary {
+      display: grid;
+      gap: 4px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.03) 28%, rgba(0,0,0,0.22) 100%),
+        rgba(8, 13, 23, 0.76);
+      color: rgba(226, 232, 240, 0.74);
+      font-size: 0.76rem;
+      font-weight: 800;
+      line-height: 1.45;
+    }
+
+    .admin-selected-summary strong {
+      color: #f8fafc;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .admin-selected-summary-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .admin-selected-chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.05);
+      color: #dbe3ee;
+      font-size: 0.66rem;
+      font-weight: 900;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .admin-selected-chip.is-blocked {
+      color: #fecaca;
+      background: rgba(239,68,68,0.14);
+    }
+
+    .admin-grid--manager,
+    .admin-grid--config,
+    .admin-grid--results {
+      margin-top: 0;
+    }
+
+    .admin-manager-stack {
+      grid-column: 1 / -1;
+      display: grid;
+      gap: 12px;
+    }
+
+    .admin-selection-empty {
+      grid-column: 1 / -1;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .admin-section-panel.has-user .admin-selection-empty {
+      display: none;
+    }
+
+    .admin-section-panel:not(.has-user) [data-admin-user-workspace] {
+      display: none;
+    }
+
+    .admin-accordion {
+      gap: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    .admin-accordion-toggle {
+      width: 100%;
+      min-height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 16px;
+      border: 0;
+      background: transparent;
+      color: #f8fafc;
+      font-size: 0.82rem;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      text-align: left;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+
+    .admin-accordion-icon {
+      display: inline-grid;
+      place-items: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.06);
+      color: rgba(248,250,252,0.84);
+      transition: transform 0.2s ease;
+    }
+
+    .admin-accordion.is-open .admin-accordion-icon {
+      transform: rotate(180deg);
+    }
+
+    .admin-accordion-body {
+      display: grid;
+      gap: 14px;
+      padding: 0 16px 16px;
+    }
+
+    .admin-danger-zone {
+      grid-column: 1 / -1;
+      display: grid;
+      gap: 8px;
+      padding: 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(244,63,94,0.22);
+      background: rgba(127,29,29,0.12);
+    }
+
+    .admin-scroll-area {
+      max-height: 360px;
+      overflow: auto;
+      padding-right: 4px;
+    }
+
+    .admin-scroll-area--audit {
+      max-height: 430px;
+    }
+
+    .admin-scroll-area--requests {
+      max-height: 310px;
+    }
+
     .admin-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -2272,6 +2470,12 @@
       max-height: 540px;
       overflow: auto;
       padding-right: 4px;
+    }
+
+    .admin-users-list--compact {
+      max-height: 260px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      align-items: start;
     }
 
     .admin-list-tools {
@@ -2457,6 +2661,10 @@
       box-shadow:
         0 10px 18px rgba(0,0,0,0.28),
         inset 0 1px 0 rgba(255,255,255,0.12);
+    }
+
+    .admin-button--compact {
+      min-width: 132px;
     }
 
     .admin-button--primary {
@@ -4820,6 +5028,38 @@
         grid-template-columns: 1fr;
       }
 
+      .admin-internal-nav {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+
+      .admin-panel-head--inline {
+        grid-template-columns: 1fr;
+      }
+
+      .admin-users-list--compact {
+        grid-template-columns: 1fr;
+        max-height: 300px;
+      }
+
+      .admin-selected-summary {
+        font-size: 0.72rem;
+      }
+
+      .admin-accordion-toggle {
+        min-height: 46px;
+        padding: 13px 14px;
+        font-size: 0.76rem;
+      }
+
+      .admin-accordion-body {
+        padding: 0 14px 14px;
+      }
+
+      .admin-scroll-area {
+        max-height: 340px;
+      }
+
       .results-actions {
         justify-content: stretch;
       }
@@ -5071,6 +5311,90 @@
       .admin-results-bar {
         border-radius: 14px;
         padding: 10px 12px;
+      }
+
+      .admin-internal-nav {
+        display: flex;
+        gap: 6px;
+        overflow-x: auto;
+        padding-bottom: 2px;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .admin-internal-nav::-webkit-scrollbar {
+        display: none;
+      }
+
+      .admin-section-tab {
+        flex: 0 0 auto;
+        min-width: 148px;
+        min-height: 38px;
+        padding: 8px 9px;
+        font-size: 0.6rem;
+        letter-spacing: 0.06em;
+      }
+
+      .admin-panel {
+        border-radius: 14px;
+        padding: 12px;
+      }
+
+      .admin-user-dock {
+        padding: 12px;
+      }
+
+      .admin-users-list {
+        max-height: 280px;
+      }
+
+      .admin-user-card {
+        padding: 10px;
+      }
+
+      .admin-user-head {
+        align-items: flex-start;
+        gap: 8px;
+      }
+
+      .admin-user-select {
+        min-width: 90px;
+        min-height: 30px;
+        padding: 6px 8px;
+        font-size: 0.58rem;
+      }
+
+      .admin-selected-summary {
+        padding: 10px;
+      }
+
+      .admin-form,
+      .admin-form--extras {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+
+      .admin-actions,
+      .admin-coins-manual {
+        grid-template-columns: 1fr;
+      }
+
+      .admin-button,
+      .admin-button--compact {
+        width: 100%;
+        min-width: 0;
+      }
+
+      .admin-coins-row {
+        align-items: flex-start;
+      }
+
+      .admin-chip-actions {
+        width: 100%;
+      }
+
+      .admin-chip-button {
+        flex: 1 1 52px;
       }
 
       .admin-results-label {
@@ -6300,226 +6624,292 @@
       </section>
       <section class="tab-panel is-hidden is-empty" id="tab-admin" aria-label="Administração">
         <div class="admin-shell">
-          <div class="admin-grid">
-            <section class="admin-panel">
-              <div class="admin-panel-head">
-                <h3 class="admin-panel-title">Usuários</h3>
-                <p class="admin-panel-copy">Selecione um participante para gerenciar conta, moedas, palpites, extras e buffs.</p>
-              </div>
-              <div class="admin-list-tools">
-                <div class="admin-list-grid">
-                  <label class="admin-field">
-                    <span class="admin-label">Buscar usuário</span>
-                    <input class="admin-input" id="admin-user-search" type="text" placeholder="Apelido ou nome real">
-                  </label>
-                  <label class="admin-field">
-                    <span class="admin-label">Filtro</span>
-                    <select class="admin-select" id="admin-user-filter">
-                      <option value="all">Todos</option>
-                      <option value="active">Ativos</option>
-                      <option value="blocked">Bloqueados</option>
-                      <option value="extras">Com extras</option>
-                      <option value="no-predictions">Sem palpites</option>
-                    </select>
-                  </label>
-                </div>
-                <div class="admin-list-actions">
-                  <button class="admin-button" id="admin-users-refresh" type="button">Atualizar lista</button>
-                </div>
-              </div>
-              <div class="admin-users-list" id="admin-users-list"></div>
-            </section>
+          <div class="admin-internal-nav" role="tablist" aria-label="Seções administrativas">
+            <button class="admin-section-tab is-active" id="admin-section-predictions-tab" type="button" role="tab" aria-selected="true" aria-controls="admin-section-predictions" data-admin-section-target="admin-section-predictions">Palpites / Buffs</button>
+            <button class="admin-section-tab" id="admin-section-config-tab" type="button" role="tab" aria-selected="false" aria-controls="admin-section-config" data-admin-section-target="admin-section-config">Config. Gerais</button>
+            <button class="admin-section-tab" id="admin-section-results-tab" type="button" role="tab" aria-selected="false" aria-controls="admin-section-results" data-admin-section-target="admin-section-results">Resultados / Auditoria</button>
+          </div>
 
-            <section class="admin-panel">
-              <div class="admin-panel-head">
-                <h3 class="admin-panel-title">Conta selecionada</h3>
-                <p class="admin-panel-copy" id="admin-selected-copy">Escolha um usuário na lista para editar.</p>
+          <section class="admin-panel admin-user-dock">
+            <div class="admin-panel-head admin-panel-head--inline">
+              <div>
+                <h3 class="admin-panel-title">Participante ativo</h3>
+                <p class="admin-panel-copy">Busque e selecione um participante uma vez; a seleção vale para todas as subabas.</p>
               </div>
-              <form class="admin-form" id="admin-user-form">
+              <button class="admin-button admin-button--compact" id="admin-users-refresh" type="button">Atualizar lista</button>
+            </div>
+            <div class="admin-list-tools">
+              <div class="admin-list-grid">
                 <label class="admin-field">
-                  <span class="admin-label">Apelido</span>
-                  <input class="admin-input" id="admin-user-nickname" type="text" placeholder="Usuário / apelido">
-                </label>
-                <label class="admin-field">
-                  <span class="admin-label">Nome real</span>
-                  <input class="admin-input" id="admin-user-realname" type="text" placeholder="Nome completo">
-                </label>
-                <label class="admin-field">
-                  <span class="admin-label">Nova senha</span>
-                  <input class="admin-input" id="admin-user-password" type="password" placeholder="Deixe em branco para manter" autocomplete="new-password">
-                </label>
-                <label class="admin-check">
-                  <input id="admin-user-blocked" type="checkbox">
-                  <span>Bloquear acesso desse usuário</span>
-                </label>
-                <div class="admin-actions">
-                  <button class="admin-button admin-button--primary" id="admin-user-save" type="submit">Salvar conta</button>
-                  <button class="admin-button" id="admin-user-clear" type="button">Limpar seleção</button>
-                  <button class="admin-button admin-button--danger" id="admin-user-delete" type="button">Excluir usuário</button>
-                </div>
-              </form>
-
-              <div class="admin-coins-block">
-                <p class="admin-subtitle">Moedas</p>
-                <div class="admin-coins-row">
-                  <span class="admin-coins-value" id="admin-user-coins">0</span>
-                  <div class="admin-chip-actions">
-                    <button class="admin-chip-button" type="button" data-admin-coins-adjust="-5">-5</button>
-                    <button class="admin-chip-button" type="button" data-admin-coins-adjust="-1">-1</button>
-                    <button class="admin-chip-button" type="button" data-admin-coins-adjust="1">+1</button>
-                    <button class="admin-chip-button" type="button" data-admin-coins-adjust="5">+5</button>
-                  </div>
-                </div>
-                <div class="admin-coins-manual">
-                  <input class="admin-input" id="admin-user-coins-set" type="number" min="0" placeholder="Definir total de moedas">
-                  <button class="admin-button" id="admin-user-coins-save" type="button">Definir</button>
-                </div>
-              </div>
-            </section>
-
-            <section class="admin-panel">
-              <div class="admin-panel-head">
-                <h3 class="admin-panel-title">Palpite normal</h3>
-                <p class="admin-panel-copy">Altere manualmente o palpite de qualquer jogo para o usuário selecionado.</p>
-              </div>
-              <form class="admin-form" id="admin-prediction-form">
-                <label class="admin-field admin-field--full">
-                  <span class="admin-label">Jogo</span>
-                  <select class="admin-select" id="admin-prediction-match"></select>
+                  <span class="admin-label">Buscar usuário</span>
+                  <input class="admin-input" id="admin-user-search" type="text" placeholder="Apelido ou nome real">
                 </label>
                 <label class="admin-field">
-                  <span class="admin-label">Casa</span>
-                  <input class="admin-input" id="admin-prediction-home" type="number" min="0" max="99">
-                </label>
-                <label class="admin-field">
-                  <span class="admin-label">Fora</span>
-                  <input class="admin-input" id="admin-prediction-away" type="number" min="0" max="99">
-                </label>
-                <label class="admin-field">
-                  <span class="admin-label">Prorrogação casa</span>
-                  <input class="admin-input" id="admin-prediction-extra-home" type="number" min="0" max="99" placeholder="Opcional">
-                </label>
-                <label class="admin-field">
-                  <span class="admin-label">Prorrogação fora</span>
-                  <input class="admin-input" id="admin-prediction-extra-away" type="number" min="0" max="99" placeholder="Opcional">
-                </label>
-                <label class="admin-field admin-field--full">
-                  <span class="admin-label">Quem avança</span>
-                  <select class="admin-select" id="admin-prediction-winner"></select>
-                </label>
-                <div class="admin-actions admin-actions--full">
-                  <button class="admin-button admin-button--primary" type="submit">Salvar palpite do usuário</button>
-                </div>
-              </form>
-              <div class="admin-preview" id="admin-prediction-preview">Nenhum palpite carregado para este jogo.</div>
-            </section>
-
-            <section class="admin-panel">
-              <div class="admin-panel-head">
-                <h3 class="admin-panel-title">Palpites extras</h3>
-                <p class="admin-panel-copy">Edite diretamente os palpites extras do usuário selecionado.</p>
-              </div>
-              <form class="admin-form admin-form--extras" id="admin-extras-form">
-                <label class="admin-field"><span class="admin-label">Campeão</span><input class="admin-input" id="admin-extra-champion" type="text"></label>
-                <label class="admin-field"><span class="admin-label">Vice-campeão</span><input class="admin-input" id="admin-extra-runner-up" type="text"></label>
-                <label class="admin-field"><span class="admin-label">3º lugar</span><input class="admin-input" id="admin-extra-third" type="text"></label>
-                <label class="admin-field"><span class="admin-label">4º lugar</span><input class="admin-input" id="admin-extra-fourth" type="text"></label>
-                <label class="admin-field"><span class="admin-label">Artilheiro</span><input class="admin-input" id="admin-extra-top-scorer" type="text"></label>
-                <label class="admin-field"><span class="admin-label">Melhor campanha</span><input class="admin-input" id="admin-extra-best-group" type="text"></label>
-                <label class="admin-field"><span class="admin-label">Zebra</span><input class="admin-input" id="admin-extra-zebra" type="text"></label>
-                <label class="admin-field"><span class="admin-label">Total de gols</span><input class="admin-input" id="admin-extra-total-goals" type="number" min="0"></label>
-                <div class="admin-actions admin-actions--full">
-                  <button class="admin-button admin-button--primary" type="submit">Salvar extras do usuário</button>
-                </div>
-              </form>
-              <div class="admin-preview" id="admin-extras-preview">Nenhum palpite extra carregado para este usuário.</div>
-            </section>
-
-            <section class="admin-panel">
-              <div class="admin-panel-head">
-                <h3 class="admin-panel-title">Resultados finais do torneio</h3>
-                <p class="admin-panel-copy">Registre os resultados reais da Copa para pontuar os palpites extras de todos os participantes no ranking.</p>
-              </div>
-              <form class="admin-form admin-form--extras" id="admin-bonus-results-form">
-                <label class="admin-field"><span class="admin-label">Campeão</span><input class="admin-input" id="admin-br-champion" type="text" placeholder="Ex: Brasil"></label>
-                <label class="admin-field"><span class="admin-label">Vice-campeão</span><input class="admin-input" id="admin-br-runner-up" type="text" placeholder="Ex: Argentina"></label>
-                <label class="admin-field"><span class="admin-label">3º lugar</span><input class="admin-input" id="admin-br-third" type="text" placeholder="Ex: França"></label>
-                <label class="admin-field"><span class="admin-label">4º lugar</span><input class="admin-input" id="admin-br-fourth" type="text" placeholder="Ex: Alemanha"></label>
-                <label class="admin-field"><span class="admin-label">Artilheiro</span><input class="admin-input" id="admin-br-top-scorer" type="text" placeholder="Ex: Vini Jr"></label>
-                <label class="admin-field"><span class="admin-label">Melhor campanha</span><input class="admin-input" id="admin-br-best-group" type="text" placeholder="Ex: Brasil"></label>
-                <label class="admin-field"><span class="admin-label">Zebra</span><input class="admin-input" id="admin-br-zebra-team" type="text" placeholder="Ex: Marrocos"></label>
-                <label class="admin-field"><span class="admin-label">Fases avançadas (zebra)</span><input class="admin-input" id="admin-br-zebra-phases" type="number" min="0" max="7" placeholder="0–7"></label>
-                <label class="admin-field"><span class="admin-label">Total de gols</span><input class="admin-input" id="admin-br-total-goals" type="number" min="0" placeholder="Ex: 164"></label>
-                <div class="admin-actions admin-actions--full">
-                  <button class="admin-button admin-button--primary" type="submit">Salvar resultados finais</button>
-                </div>
-              </form>
-              <div class="admin-preview" id="admin-bonus-results-preview">Nenhum resultado final registrado ainda.</div>
-            </section>
-
-            <section class="admin-panel">
-              <div class="admin-panel-head">
-                <h3 class="admin-panel-title">Buffs do usuário</h3>
-                <p class="admin-panel-copy">Aplique ou remova buffs manualmente para corrigir qualquer situação.</p>
-              </div>
-              <form class="admin-form" id="admin-buff-form">
-                <label class="admin-field admin-field--full">
-                  <span class="admin-label">Jogo</span>
-                  <select class="admin-select" id="admin-buff-match"></select>
-                </label>
-                <label class="admin-field">
-                  <span class="admin-label">Buff</span>
-                  <select class="admin-select" id="admin-buff-id">
-                    <option value="draw-protected">Empate Protegido (1🪙)</option>
-                    <option value="palpite-duplo">Pontuação Dobrada ×2 (4🪙)</option>
-                    <option value="zerar-adversario">Zerar Adversário (4🪙)</option>
-                    <option value="meia-adversario">Meiar Adversário (3🪙)</option>
-                    <option value="coin-bet">Aposta de Moedas (1🪙)</option>
+                  <span class="admin-label">Filtro</span>
+                  <select class="admin-select" id="admin-user-filter">
+                    <option value="all">Todos</option>
+                    <option value="active">Ativos</option>
+                    <option value="blocked">Bloqueados</option>
+                    <option value="extras">Com extras</option>
+                    <option value="no-predictions">Sem palpites</option>
                   </select>
                 </label>
-                <label class="admin-field">
-                  <span class="admin-label">Alvo (se houver)</span>
-                  <input class="admin-input" id="admin-buff-target" type="text" placeholder="Apelido do adversário">
-                </label>
-                <div class="admin-actions admin-actions--full">
-                  <button class="admin-button admin-button--primary" type="submit">Aplicar buff</button>
-                  <button class="admin-button" id="admin-buff-remove" type="button">Remover buff</button>
+              </div>
+            </div>
+            <div class="admin-selected-summary" id="admin-selected-summary">
+              Selecione um usuário para gerenciar palpites, moedas e buffs.
+            </div>
+            <div class="admin-users-list admin-users-list--compact" id="admin-users-list"></div>
+          </section>
+
+          <div class="admin-section-panel is-active" id="admin-section-predictions" role="tabpanel" aria-labelledby="admin-section-predictions-tab">
+            <div class="admin-grid admin-grid--manager">
+              <div class="admin-empty admin-selection-empty" data-admin-selection-empty>Selecione um usuário para gerenciar palpites, moedas e buffs.</div>
+              <div class="admin-manager-stack" data-admin-user-workspace>
+                <section class="admin-panel admin-accordion is-open" data-admin-accordion>
+                  <button class="admin-accordion-toggle" type="button" aria-expanded="true">
+                    <span>Palpite normal</span>
+                    <span class="admin-accordion-icon" aria-hidden="true">▾</span>
+                  </button>
+                  <div class="admin-accordion-body">
+                    <div class="admin-panel-head">
+                      <p class="admin-panel-copy">Altere manualmente o palpite de qualquer jogo para o usuário selecionado.</p>
+                    </div>
+                    <form class="admin-form" id="admin-prediction-form">
+                      <label class="admin-field admin-field--full">
+                        <span class="admin-label">Jogo</span>
+                        <select class="admin-select" id="admin-prediction-match"></select>
+                      </label>
+                      <label class="admin-field">
+                        <span class="admin-label">Casa</span>
+                        <input class="admin-input" id="admin-prediction-home" type="number" min="0" max="99">
+                      </label>
+                      <label class="admin-field">
+                        <span class="admin-label">Fora</span>
+                        <input class="admin-input" id="admin-prediction-away" type="number" min="0" max="99">
+                      </label>
+                      <label class="admin-field">
+                        <span class="admin-label">Prorrogação casa</span>
+                        <input class="admin-input" id="admin-prediction-extra-home" type="number" min="0" max="99" placeholder="Opcional">
+                      </label>
+                      <label class="admin-field">
+                        <span class="admin-label">Prorrogação fora</span>
+                        <input class="admin-input" id="admin-prediction-extra-away" type="number" min="0" max="99" placeholder="Opcional">
+                      </label>
+                      <label class="admin-field admin-field--full">
+                        <span class="admin-label">Quem avança</span>
+                        <select class="admin-select" id="admin-prediction-winner"></select>
+                      </label>
+                      <div class="admin-actions admin-actions--full">
+                        <button class="admin-button admin-button--primary" type="submit">Salvar palpite do usuário</button>
+                      </div>
+                    </form>
+                    <div class="admin-preview" id="admin-prediction-preview">Nenhum palpite carregado para este jogo.</div>
+                  </div>
+                </section>
+
+                <section class="admin-panel admin-accordion" data-admin-accordion>
+                  <button class="admin-accordion-toggle" type="button" aria-expanded="false">
+                    <span>Palpites extras</span>
+                    <span class="admin-accordion-icon" aria-hidden="true">▾</span>
+                  </button>
+                  <div class="admin-accordion-body" hidden>
+                    <div class="admin-panel-head">
+                      <p class="admin-panel-copy">Edite diretamente os palpites extras do usuário selecionado.</p>
+                    </div>
+                    <form class="admin-form admin-form--extras" id="admin-extras-form">
+                      <label class="admin-field"><span class="admin-label">Campeão</span><input class="admin-input" id="admin-extra-champion" type="text"></label>
+                      <label class="admin-field"><span class="admin-label">Vice-campeão</span><input class="admin-input" id="admin-extra-runner-up" type="text"></label>
+                      <label class="admin-field"><span class="admin-label">3º lugar</span><input class="admin-input" id="admin-extra-third" type="text"></label>
+                      <label class="admin-field"><span class="admin-label">4º lugar</span><input class="admin-input" id="admin-extra-fourth" type="text"></label>
+                      <label class="admin-field"><span class="admin-label">Artilheiro</span><input class="admin-input" id="admin-extra-top-scorer" type="text"></label>
+                      <label class="admin-field"><span class="admin-label">Melhor campanha</span><input class="admin-input" id="admin-extra-best-group" type="text"></label>
+                      <label class="admin-field"><span class="admin-label">Zebra</span><input class="admin-input" id="admin-extra-zebra" type="text"></label>
+                      <label class="admin-field"><span class="admin-label">Total de gols</span><input class="admin-input" id="admin-extra-total-goals" type="number" min="0"></label>
+                      <div class="admin-actions admin-actions--full">
+                        <button class="admin-button admin-button--primary" type="submit">Salvar extras do usuário</button>
+                      </div>
+                    </form>
+                    <div class="admin-preview" id="admin-extras-preview">Nenhum palpite extra carregado para este usuário.</div>
+                  </div>
+                </section>
+
+                <section class="admin-panel admin-accordion" data-admin-accordion>
+                  <button class="admin-accordion-toggle" type="button" aria-expanded="false">
+                    <span>Moedas</span>
+                    <span class="admin-accordion-icon" aria-hidden="true">▾</span>
+                  </button>
+                  <div class="admin-accordion-body" hidden>
+                    <div class="admin-coins-block">
+                      <div class="admin-coins-row">
+                        <span class="admin-coins-value" id="admin-user-coins">0</span>
+                        <div class="admin-chip-actions">
+                          <button class="admin-chip-button" type="button" data-admin-coins-adjust="-5">-5</button>
+                          <button class="admin-chip-button" type="button" data-admin-coins-adjust="-1">-1</button>
+                          <button class="admin-chip-button" type="button" data-admin-coins-adjust="1">+1</button>
+                          <button class="admin-chip-button" type="button" data-admin-coins-adjust="5">+5</button>
+                        </div>
+                      </div>
+                      <div class="admin-coins-manual">
+                        <input class="admin-input" id="admin-user-coins-set" type="number" min="0" placeholder="Definir total de moedas">
+                        <button class="admin-button" id="admin-user-coins-save" type="button">Definir</button>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+
+                <section class="admin-panel admin-accordion" data-admin-accordion>
+                  <button class="admin-accordion-toggle" type="button" aria-expanded="false">
+                    <span>Buffs do usuário</span>
+                    <span class="admin-accordion-icon" aria-hidden="true">▾</span>
+                  </button>
+                  <div class="admin-accordion-body" hidden>
+                    <div class="admin-panel-head">
+                      <p class="admin-panel-copy">Aplique ou remova buffs manualmente para corrigir qualquer situação.</p>
+                    </div>
+                    <form class="admin-form" id="admin-buff-form">
+                      <label class="admin-field admin-field--full">
+                        <span class="admin-label">Jogo</span>
+                        <select class="admin-select" id="admin-buff-match"></select>
+                      </label>
+                      <label class="admin-field">
+                        <span class="admin-label">Buff</span>
+                        <select class="admin-select" id="admin-buff-id">
+                          <option value="draw-protected">Empate Protegido (1🪙)</option>
+                          <option value="palpite-duplo">Pontuação Dobrada ×2 (4🪙)</option>
+                          <option value="zerar-adversario">Zerar Adversário (4🪙)</option>
+                          <option value="meia-adversario">Meiar Adversário (3🪙)</option>
+                          <option value="coin-bet">Aposta de Moedas (1🪙)</option>
+                        </select>
+                      </label>
+                      <label class="admin-field">
+                        <span class="admin-label">Alvo (se houver)</span>
+                        <input class="admin-input" id="admin-buff-target" type="text" placeholder="Apelido do adversário">
+                      </label>
+                      <div class="admin-actions admin-actions--full">
+                        <button class="admin-button admin-button--primary" type="submit">Aplicar buff</button>
+                        <button class="admin-button" id="admin-buff-remove" type="button">Remover buff</button>
+                      </div>
+                    </form>
+                  </div>
+                </section>
+
+                <section class="admin-panel admin-accordion" data-admin-accordion>
+                  <button class="admin-accordion-toggle" type="button" aria-expanded="false">
+                    <span>Histórico de buffs</span>
+                    <span class="admin-accordion-icon" aria-hidden="true">▾</span>
+                  </button>
+                  <div class="admin-accordion-body" hidden>
+                    <div class="admin-buffs-list" id="admin-buffs-list"></div>
+                  </div>
+                </section>
+              </div>
+            </div>
+          </div>
+
+          <div class="admin-section-panel" id="admin-section-config" role="tabpanel" hidden>
+            <div class="admin-grid admin-grid--config">
+              <div class="admin-empty admin-selection-empty" data-admin-selection-empty>Selecione um usuário para editar conta, bloqueio ou senha.</div>
+              <section class="admin-panel" data-admin-user-workspace>
+                <div class="admin-panel-head">
+                  <h3 class="admin-panel-title">Conta selecionada</h3>
+                  <p class="admin-panel-copy" id="admin-selected-copy">Escolha um usuário na lista para editar.</p>
                 </div>
-              </form>
-              <div class="admin-buffs-list" id="admin-buffs-list"></div>
-            </section>
+                <form class="admin-form" id="admin-user-form">
+                  <label class="admin-field">
+                    <span class="admin-label">Apelido</span>
+                    <input class="admin-input" id="admin-user-nickname" type="text" placeholder="Usuário / apelido">
+                  </label>
+                  <label class="admin-field">
+                    <span class="admin-label">Nome real</span>
+                    <input class="admin-input" id="admin-user-realname" type="text" placeholder="Nome completo">
+                  </label>
+                  <label class="admin-field">
+                    <span class="admin-label">Nova senha</span>
+                    <input class="admin-input" id="admin-user-password" type="password" placeholder="Deixe em branco para manter" autocomplete="new-password">
+                  </label>
+                  <label class="admin-check">
+                    <input id="admin-user-blocked" type="checkbox">
+                    <span>Bloquear acesso desse usuário</span>
+                  </label>
+                  <div class="admin-actions">
+                    <button class="admin-button admin-button--primary" id="admin-user-save" type="submit">Salvar conta</button>
+                    <button class="admin-button" id="admin-user-clear" type="button">Limpar seleção</button>
+                  </div>
+                  <div class="admin-danger-zone">
+                    <p class="admin-subtitle">Zona de risco</p>
+                    <p class="admin-panel-copy">A exclusão remove conta, palpites, extras, buffs e sessões do usuário.</p>
+                    <button class="admin-button admin-button--danger" id="admin-user-delete" type="button">Excluir usuário</button>
+                  </div>
+                </form>
+              </section>
 
-            <section class="admin-panel">
-              <div class="admin-panel-head">
-                <h3 class="admin-panel-title">Solicitações de troca de nome</h3>
-                <p class="admin-panel-copy">Participantes que solicitaram trocar o nome real precisam de aprovação aqui.</p>
-              </div>
-              <div id="admin-name-requests-list"><p style="opacity:.45;font-size:.78rem">Nenhuma solicitação pendente.</p></div>
-            </section>
-
-            <section class="admin-panel">
-              <div class="admin-panel-head">
-                <h3 class="admin-panel-title">Minha senha (Admin)</h3>
-                <p class="admin-panel-copy">Altere a senha da sua conta de administrador.</p>
-              </div>
-              <form class="admin-form" id="admin-own-password-form">
-                <label class="admin-field admin-field--full">
-                  <span class="admin-label">Nova senha</span>
-                  <input class="admin-input" id="admin-own-password" type="password" placeholder="Mínimo 6 caracteres" autocomplete="new-password">
-                </label>
-                <div class="admin-actions">
-                  <button class="admin-button admin-button--primary" type="submit">Salvar nova senha</button>
+              <section class="admin-panel">
+                <div class="admin-panel-head">
+                  <h3 class="admin-panel-title">Solicitações de troca de nome</h3>
+                  <p class="admin-panel-copy">Participantes que solicitaram trocar o nome real precisam de aprovação aqui.</p>
                 </div>
-              </form>
-            </section>
+                <div class="admin-scroll-area admin-scroll-area--requests" id="admin-name-requests-list"><p style="opacity:.45;font-size:.78rem">Nenhuma solicitação pendente.</p></div>
+              </section>
 
-            <section class="admin-panel admin-panel--wide">
-              <div class="admin-panel-head">
-                <h3 class="admin-panel-title">Auditoria</h3>
-                <p class="admin-panel-copy">Registro simples das últimas ações administrativas para saber quem alterou o quê.</p>
-              </div>
-              <div class="admin-audit-list" id="admin-audit-list"></div>
-            </section>
+              <section class="admin-panel">
+                <div class="admin-panel-head">
+                  <h3 class="admin-panel-title">Minha senha (Admin)</h3>
+                  <p class="admin-panel-copy">Altere a senha da sua conta de administrador.</p>
+                </div>
+                <form class="admin-form" id="admin-own-password-form">
+                  <label class="admin-field admin-field--full">
+                    <span class="admin-label">Nova senha</span>
+                    <input class="admin-input" id="admin-own-password" type="password" placeholder="Mínimo 6 caracteres" autocomplete="new-password">
+                  </label>
+                  <div class="admin-actions">
+                    <button class="admin-button admin-button--primary" type="submit">Salvar nova senha</button>
+                  </div>
+                </form>
+              </section>
+            </div>
+          </div>
+
+          <div class="admin-section-panel" id="admin-section-results" role="tabpanel" hidden>
+            <div class="admin-grid admin-grid--results">
+              <section class="admin-panel">
+                <div class="admin-panel-head">
+                  <h3 class="admin-panel-title">Resultados oficiais das partidas</h3>
+                  <p class="admin-panel-copy">Use o botão abaixo para abrir o modal de lançamento manual de placares oficiais.</p>
+                </div>
+                <button class="admin-button admin-button--primary" id="admin-results-inline-trigger" type="button">Lançar resultado oficial</button>
+              </section>
+
+              <section class="admin-panel admin-panel--wide">
+                <div class="admin-panel-head">
+                  <h3 class="admin-panel-title">Resultados finais do torneio</h3>
+                  <p class="admin-panel-copy">Registre os resultados reais da Copa para pontuar os palpites extras de todos os participantes no ranking.</p>
+                </div>
+                <form class="admin-form admin-form--extras" id="admin-bonus-results-form">
+                  <label class="admin-field"><span class="admin-label">Campeão</span><input class="admin-input" id="admin-br-champion" type="text" placeholder="Ex: Brasil"></label>
+                  <label class="admin-field"><span class="admin-label">Vice-campeão</span><input class="admin-input" id="admin-br-runner-up" type="text" placeholder="Ex: Argentina"></label>
+                  <label class="admin-field"><span class="admin-label">3º lugar</span><input class="admin-input" id="admin-br-third" type="text" placeholder="Ex: França"></label>
+                  <label class="admin-field"><span class="admin-label">4º lugar</span><input class="admin-input" id="admin-br-fourth" type="text" placeholder="Ex: Alemanha"></label>
+                  <label class="admin-field"><span class="admin-label">Artilheiro</span><input class="admin-input" id="admin-br-top-scorer" type="text" placeholder="Ex: Vini Jr"></label>
+                  <label class="admin-field"><span class="admin-label">Melhor campanha</span><input class="admin-input" id="admin-br-best-group" type="text" placeholder="Ex: Brasil"></label>
+                  <label class="admin-field"><span class="admin-label">Zebra</span><input class="admin-input" id="admin-br-zebra-team" type="text" placeholder="Ex: Marrocos"></label>
+                  <label class="admin-field"><span class="admin-label">Fases avançadas (zebra)</span><input class="admin-input" id="admin-br-zebra-phases" type="number" min="0" max="7" placeholder="0–7"></label>
+                  <label class="admin-field"><span class="admin-label">Total de gols</span><input class="admin-input" id="admin-br-total-goals" type="number" min="0" placeholder="Ex: 164"></label>
+                  <div class="admin-actions admin-actions--full">
+                    <button class="admin-button admin-button--primary" type="submit">Salvar resultados finais</button>
+                  </div>
+                </form>
+                <div class="admin-preview" id="admin-bonus-results-preview">Nenhum resultado final registrado ainda.</div>
+              </section>
+
+              <section class="admin-panel admin-panel--wide">
+                <div class="admin-panel-head">
+                  <h3 class="admin-panel-title">Auditoria</h3>
+                  <p class="admin-panel-copy">Registro simples das últimas ações administrativas para saber quem alterou o quê.</p>
+                </div>
+                <div class="admin-audit-list admin-scroll-area admin-scroll-area--audit" id="admin-audit-list"></div>
+              </section>
+            </div>
           </div>
           <div class="admin-feedback" id="admin-feedback"></div>
         </div>
@@ -6903,6 +7293,7 @@
     const syncStatusText = document.getElementById("sync-status-text");
     const adminResultsTrigger = document.getElementById("admin-results-trigger");
     const adminResultsApiTrigger = document.getElementById("admin-results-api-trigger");
+    const adminResultsInlineTrigger = document.getElementById("admin-results-inline-trigger");
     const loginTrigger = document.querySelector(".login-card");
     const loginCardUser = document.getElementById("login-card-user");
     const loginCardLabel = document.getElementById("login-card-label");
@@ -6966,6 +7357,11 @@
     // Admin own password change
     const adminOwnPasswordForm = document.getElementById("admin-own-password-form");
     const adminOwnPasswordInput = document.getElementById("admin-own-password");
+    const adminSectionButtons = Array.from(document.querySelectorAll("[data-admin-section-target]"));
+    const adminSectionPanels = Array.from(document.querySelectorAll(".admin-section-panel"));
+    const adminSelectedSummary = document.getElementById("admin-selected-summary");
+    const adminSelectionEmptyMessages = Array.from(document.querySelectorAll("[data-admin-selection-empty]"));
+    const adminAccordions = Array.from(document.querySelectorAll("[data-admin-accordion]"));
 
     // State for avatar selection (shared between register and profile)
     let avatarModalContext = "register"; // "register" | "profile"
@@ -7057,6 +7453,7 @@
     let activeResultMatchId = null;
     let selectedAdminUser = null;
     let adminUsersCache = [];
+    const ADMIN_SECTION_STORAGE_KEY = "bolao-admin-section";
     let missionProgressCache = {};
     let userHistoryCache = [];
     let apiSyncStatusCache = null;
@@ -8270,6 +8667,63 @@
       adminFeedback.className = "admin-feedback" + (type ? ` is-${type}` : "");
     }
 
+    function activateAdminSection(nextId, persist = true) {
+      if (!nextId || !adminSectionPanels.length) return;
+      const nextPanel = document.getElementById(nextId);
+      if (!nextPanel) return;
+
+      adminSectionPanels.forEach((panel) => {
+        const isActive = panel.id === nextId;
+        panel.classList.toggle("is-active", isActive);
+        panel.hidden = !isActive;
+      });
+
+      adminSectionButtons.forEach((button) => {
+        const isActive = button.dataset.adminSectionTarget === nextId;
+        button.classList.toggle("is-active", isActive);
+        button.setAttribute("aria-selected", isActive ? "true" : "false");
+      });
+
+      if (persist) {
+        try {
+          sessionStorage.setItem(ADMIN_SECTION_STORAGE_KEY, nextId);
+        } catch {
+          // Session storage can fail in restricted browser contexts.
+        }
+      }
+    }
+
+    function renderAdminSelectedSummary(user) {
+      if (!adminSelectedSummary) return;
+      if (!user) {
+        adminSelectedSummary.textContent = "Selecione um usuário para gerenciar palpites, moedas e buffs.";
+        return;
+      }
+
+      adminSelectedSummary.innerHTML = `
+        <strong>${escapeHtml(user.nickname || "Usuário")}</strong>
+        <span>${escapeHtml(user.real_name || "Nome real não informado")}</span>
+        <div class="admin-selected-summary-row">
+          <span class="admin-selected-chip">Moedas: ${escapeHtml(String(user.coins ?? 0))}</span>
+          <span class="admin-selected-chip">Palpites: ${escapeHtml(String(user.predictions_count ?? 0))}</span>
+          <span class="admin-selected-chip">Último login: ${user.last_login_at ? escapeHtml(formatDateTimeShort(user.last_login_at)) : "Nunca"}</span>
+          ${user.has_bonus_prediction ? `<span class="admin-selected-chip">Extras salvos</span>` : `<span class="admin-selected-chip">Sem extras</span>`}
+          ${user.is_blocked ? `<span class="admin-selected-chip is-blocked">Bloqueado</span>` : `<span class="admin-selected-chip">Ativo</span>`}
+        </div>
+      `;
+    }
+
+    function refreshAdminSelectionState() {
+      const hasUser = Boolean(selectedAdminUser);
+      renderAdminSelectedSummary(selectedAdminUser);
+      adminSectionPanels.forEach((panel) => {
+        panel.classList.toggle("has-user", hasUser);
+      });
+      adminSelectionEmptyMessages.forEach((message) => {
+        message.hidden = hasUser;
+      });
+    }
+
     function renderApiSyncStatus(syncStatus = null, feedback = null, type = "") {
       if (!syncStatusBar || !syncStatusText) return;
       apiSyncStatusCache = syncStatus;
@@ -8686,6 +9140,7 @@
         if (adminPredictionPreview) adminPredictionPreview.textContent = "Nenhum palpite carregado para este jogo.";
         if (adminExtrasPreview) adminExtrasPreview.textContent = "Nenhum palpite extra carregado para este usuário.";
         renderAdminBuffs([]);
+        refreshAdminSelectionState();
         return;
       }
 
@@ -8696,6 +9151,7 @@
       adminUserBlocked.checked = Boolean(user.is_blocked);
       adminUserCoins.textContent = String(user.coins ?? 0);
       adminUserCoinsSet.value = "";
+      refreshAdminSelectionState();
     }
 
     async function loadAdminUsers() {
@@ -11202,6 +11658,35 @@
     adminResultsTrigger?.addEventListener("click", () => {
       openResultsModal();
     });
+
+    adminResultsInlineTrigger?.addEventListener("click", () => {
+      openResultsModal();
+    });
+
+    adminSectionButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        activateAdminSection(button.dataset.adminSectionTarget);
+      });
+    });
+
+    adminAccordions.forEach((accordion) => {
+      const toggle = accordion.querySelector(".admin-accordion-toggle");
+      const body = accordion.querySelector(".admin-accordion-body");
+      toggle?.addEventListener("click", () => {
+        const isOpen = accordion.classList.toggle("is-open");
+        toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+        if (body) body.hidden = !isOpen;
+      });
+    });
+
+    try {
+      const storedAdminSection = sessionStorage.getItem(ADMIN_SECTION_STORAGE_KEY);
+      activateAdminSection(storedAdminSection || "admin-section-predictions", false);
+    } catch {
+      activateAdminSection("admin-section-predictions", false);
+    }
+
+    refreshAdminSelectionState();
 
     hydrateMissionCards();
 
