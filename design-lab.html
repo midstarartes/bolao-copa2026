@@ -2415,6 +2415,159 @@
       max-height: 310px;
     }
 
+    .filters-admin-shell {
+      gap: 14px;
+    }
+
+    .filters-admin-panel {
+      gap: 14px;
+    }
+
+    .filters-section-panel {
+      display: none;
+    }
+
+    .filters-section-panel.is-active {
+      display: block;
+    }
+
+    .filters-control-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(180px, 0.35fr);
+      gap: 12px;
+      align-items: end;
+    }
+
+    .filters-official-result {
+      min-height: 42px;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(0,0,0,0.24);
+      color: rgba(226,232,240,0.76);
+      font-size: 0.76rem;
+      font-weight: 900;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .filters-official-result strong {
+      color: #f87171;
+      font-size: 0.9rem;
+    }
+
+    .filters-list {
+      max-height: min(68vh, 720px);
+      overflow: auto;
+      display: grid;
+      gap: 8px;
+      padding: 2px 4px 4px 0;
+    }
+
+    .filters-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(180px, 0.55fr);
+      gap: 12px;
+      align-items: center;
+      min-height: 68px;
+      padding: 12px 14px;
+    }
+
+    .filters-row .ranking-player-name {
+      margin: 0;
+    }
+
+    .filters-row .ranking-player-real {
+      margin: 2px 0 0;
+    }
+
+    .filters-row.is-exact-hit {
+      border-color: rgba(34,197,94,0.34);
+      background:
+        linear-gradient(180deg, rgba(74,222,128,0.22), rgba(21,128,61,0.10) 46%, rgba(0,0,0,0.26) 100%),
+        rgba(7,33,18,0.74);
+      box-shadow:
+        0 0 22px rgba(34,197,94,0.18),
+        inset 0 1px 0 rgba(255,255,255,0.14);
+    }
+
+    .filters-row.is-result-miss {
+      border-color: rgba(248,113,113,0.32);
+      background:
+        linear-gradient(180deg, rgba(248,113,113,0.18), rgba(127,29,29,0.12) 48%, rgba(0,0,0,0.30) 100%),
+        rgba(39,8,8,0.76);
+    }
+
+    .filters-row.is-extra-hit {
+      border-color: rgba(34,197,94,0.28);
+      box-shadow:
+        0 0 18px rgba(34,197,94,0.12),
+        inset 0 1px 0 rgba(255,255,255,0.12);
+    }
+
+    .filters-value {
+      justify-self: end;
+      display: grid;
+      gap: 4px;
+      color: #f8fafc;
+      font-size: 0.86rem;
+      font-weight: 900;
+      letter-spacing: 0.04em;
+      text-align: right;
+      text-transform: uppercase;
+    }
+
+    .filters-value small {
+      color: rgba(226,232,240,0.62);
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      text-transform: none;
+    }
+
+    .filters-value--empty {
+      color: rgba(226,232,240,0.44);
+    }
+
+    .filters-tags {
+      display: flex;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+
+    .filters-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 7px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.06);
+      color: #e5e7eb;
+      font-size: 0.64rem;
+      font-weight: 900;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .filters-loading,
+    .filters-empty {
+      padding: 16px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.04);
+      color: rgba(226,232,240,0.64);
+      font-size: 0.78rem;
+      font-weight: 900;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
     .admin-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -5046,6 +5199,25 @@
         font-size: 0.72rem;
       }
 
+      .filters-control-grid,
+      .filters-row {
+        grid-template-columns: 1fr;
+      }
+
+      .filters-row {
+        gap: 8px;
+        min-height: 0;
+      }
+
+      .filters-value {
+        justify-self: stretch;
+        text-align: left;
+      }
+
+      .filters-tags {
+        justify-content: flex-start;
+      }
+
       .admin-accordion-toggle {
         min-height: 46px;
         padding: 13px 14px;
@@ -6054,6 +6226,7 @@
         <button class="top-nav-button" type="button" data-tab-target="tab-moedas">Moedas<span class="top-nav-badge is-hidden" id="missions-nav-badge">0</span></button>
         <button class="top-nav-button" type="button" data-tab-target="tab-ranking">Ranking</button>
         <button class="top-nav-button" type="button" data-tab-target="tab-regras">Regras</button>
+        <button class="top-nav-button top-nav-button--admin" type="button" data-tab-target="tab-filtros">Filtros</button>
         <button class="top-nav-button top-nav-button--admin" type="button" data-tab-target="tab-admin">Admin</button>
       </nav>
       <button class="top-nav-arrow top-nav-arrow--next" id="top-nav-next" type="button" aria-label="Ver mais abas">›</button>
@@ -6367,6 +6540,79 @@
             <div class="mission-progress is-neutral">0/1</div>
             <button class="mission-claim is-locked" type="button" disabled>🪙 Resgatar</button>
           </article>
+        </div>
+      </section>
+      <section class="tab-panel is-hidden is-empty" id="tab-filtros" aria-label="Filtros administrativos">
+        <div class="admin-shell filters-admin-shell">
+          <div class="admin-internal-nav" role="tablist" aria-label="Filtros administrativos">
+            <button class="admin-section-tab is-active" id="filters-section-predictions-tab" type="button" role="tab" aria-selected="true" aria-controls="filters-section-predictions" data-filters-section-target="filters-section-predictions">Palpites</button>
+            <button class="admin-section-tab" id="filters-section-buffs-tab" type="button" role="tab" aria-selected="false" aria-controls="filters-section-buffs" data-filters-section-target="filters-section-buffs">Buffs</button>
+            <button class="admin-section-tab" id="filters-section-extras-tab" type="button" role="tab" aria-selected="false" aria-controls="filters-section-extras" data-filters-section-target="filters-section-extras">Extras</button>
+          </div>
+
+          <section class="admin-section-panel filters-section-panel is-active" id="filters-section-predictions" role="tabpanel" aria-labelledby="filters-section-predictions-tab">
+            <div class="admin-panel filters-admin-panel">
+              <div class="admin-panel-head">
+                <h3 class="admin-panel-title">Palpites por jogo</h3>
+                <p class="admin-panel-copy">Consulta geral dos palpites de todos os participantes, sem edição.</p>
+              </div>
+              <label class="admin-field admin-field--full">
+                <span class="admin-label">Jogo</span>
+                <select class="admin-select" id="filters-predictions-match"></select>
+              </label>
+              <div class="filters-official-result" id="filters-predictions-result">Selecione um jogo para visualizar os palpites.</div>
+              <div class="filters-list" id="filters-predictions-list"></div>
+            </div>
+          </section>
+
+          <section class="admin-section-panel filters-section-panel" id="filters-section-buffs" role="tabpanel" aria-labelledby="filters-section-buffs-tab" hidden>
+            <div class="admin-panel filters-admin-panel">
+              <div class="admin-panel-head">
+                <h3 class="admin-panel-title">Buffs por jogo</h3>
+                <p class="admin-panel-copy">Veja quais buffs cada participante usou no jogo selecionado.</p>
+              </div>
+              <div class="filters-control-grid">
+                <label class="admin-field">
+                  <span class="admin-label">Jogo</span>
+                  <select class="admin-select" id="filters-buffs-match"></select>
+                </label>
+                <label class="admin-field">
+                  <span class="admin-label">Filtro</span>
+                  <select class="admin-select" id="filters-buffs-status">
+                    <option value="all">Todos</option>
+                    <option value="with">Com buff</option>
+                    <option value="without">Sem buff</option>
+                  </select>
+                </label>
+              </div>
+              <div class="filters-official-result" id="filters-buffs-result">Selecione um jogo para visualizar os buffs.</div>
+              <div class="filters-list" id="filters-buffs-list"></div>
+            </div>
+          </section>
+
+          <section class="admin-section-panel filters-section-panel" id="filters-section-extras" role="tabpanel" aria-labelledby="filters-section-extras-tab" hidden>
+            <div class="admin-panel filters-admin-panel">
+              <div class="admin-panel-head">
+                <h3 class="admin-panel-title">Extras por participante</h3>
+                <p class="admin-panel-copy">Consulta geral dos palpites extras salvos por todos os participantes.</p>
+              </div>
+              <label class="admin-field admin-field--full">
+                <span class="admin-label">Extra</span>
+                <select class="admin-select" id="filters-extras-type">
+                  <option value="champion">Campeão</option>
+                  <option value="runner_up">Vice-campeão</option>
+                  <option value="third_place">3º lugar</option>
+                  <option value="fourth_place">4º lugar</option>
+                  <option value="top_scorer">Artilheiro</option>
+                  <option value="best_group_stage_team">Melhor campanha</option>
+                  <option value="tournament_zebra">Zebra</option>
+                  <option value="total_goals">Total de gols</option>
+                </select>
+              </label>
+              <div class="filters-official-result" id="filters-extras-result">Resultado oficial ainda não lançado.</div>
+              <div class="filters-list" id="filters-extras-list"></div>
+            </div>
+          </section>
         </div>
       </section>
       <section class="tab-panel is-hidden is-empty" id="tab-regras" aria-label="Regras">
@@ -7358,10 +7604,22 @@
     const adminOwnPasswordForm = document.getElementById("admin-own-password-form");
     const adminOwnPasswordInput = document.getElementById("admin-own-password");
     const adminSectionButtons = Array.from(document.querySelectorAll("[data-admin-section-target]"));
-    const adminSectionPanels = Array.from(document.querySelectorAll(".admin-section-panel"));
+    const adminSectionPanels = Array.from(document.querySelectorAll("#tab-admin .admin-section-panel"));
     const adminSelectedSummary = document.getElementById("admin-selected-summary");
     const adminSelectionEmptyMessages = Array.from(document.querySelectorAll("[data-admin-selection-empty]"));
     const adminAccordions = Array.from(document.querySelectorAll("[data-admin-accordion]"));
+    const filtersSectionButtons = Array.from(document.querySelectorAll("[data-filters-section-target]"));
+    const filtersSectionPanels = Array.from(document.querySelectorAll(".filters-section-panel"));
+    const filtersPredictionsMatch = document.getElementById("filters-predictions-match");
+    const filtersPredictionsResult = document.getElementById("filters-predictions-result");
+    const filtersPredictionsList = document.getElementById("filters-predictions-list");
+    const filtersBuffsMatch = document.getElementById("filters-buffs-match");
+    const filtersBuffsStatus = document.getElementById("filters-buffs-status");
+    const filtersBuffsResult = document.getElementById("filters-buffs-result");
+    const filtersBuffsList = document.getElementById("filters-buffs-list");
+    const filtersExtrasType = document.getElementById("filters-extras-type");
+    const filtersExtrasResult = document.getElementById("filters-extras-result");
+    const filtersExtrasList = document.getElementById("filters-extras-list");
 
     // State for avatar selection (shared between register and profile)
     let avatarModalContext = "register"; // "register" | "profile"
@@ -7453,7 +7711,10 @@
     let activeResultMatchId = null;
     let selectedAdminUser = null;
     let adminUsersCache = [];
+    let filtersUsersCache = [];
+    let filtersBonusResultsCache = null;
     const ADMIN_SECTION_STORAGE_KEY = "bolao-admin-section";
+    const FILTERS_SECTION_STORAGE_KEY = "bolao-filters-section";
     let missionProgressCache = {};
     let userHistoryCache = [];
     let apiSyncStatusCache = null;
@@ -8354,6 +8615,10 @@
       return fixTeamEncoding(name);
     }
 
+    function getTeamCodeFromName(name) {
+      return TEAM_ALIAS_TO_CODE[normalizeTextForApi(name)] || String(name || "").slice(0, 3).toUpperCase();
+    }
+
     function matchHasOfficialResult(match) {
       return match?.score_home != null && match?.score_away != null;
     }
@@ -9032,6 +9297,395 @@
         .join("");
       if (adminPredictionMatch) adminPredictionMatch.innerHTML = options;
       if (adminBuffMatch) adminBuffMatch.innerHTML = options;
+      populateFiltersMatchOptions();
+    }
+
+    function populateFiltersMatchOptions() {
+      const options = matchRecords
+        .map((match) => buildMatchSelectOption(match))
+        .join("");
+      if (filtersPredictionsMatch) filtersPredictionsMatch.innerHTML = options;
+      if (filtersBuffsMatch) filtersBuffsMatch.innerHTML = options;
+    }
+
+    function activateFiltersSection(nextId, persist = true, shouldLoad = true) {
+      const nextPanel = document.getElementById(nextId);
+      if (!nextPanel) return;
+      filtersSectionButtons.forEach((button) => {
+        const isActive = button.dataset.filtersSectionTarget === nextId;
+        button.classList.toggle("is-active", isActive);
+        button.setAttribute("aria-selected", isActive ? "true" : "false");
+      });
+      filtersSectionPanels.forEach((panel) => {
+        const isActive = panel.id === nextId;
+        panel.classList.toggle("is-active", isActive);
+        panel.hidden = !isActive;
+      });
+      if (persist) {
+        try {
+          sessionStorage.setItem(FILTERS_SECTION_STORAGE_KEY, nextId);
+        } catch {}
+      }
+      if (shouldLoad) {
+        void loadActiveFiltersSection();
+      }
+    }
+
+    function getFiltersSelectedMatchId(section) {
+      return section === "buffs" ? filtersBuffsMatch?.value : filtersPredictionsMatch?.value;
+    }
+
+    function renderFiltersLoading(listElement) {
+      if (listElement) listElement.innerHTML = `<div class="filters-loading">Carregando...</div>`;
+    }
+
+    function renderFiltersEmpty(listElement, message) {
+      if (listElement) listElement.innerHTML = `<div class="filters-empty">${escapeHtml(message)}</div>`;
+    }
+
+    async function loadFiltersUsers() {
+      const currentUser = getCurrentUser();
+      if (!currentUser?.isAdmin || !BACKEND_ENABLED) return [];
+      if (filtersUsersCache.length) return filtersUsersCache;
+      const { data, error } = await supabase
+        .from("app_users")
+        .select("id,nickname,real_name,avatar_type,avatar_value,is_admin,is_blocked")
+        .order("nickname", { ascending: true });
+      if (error) throw error;
+      filtersUsersCache = (data || []).filter((user) => !user.is_admin);
+      return filtersUsersCache;
+    }
+
+    function buildFiltersPlayerHtml(user) {
+      return `
+        <div class="ranking-player">
+          ${getAvatarMarkup(user.avatar_type, user.avatar_value, "user-avatar--sm")}
+          <div>
+            <p class="ranking-player-name">${escapeHtml(user.nickname || "Usuário")}</p>
+            <p class="ranking-player-real">${escapeHtml(user.real_name || "Nome real não informado")}</p>
+          </div>
+        </div>
+      `;
+    }
+
+    function buildOfficialMatchResultHtml(match) {
+      if (!match) return "Selecione um jogo.";
+      if (!matchHasOfficialResult(match)) {
+        return `Resultado oficial: <strong>não lançado</strong>`;
+      }
+      const homeCode = match.home_code || getTeamCodeFromName(match.home_team) || "CASA";
+      const awayCode = match.away_code || getTeamCodeFromName(match.away_team) || "FORA";
+      const extraText = match.extra_time_home != null && match.extra_time_away != null
+        ? ` • Prorrogação ${match.extra_time_home}-${match.extra_time_away}`
+        : "";
+      const winnerText = match.winner_team ? ` • Avança: ${getDisplayTeamName(match.winner_team)}` : "";
+      return `Resultado oficial: <strong>${escapeHtml(homeCode)} ${escapeHtml(match.score_home)}-${escapeHtml(match.score_away)} ${escapeHtml(awayCode)}</strong>${escapeHtml(extraText + winnerText)}`;
+    }
+
+    function buildPredictionValueHtml(match, prediction) {
+      if (!prediction) {
+        return `<div class="filters-value filters-value--empty">Sem palpite</div>`;
+      }
+      const scoreHtml = buildPredictionScoreHtml(match, prediction);
+      const extraText = prediction.extra_time_home != null && prediction.extra_time_away != null
+        ? `Prorrogação: ${prediction.extra_time_home}-${prediction.extra_time_away}`
+        : "";
+      const winnerText = prediction.winner_team ? `Avança: ${getDisplayTeamName(prediction.winner_team)}` : "";
+      const details = [extraText, winnerText].filter(Boolean).join(" • ");
+      return `
+        <div class="filters-value">
+          <span class="preds-score">${scoreHtml}</span>
+          ${details ? `<small>${escapeHtml(details)}</small>` : ""}
+        </div>
+      `;
+    }
+
+    function getFiltersPredictionMargin(prediction) {
+      if (!prediction || prediction.home_score == null || prediction.away_score == null) {
+        return Number.NEGATIVE_INFINITY;
+      }
+      return Number(prediction.home_score) - Number(prediction.away_score);
+    }
+
+    function compareFiltersText(a, b) {
+      return String(a || "").localeCompare(String(b || ""), "pt-BR", {
+        sensitivity: "base",
+        numeric: true,
+      });
+    }
+
+    async function loadFiltersPredictions() {
+      const currentUser = getCurrentUser();
+      if (!currentUser?.isAdmin || !BACKEND_ENABLED) return;
+      const matchId = getFiltersSelectedMatchId("predictions");
+      const match = getMatchRecordById(matchId);
+      if (filtersPredictionsResult) filtersPredictionsResult.innerHTML = buildOfficialMatchResultHtml(match);
+      if (!matchId || !match) {
+        renderFiltersEmpty(filtersPredictionsList, "Selecione um jogo.");
+        return;
+      }
+      renderFiltersLoading(filtersPredictionsList);
+      try {
+        const [users, predictionsResponse] = await Promise.all([
+          loadFiltersUsers(),
+          supabase
+            .from("predictions")
+            .select("user_id,home_score,away_score,extra_time_home,extra_time_away,winner_team")
+            .eq("match_id", matchId),
+        ]);
+        if (predictionsResponse.error) throw predictionsResponse.error;
+        const predictionByUser = new Map((predictionsResponse.data || []).map((entry) => [entry.user_id, entry]));
+        if (!users.length) {
+          renderFiltersEmpty(filtersPredictionsList, "Nenhum participante encontrado.");
+          return;
+        }
+        const sortedUsers = [...users].sort((a, b) => {
+          const predictionA = predictionByUser.get(a.id) || null;
+          const predictionB = predictionByUser.get(b.id) || null;
+          const marginDiff = getFiltersPredictionMargin(predictionB) - getFiltersPredictionMargin(predictionA);
+          if (marginDiff !== 0) return marginDiff;
+          const homeScoreDiff = Number(predictionB?.home_score ?? -1) - Number(predictionA?.home_score ?? -1);
+          if (homeScoreDiff !== 0) return homeScoreDiff;
+          return compareFiltersText(a.nickname, b.nickname);
+        });
+        filtersPredictionsList.innerHTML = sortedUsers.map((user) => {
+          const prediction = predictionByUser.get(user.id) || null;
+          const resultState = prediction ? getPredictionResultState(match, prediction) : "";
+          const stateClass =
+            resultState === "exact" ? " is-exact-hit" :
+            resultState === "miss" ? " is-result-miss" :
+            "";
+          return `
+            <article class="ranking-card filters-row${stateClass}">
+              ${buildFiltersPlayerHtml(user)}
+              ${buildPredictionValueHtml(match, prediction)}
+            </article>
+          `;
+        }).join("");
+      } catch (error) {
+        console.error(error);
+        renderFiltersEmpty(filtersPredictionsList, error.message || "Não foi possível carregar os palpites.");
+      }
+    }
+
+    function getFiltersBuffLabel(entry) {
+      const buff = buffCatalog.find((item) => item.id === entry.buff_id);
+      return buff?.title || buffIdToLabel(entry.buff_id);
+    }
+
+    function getFiltersBuffSortLabel(entries) {
+      if (!entries.length) return "zzzzzz";
+      return [...entries]
+        .map((entry) => getFiltersBuffLabel(entry))
+        .sort(compareFiltersText)[0] || "zzzzzz";
+    }
+
+    function buildFiltersBuffLabel(entry) {
+      const label = getFiltersBuffLabel(entry);
+      if (entry.buff_id === "zerar-adversario" || entry.buff_id === "meia-adversario") {
+        const target = entry.target_nickname ? ` • Alvo: ${entry.target_nickname}` : " • Alvo não informado";
+        return label + target;
+      }
+      return label;
+    }
+
+    function buildBuffDetailTags(entries) {
+      if (!entries.length) {
+        return `<div class="filters-value filters-value--empty">Nenhum buff utilizado</div>`;
+      }
+      const tags = [...entries]
+        .sort((a, b) => compareFiltersText(getFiltersBuffLabel(a), getFiltersBuffLabel(b)))
+        .map((entry) => `<span class="filters-tag">${escapeHtml(buildFiltersBuffLabel(entry))}</span>`)
+        .join("");
+      return `<div class="filters-value"><div class="filters-tags">${tags}</div></div>`;
+    }
+
+    async function loadFiltersBuffs() {
+      const currentUser = getCurrentUser();
+      if (!currentUser?.isAdmin || !BACKEND_ENABLED) return;
+      const matchId = getFiltersSelectedMatchId("buffs");
+      const match = getMatchRecordById(matchId);
+      if (filtersBuffsResult) filtersBuffsResult.innerHTML = buildOfficialMatchResultHtml(match);
+      if (!matchId || !match) {
+        renderFiltersEmpty(filtersBuffsList, "Selecione um jogo.");
+        return;
+      }
+      renderFiltersLoading(filtersBuffsList);
+      try {
+        const [users, buffsResponse] = await Promise.all([
+          loadFiltersUsers(),
+          supabase
+            .from("match_buffs")
+            .select("user_id,buff_id,target_nickname")
+            .eq("match_id", matchId),
+        ]);
+        if (buffsResponse.error) throw buffsResponse.error;
+        const buffsByUser = (buffsResponse.data || []).reduce((map, entry) => {
+          if (!map.has(entry.user_id)) map.set(entry.user_id, []);
+          map.get(entry.user_id).push(entry);
+          return map;
+        }, new Map());
+        const filterValue = filtersBuffsStatus?.value || "all";
+        const filteredUsers = users.filter((user) => {
+          const hasBuff = Boolean(buffsByUser.get(user.id)?.length);
+          if (filterValue === "with") return hasBuff;
+          if (filterValue === "without") return !hasBuff;
+          return true;
+        });
+        if (!filteredUsers.length) {
+          renderFiltersEmpty(filtersBuffsList, "Nenhum participante encontrado para esse filtro.");
+          return;
+        }
+        const sortedUsers = [...filteredUsers].sort((a, b) => {
+          const labelDiff = compareFiltersText(
+            getFiltersBuffSortLabel(buffsByUser.get(a.id) || []),
+            getFiltersBuffSortLabel(buffsByUser.get(b.id) || [])
+          );
+          if (labelDiff !== 0) return labelDiff;
+          return compareFiltersText(a.nickname, b.nickname);
+        });
+        filtersBuffsList.innerHTML = sortedUsers.map((user) => {
+          const entries = buffsByUser.get(user.id) || [];
+          return `
+            <article class="ranking-card filters-row">
+              ${buildFiltersPlayerHtml(user)}
+              ${buildBuffDetailTags(entries)}
+            </article>
+          `;
+        }).join("");
+      } catch (error) {
+        console.error(error);
+        renderFiltersEmpty(filtersBuffsList, error.message || "Não foi possível carregar os buffs.");
+      }
+    }
+
+    const filtersExtrasLabels = {
+      champion: "Campeão",
+      runner_up: "Vice-campeão",
+      third_place: "3º lugar",
+      fourth_place: "4º lugar",
+      top_scorer: "Artilheiro",
+      best_group_stage_team: "Melhor campanha",
+      tournament_zebra: "Zebra",
+      total_goals: "Total de gols",
+    };
+
+    const filtersExtrasOfficialMap = {
+      champion: "champion",
+      runner_up: "runner_up",
+      third_place: "third_place",
+      fourth_place: "fourth_place",
+      top_scorer: "top_scorer",
+      best_group_stage_team: "best_group_stage_team",
+      tournament_zebra: "zebra_team",
+      total_goals: "total_goals",
+    };
+
+    async function loadFiltersBonusResults() {
+      if (filtersBonusResultsCache) return filtersBonusResultsCache;
+      const { data, error } = await supabase.rpc("app_get_bonus_results");
+      if (error) throw error;
+      filtersBonusResultsCache = data || {};
+      return filtersBonusResultsCache;
+    }
+
+    function normalizeExtraAnswer(value) {
+      return normalizeTextForApi(String(value ?? ""));
+    }
+
+    function compareFiltersExtraValues(extraKey, valueA, valueB, userA, userB) {
+      const hasA = valueA !== null && valueA !== undefined && valueA !== "";
+      const hasB = valueB !== null && valueB !== undefined && valueB !== "";
+      if (hasA !== hasB) return hasA ? -1 : 1;
+      if (!hasA && !hasB) return compareFiltersText(userA.nickname, userB.nickname);
+
+      const numericA = Number(valueA);
+      const numericB = Number(valueB);
+      const isNumericSort = extraKey === "total_goals" || (!Number.isNaN(numericA) && !Number.isNaN(numericB));
+      if (isNumericSort && !Number.isNaN(numericA) && !Number.isNaN(numericB)) {
+        const numericDiff = numericB - numericA;
+        if (numericDiff !== 0) return numericDiff;
+        return compareFiltersText(userA.nickname, userB.nickname);
+      }
+
+      const textDiff = compareFiltersText(valueA, valueB);
+      if (textDiff !== 0) return textDiff;
+      return compareFiltersText(userA.nickname, userB.nickname);
+    }
+
+    function renderFiltersExtraResult(extraKey, officialResults) {
+      const officialKey = filtersExtrasOfficialMap[extraKey];
+      const officialValue = officialResults?.[officialKey];
+      if (!filtersExtrasResult) return;
+      filtersExtrasResult.innerHTML = officialValue !== null && officialValue !== undefined && officialValue !== ""
+        ? `${escapeHtml(filtersExtrasLabels[extraKey] || "Extra")}: <strong>${escapeHtml(String(officialValue))}</strong>`
+        : `Resultado oficial de ${escapeHtml(filtersExtrasLabels[extraKey] || "extra")}: <strong>não lançado</strong>`;
+    }
+
+    async function loadFiltersExtras() {
+      const currentUser = getCurrentUser();
+      if (!currentUser?.isAdmin || !BACKEND_ENABLED) return;
+      const extraKey = filtersExtrasType?.value || "champion";
+      renderFiltersLoading(filtersExtrasList);
+      try {
+        const [users, predictionsResponse, officialResults] = await Promise.all([
+          loadFiltersUsers(),
+          supabase
+            .from("bonus_predictions")
+            .select("user_id,champion,runner_up,third_place,fourth_place,top_scorer,best_group_stage_team,tournament_zebra,total_goals"),
+          loadFiltersBonusResults(),
+        ]);
+        if (predictionsResponse.error) throw predictionsResponse.error;
+        renderFiltersExtraResult(extraKey, officialResults);
+        const predictionsByUser = new Map((predictionsResponse.data || []).map((entry) => [entry.user_id, entry]));
+        const officialKey = filtersExtrasOfficialMap[extraKey];
+        const officialValue = officialResults?.[officialKey];
+        const hasOfficial = officialValue !== null && officialValue !== undefined && officialValue !== "";
+        if (!users.length) {
+          renderFiltersEmpty(filtersExtrasList, "Nenhum participante encontrado.");
+          return;
+        }
+        const sortedUsers = [...users].sort((a, b) => {
+          const rowA = predictionsByUser.get(a.id) || {};
+          const rowB = predictionsByUser.get(b.id) || {};
+          return compareFiltersExtraValues(extraKey, rowA?.[extraKey], rowB?.[extraKey], a, b);
+        });
+        filtersExtrasList.innerHTML = sortedUsers.map((user) => {
+          const row = predictionsByUser.get(user.id) || {};
+          const rawValue = row?.[extraKey];
+          const hasAnswer = rawValue !== null && rawValue !== undefined && rawValue !== "";
+          const value = hasAnswer ? String(rawValue) : "Não preenchido";
+          const isCorrect = hasOfficial && hasAnswer && normalizeExtraAnswer(rawValue) === normalizeExtraAnswer(officialValue);
+          const isWrong = hasOfficial && (!hasAnswer || normalizeExtraAnswer(rawValue) !== normalizeExtraAnswer(officialValue));
+          const stateClass = isCorrect ? " is-extra-hit" : isWrong ? " is-result-miss" : "";
+          return `
+            <article class="ranking-card filters-row${stateClass}">
+              ${buildFiltersPlayerHtml(user)}
+              <div class="filters-value${hasAnswer ? "" : " filters-value--empty"}">${escapeHtml(value)}</div>
+            </article>
+          `;
+        }).join("");
+      } catch (error) {
+        console.error(error);
+        renderFiltersEmpty(filtersExtrasList, error.message || "Não foi possível carregar os extras.");
+      }
+    }
+
+    async function loadActiveFiltersSection() {
+      const currentUser = getCurrentUser();
+      if (!currentUser?.isAdmin) return;
+      if (!filtersPredictionsMatch?.options?.length || !filtersBuffsMatch?.options?.length) {
+        populateFiltersMatchOptions();
+      }
+      const activeFiltersPanel = filtersSectionPanels.find((panel) => panel.classList.contains("is-active"));
+      if (!activeFiltersPanel) return;
+      if (activeFiltersPanel.id === "filters-section-predictions") {
+        await loadFiltersPredictions();
+      } else if (activeFiltersPanel.id === "filters-section-buffs") {
+        await loadFiltersBuffs();
+      } else if (activeFiltersPanel.id === "filters-section-extras") {
+        await loadFiltersExtras();
+      }
     }
 
     function fillAdminWinnerOptions(selectElement, matchId, selectedValue = "") {
@@ -9170,6 +9824,7 @@
         });
         if (error) throw error;
         adminUsersCache = (data || []).filter((user) => !user.is_admin);
+        filtersUsersCache = [];
         if (selectedAdminUser) {
           selectedAdminUser = adminUsersCache.find((user) => user.user_id === selectedAdminUser.user_id) || null;
         }
@@ -9317,6 +9972,7 @@
         if (adminBrZebraTeam) adminBrZebraTeam.value = r.zebra_team || "";
         if (adminBrZebraPhases) adminBrZebraPhases.value = r.zebra_phases_advanced ?? "";
         if (adminBrTotalGoals) adminBrTotalGoals.value = r.total_goals ?? "";
+        filtersBonusResultsCache = r;
         const pairs = [
           ["Campeão", r.champion],
           ["Vice", r.runner_up],
@@ -11534,6 +12190,9 @@
         if (nextId === "tab-admin") {
           void loadAdminUsers();
         }
+        if (nextId === "tab-filtros") {
+          void loadActiveFiltersSection();
+        }
       }, 500);
     }
 
@@ -11678,6 +12337,35 @@
         if (body) body.hidden = !isOpen;
       });
     });
+
+    filtersSectionButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        activateFiltersSection(button.dataset.filtersSectionTarget);
+      });
+    });
+
+    filtersPredictionsMatch?.addEventListener("change", () => {
+      void loadFiltersPredictions();
+    });
+
+    filtersBuffsMatch?.addEventListener("change", () => {
+      void loadFiltersBuffs();
+    });
+
+    filtersBuffsStatus?.addEventListener("change", () => {
+      void loadFiltersBuffs();
+    });
+
+    filtersExtrasType?.addEventListener("change", () => {
+      void loadFiltersExtras();
+    });
+
+    try {
+      const storedFiltersSection = sessionStorage.getItem(FILTERS_SECTION_STORAGE_KEY);
+      activateFiltersSection(storedFiltersSection || "filters-section-predictions", false, false);
+    } catch {
+      activateFiltersSection("filters-section-predictions", false, false);
+    }
 
     try {
       const storedAdminSection = sessionStorage.getItem(ADMIN_SECTION_STORAGE_KEY);

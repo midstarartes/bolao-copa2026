@@ -640,6 +640,67 @@ Antes de qualquer commit:
 
 ## 32. Registro de mudanças do AGENTS.md
 
+### Sessao 2026-06-23 - ordenacao e exibicao da aba FILTROS
+
+- O que foi alterado:
+  - na subaba `Palpites` da aba `Filtros`, a lista passou a ordenar os palpites pelo saldo previsto `gols casa - gols fora`, do maior para o menor, mantendo usuarios sem palpite ao final;
+  - na subaba `Buffs`, a lista passou a ordenar participantes pelo nome do primeiro buff em ordem alfabetica;
+  - quando um usuario possui mais de um buff no jogo, os buffs tambem sao exibidos em ordem alfabetica;
+  - na subaba `Extras`, respostas textuais passam a ordenar de A a Z e respostas numericas de forma decrescente;
+  - a exibicao dos buffs foi simplificada: `Aposta de Moedas`, `Empate Protegido` e `Pontuacao Dobrada` mostram apenas o nome; `Zerar Adversario` e `Meiar Adversario` mostram o alvo.
+- Por que foi alterado:
+  - facilitar a auditoria visual do ADMIN na nova aba consultiva `Filtros`.
+- Arquivos modificados:
+  - `design-lab.html`
+  - `AGENTS.md`
+- Impacto no bolao:
+  - alteracao somente visual/consultiva para ADMIN;
+  - nao altera pontuacao, ranking, palpites, moedas, buffs, extras, Supabase, RPCs, banco de dados, Vercel ou GitHub.
+- Areas afetadas:
+  - visual/admin: afetado;
+  - JavaScript: ajustes de ordenacao e formatacao da aba `Filtros`;
+  - Supabase/API/deploy: sem alteracao.
+- Testes ou verificacoes feitos:
+  - `git status`;
+  - leitura do `AGENTS.md`;
+  - leitura dos commits recentes;
+  - verificacao de sintaxe do JavaScript embutido com `node --check` em arquivo temporario;
+  - `npm.cmd run build`.
+- Pendencias:
+  - validar visualmente como ADMIN se a ordenacao bate com a expectativa em jogos/extras reais.
+
+### Sessao 2026-06-23 - aba ADMIN FILTROS consultiva
+
+- O que foi alterado:
+  - foi criada uma nova aba principal `Filtros`, visivel somente para usuarios ADMIN;
+  - a aba `Filtros` possui tres subabas internas: `Palpites`, `Buffs` e `Extras`;
+  - `Palpites` permite selecionar um jogo e consultar todos os participantes, com avatar, apelido, nome real e palpite ou `Sem palpite`;
+  - jogos com resultado oficial reutilizam a logica visual existente de acerto exato/erro de resultado para destacar os cards;
+  - `Buffs` permite selecionar um jogo, filtrar por `Todos`, `Com buff` e `Sem buff`, e consultar os buffs usados por participante;
+  - `Extras` permite selecionar um dos oito extras e consultar as respostas de todos os participantes, com resultado oficial quando disponivel;
+  - a aba `ADMIN` reorganizada anteriormente nao foi modificada estruturalmente.
+- Por que foi alterado:
+  - dar ao administrador uma area separada e somente leitura para auditar rapidamente palpites, buffs e extras sem entrar no gerenciamento individual de usuarios.
+- Arquivos modificados:
+  - `design-lab.html`
+  - `AGENTS.md`
+- Impacto no bolao:
+  - alteracao visual/consultiva para ADMIN;
+  - nao altera pontuacao, ranking, palpites, moedas, buffs, resultados oficiais, Supabase, RPCs, permissoes, banco de dados, Vercel ou GitHub.
+- Areas afetadas:
+  - visual/admin: afetado;
+  - JavaScript: adicionadas consultas read-only e renderizacao da aba `Filtros`;
+  - Supabase: sem patch e sem RPC nova; usa tabelas/funcoes ja existentes em leitura.
+- Testes ou verificacoes feitos:
+  - `git status`;
+  - leitura do `AGENTS.md`;
+  - leitura dos commits recentes;
+  - verificacao de sintaxe do JavaScript embutido com `node --check` em arquivo temporario;
+  - `npm.cmd run build`.
+- Pendencias:
+  - validar visualmente no navegador como ADMIN em desktop e celular;
+  - publicar somente apos revisao/autorizacao do usuario.
+
 ### Sessao 2026-06-22 - reorganizacao visual do painel ADMIN
 
 - O que foi alterado:
