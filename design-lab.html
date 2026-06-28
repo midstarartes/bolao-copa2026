@@ -8759,6 +8759,12 @@
       return match?.score_home != null && match?.score_away != null;
     }
 
+    function isKnockoutMatch(match) {
+      const phase = String(match?.phase || "").toLowerCase();
+      const phaseLabel = String(match?.phase_label || "").toUpperCase().trim();
+      return phase !== "group" && phaseLabel !== "FASE DE GRUPOS";
+    }
+
     function formatMatchSelectLabel(match) {
       const number = match.match_number ? `JOGO ${match.match_number}` : String(match.id || "").toUpperCase();
       const teams = `${getDisplayTeamName(match.home_team)} x ${getDisplayTeamName(match.away_team)}`;
@@ -10704,15 +10710,33 @@
       return getPredictions()[currentUser.username] || {};
     }
 
+    function getFixtureMatchRecord(fixture) {
+      return getMatchRecordById(getFixtureId(fixture));
+    }
+
+    function getPredictionWinnerTeam(fixture, prediction) {
+      const match = getFixtureMatchRecord(fixture);
+      if (!isKnockoutMatch(match)) return null;
+      const homeScore = Number(prediction?.home);
+      const awayScore = Number(prediction?.away);
+      if (homeScore > awayScore) return match.home_team || null;
+      if (awayScore > homeScore) return match.away_team || null;
+      return null;
+    }
+
     async function savePredictionForFixture(fixture, prediction) {
       const currentUser = getCurrentUser();
       if (!currentUser?.username || !fixture) return;
+      const winnerTeam = getPredictionWinnerTeam(fixture, prediction);
       const allPredictions = getPredictions();
       if (!allPredictions[currentUser.username]) {
         allPredictions[currentUser.username] = {};
       }
       const previousPrediction = allPredictions[currentUser.username][getFixtureId(fixture)] || null;
-      allPredictions[currentUser.username][getFixtureId(fixture)] = prediction;
+      allPredictions[currentUser.username][getFixtureId(fixture)] = {
+        ...prediction,
+        winnerTeam,
+      };
       setPredictions(allPredictions);
 
       if (!BACKEND_ENABLED) return;
@@ -10727,7 +10751,7 @@
         p_away_score: prediction.away,
         p_extra_time_home: null,
         p_extra_time_away: null,
-        p_winner_team: null,
+        p_winner_team: winnerTeam,
       });
 
       if (error) {
@@ -10814,7 +10838,7 @@
         if (currentUser?.id) {
           const { data, error } = await supabase
             .from("predictions")
-            .select("match_id, home_score, away_score, updated_at")
+            .select("match_id, home_score, away_score, winner_team, updated_at")
             .eq("user_id", currentUser.id);
 
           if (!error && Array.isArray(data)) {
@@ -10822,6 +10846,7 @@
               accumulator[item.match_id] = {
                 home: item.home_score,
                 away: item.away_score,
+                winnerTeam: item.winner_team,
                 savedAt: item.updated_at,
               };
               return accumulator;
@@ -12247,6 +12272,7 @@
       }
 
       if (mode === "editing") {
+        const fixture = button.closest(".fixture");
         inputs.forEach((input) => {
           const numericValue = Number.parseInt(input.value || "0", 10);
           const safeValue = Number.isNaN(numericValue) ? 0 : Math.min(99, Math.max(0, numericValue));
@@ -12254,19 +12280,31 @@
           input.disabled = true;
         });
 
+        const homeScore = Number.parseInt(inputs[0].value || "0", 10);
+        const awayScore = Number.parseInt(inputs[1].value || "0", 10);
+        const isKnockout = fixture && isKnockoutMatch(getFixtureMatchRecord(fixture));
+        if (isKnockout && homeScore === awayScore) {
+          inputs.forEach((input) => {
+            input.disabled = false;
+          });
+          showFeedback("No mata-mata, informe um placar com vencedor para definir quem avança.", "error");
+          return;
+        }
+        const winnerTeam = fixture ? getPredictionWinnerTeam(fixture, { home: homeScore, away: awayScore }) : null;
+
         button.dataset.mode = "saved";
         button.textContent = "Editar";
         button.classList.remove("is-save");
         button.classList.add("is-edit");
         scoreCard.classList.remove("is-editing");
         scoreCard.classList.add("is-saved");
-        const fixture = button.closest(".fixture");
         fixture?.setAttribute("data-saved", "true");
         if (fixture && getCurrentUser()?.username) {
           try {
             await savePredictionForFixture(fixture, {
-              home: Number.parseInt(inputs[0].value || "0", 10),
-              away: Number.parseInt(inputs[1].value || "0", 10),
+              home: homeScore,
+              away: awayScore,
+              winnerTeam,
               savedAt: new Date().toISOString()
             });
           } catch (error) {

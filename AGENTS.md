@@ -640,6 +640,40 @@ Antes de qualquer commit:
 
 ## 32. Registro de mudanças do AGENTS.md
 
+### Sessao 2026-06-28 - correcao de pontuacao do mata-mata
+
+- O que foi alterado:
+  - palpites normais de jogos de mata-mata passaram a salvar `winner_team` automaticamente a partir do placar;
+  - quando o palpite de mata-mata tem placar empatado, o salvamento e bloqueado porque nao ha seletor manual de quem avanca no fluxo padrao;
+  - palpites de mata-mata ja salvos passam a restaurar o campo `winner_team` quando existir no banco;
+  - foi criado o patch SQL `patch-033-knockout-winner-fallback.sql` para a funcao `app_prediction_result_hit` aceitar a direcao do placar como fallback em mata-mata quando `winner_team` antigo estiver vazio e o placar oficial nao for empate.
+- Por que foi alterado:
+  - a pontuacao de mata-mata dependia de `winner_team`, mas o frontend salvava palpites normais com `p_winner_team = null`;
+  - isso fazia palpites corretos por vencedor/classificado nao pontuarem corretamente.
+- Arquivos modificados:
+  - `design-lab.html`
+  - `supabase/patch-033-knockout-winner-fallback.sql`
+  - `AGENTS.md`
+- Impacto no bolao:
+  - afeta pontuacao, ranking, historico e missoes ligados aos jogos de mata-mata;
+  - nao altera regras de fase de grupos;
+  - nao altera dados de usuarios, moedas, buffs, API, Vercel ou GitHub por si so;
+  - o patch SQL precisa ser aplicado no Supabase para corrigir a pontuacao calculada pelo banco.
+- Areas afetadas:
+  - frontend/palpites: afetado;
+  - Supabase/pontuacao: patch criado, pendente de aplicacao no banco;
+  - ranking/historico/missoes: afetados apos aplicacao do patch.
+- Testes ou verificacoes feitos:
+  - `git status`;
+  - leitura dos commits recentes;
+  - revisao de `app_prediction_points`, `app_prediction_score_context`, `app_get_leaderboard` e `app_get_user_history`;
+  - identificacao de que `savePredictionForFixture` salvava `p_winner_team: null`.
+  - verificacao de sintaxe do JavaScript embutido com `node --check` em arquivo temporario;
+  - `npm.cmd run build`.
+- Pendencias:
+  - aplicar `supabase/patch-033-knockout-winner-fallback.sql` no Supabase de producao;
+  - validar no ranking/historico apos aplicar o patch.
+
 ### Sessao 2026-06-28 - preenchimento visual dos 16 avos
 
 - O que foi alterado:
