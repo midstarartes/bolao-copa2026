@@ -8449,6 +8449,186 @@
       }).format(numericValue);
     }
 
+    function getPhaseTypeForScoring(phaseLabel, phase) {
+      const normalizedLabel = String(phaseLabel || "").toUpperCase().trim();
+      const normalizedPhase = String(phase || "").toLowerCase().trim();
+      if (normalizedLabel === "FASE DE GRUPOS" || normalizedPhase === "group") return "group";
+      if (
+        normalizedLabel === "SEMI FINAL" ||
+        normalizedLabel === "FINAL" ||
+        normalizedLabel.startsWith("DISPUTA 3") ||
+        ["semifinal", "final", "third_place"].includes(normalizedPhase)
+      ) {
+        return "knockout_decisive";
+      }
+      return "knockout_initial";
+    }
+
+    function getKnockoutResultPoints(phaseLabel, phase) {
+      return getPhaseTypeForScoring(phaseLabel, phase) === "knockout_decisive" ? 2 : 1;
+    }
+
+    function getMissPointsForPrediction(phaseLabel, phase) {
+      if (getPhaseTypeForScoring(phaseLabel, phase) === "group") return -0.1;
+      return getPhaseTypeForScoring(phaseLabel, phase) === "knockout_decisive" ? -0.5 : -0.2;
+    }
+
+    function hasSameWinnerByScore(homeA, awayA, homeB, awayB) {
+      const diffA = Number(homeA) - Number(awayA);
+      const diffB = Number(homeB) - Number(awayB);
+      if (!Number.isFinite(diffA) || !Number.isFinite(diffB)) return false;
+      if (diffA === 0 || diffB === 0) return false;
+      return (diffA > 0 && diffB > 0) || (diffA < 0 && diffB < 0);
+    }
+
+    function getPredictedKnockoutFallbackDelta({ match, prediction, userEntry, buffsByUserMatch, userIdByNickname }) {
+      if (!match || !prediction || prediction.winner_team) return 0;
+      if (getPhaseTypeForScoring(match.phase_label, match.phase) === "group") return 0;
+      if (match.score_home == null || match.score_away == null) return 0;
+      if (Number(match.score_home) === Number(match.score_away)) return 0;
+      if (Number(prediction.home_score) === Number(prediction.away_score)) return 0;
+      if (!hasSameWinnerByScore(prediction.home_score, prediction.away_score, match.score_home, match.score_away)) return 0;
+      if (Number(prediction.home_score) === Number(match.score_home) && Number(prediction.away_score) === Number(match.score_away)) return 0;
+
+      const userId = prediction.user_id;
+      const userBuffs = buffsByUserMatch.get(`${userId}|${match.id}`) || [];
+      const multiplier = userBuffs.some((buff) => buff.buff_id === "palpite-duplo") ? 2 : 1;
+      const cancelledByRival = Array.from(buffsByUserMatch.values()).some((buffs) =>
+        buffs.some((buff) =>
+          buff.match_id === match.id &&
+          buff.buff_id === "zerar-adversario" &&
+          userIdByNickname.get(normalizeTextForApi(buff.target_nickname || "")) === userId
+        )
+      );
+      const halvedByRival = Array.from(buffsByUserMatch.values()).some((buffs) =>
+        buffs.some((buff) =>
+          buff.match_id === match.id &&
+          buff.buff_id === "meia-adversario" &&
+          userIdByNickname.get(normalizeTextForApi(buff.target_nickname || "")) === userId
+        )
+      );
+
+      let wrongPoints = getMissPointsForPrediction(match.phase_label, match.phase) * multiplier;
+      let correctedPoints = getKnockoutResultPoints(match.phase_label, match.phase) * multiplier;
+
+      if (cancelledByRival) {
+        wrongPoints = 0;
+        correctedPoints = 0;
+      } else if (halvedByRival) {
+        wrongPoints = wrongPoints / 2;
+        correctedPoints = correctedPoints / 2;
+      }
+
+      return correctedPoints - wrongPoints;
+    }
+
+    async function applyKnockoutScoreFallbackToLeaderboard(entries) {
+      if (!BACKEND_ENABLED || !Array.isArray(entries) || entries.length === 0) return entries;
+
+      try {
+        const completedKnockoutMatches = matchRecords.filter((match) =>
+          getPhaseTypeForScoring(match.phase_label, match.phase) !== "group" &&
+          String(match.status || "").toLowerCase() === "completed" &&
+          match.score_home != null &&
+          match.score_away != null
+        );
+        if (!completedKnockoutMatches.length) return entries;
+
+        const matchIds = completedKnockoutMatches.map((match) => match.id);
+        const [{ data: predictions, error: predictionsError }, { data: buffs, error: buffsError }] = await Promise.all([
+          supabase
+            .from("predictions")
+            .select("user_id,match_id,home_score,away_score,winner_team")
+            .in("match_id", matchIds),
+          supabase
+            .from("match_buffs")
+            .select("user_id,match_id,buff_id,target_nickname")
+            .in("match_id", matchIds),
+        ]);
+        if (predictionsError) throw predictionsError;
+        if (buffsError) throw buffsError;
+
+        const matchById = new Map(completedKnockoutMatches.map((match) => [match.id, match]));
+        const entryByUserId = new Map(entries.map((entry) => [entry.user_id, entry]));
+        const userIdByNickname = new Map(entries.map((entry) => [normalizeTextForApi(entry.nickname || ""), entry.user_id]));
+        const buffsByUserMatch = new Map();
+        (buffs || []).forEach((buff) => {
+          const key = `${buff.user_id}|${buff.match_id}`;
+          if (!buffsByUserMatch.has(key)) buffsByUserMatch.set(key, []);
+          buffsByUserMatch.get(key).push(buff);
+        });
+
+        const deltaByUserId = new Map();
+        (predictions || []).forEach((prediction) => {
+          const userEntry = entryByUserId.get(prediction.user_id);
+          const delta = getPredictedKnockoutFallbackDelta({
+            match: matchById.get(prediction.match_id),
+            prediction,
+            userEntry,
+            buffsByUserMatch,
+            userIdByNickname,
+          });
+          if (delta) deltaByUserId.set(prediction.user_id, Number(deltaByUserId.get(prediction.user_id) || 0) + delta);
+        });
+
+        if (!deltaByUserId.size) return entries;
+
+        return entries
+          .map((entry) => ({
+            ...entry,
+            total_points: Number(entry.total_points || 0) + Number(deltaByUserId.get(entry.user_id) || 0),
+            knockout_score_fallback_delta: Number(deltaByUserId.get(entry.user_id) || 0),
+          }))
+          .sort((left, right) =>
+            Number(right.total_points || 0) - Number(left.total_points || 0) ||
+            Number(right.exact_scores || 0) - Number(left.exact_scores || 0) ||
+            String(left.nickname || "").localeCompare(String(right.nickname || ""), "pt-BR")
+          );
+      } catch (error) {
+        console.error(error);
+        return entries;
+      }
+    }
+
+    function getKnockoutHistoryFallbackDelta(entry) {
+      if (!entry || entry.was_predicted === false || entry.predicted_winner) return 0;
+      if (getPhaseTypeForScoring(entry.phase_label, "") === "group") return 0;
+      if (entry.match_status !== "completed" || entry.official_home == null || entry.official_away == null) return 0;
+      if (Number(entry.official_home) === Number(entry.official_away)) return 0;
+      if (Number(entry.predicted_home) === Number(entry.predicted_away)) return 0;
+      if (!hasSameWinnerByScore(entry.predicted_home, entry.predicted_away, entry.official_home, entry.official_away)) return 0;
+      if (entry.exact_hit || entry.result_hit) return 0;
+
+      const multiplier = Number(entry.total_multiplier || 1);
+      const hasHalfPenalty = String(entry.applied_buffs || "").toLowerCase().includes("meia");
+      let wrongPoints = getMissPointsForPrediction(entry.phase_label, "") * multiplier;
+      let correctedPoints = getKnockoutResultPoints(entry.phase_label, "") * multiplier;
+
+      if (entry.cancelled_by_rival) {
+        wrongPoints = 0;
+        correctedPoints = 0;
+      } else if (hasHalfPenalty) {
+        wrongPoints = wrongPoints / 2;
+        correctedPoints = correctedPoints / 2;
+      }
+
+      return correctedPoints - wrongPoints;
+    }
+
+    function applyKnockoutScoreFallbackToHistory(entries) {
+      return (entries || []).map((entry) => {
+        const delta = getKnockoutHistoryFallbackDelta(entry);
+        if (!delta) return entry;
+        return {
+          ...entry,
+          result_hit: true,
+          points_awarded: Number(entry.points_awarded || 0) + delta,
+          raw_points: Number(entry.raw_points || 0) + delta,
+          knockout_score_fallback_delta: delta,
+        };
+      });
+    }
+
     function getRankingCardTone(position, totalPlayers) {
       if (position === 1) return "ranking-card--gold";
       if (position === 2) return "ranking-card--silver";
@@ -8595,7 +8775,7 @@
           p_token: getBackendToken() || null,
         });
         if (error) throw error;
-        const entries = data || [];
+        const entries = await applyKnockoutScoreFallbackToLeaderboard(data || []);
         lanterninhaUserId = entries.length >= 2 ? (entries[entries.length - 1].user_id || null) : null;
         renderRanking(entries, lanterninhaUserId);
         updateLanterninhaIndicators();
@@ -8960,7 +9140,7 @@
           p_user_id: null,
         });
         if (error) throw error;
-        userHistoryCache = data || [];
+        userHistoryCache = applyKnockoutScoreFallbackToHistory(data || []);
         renderUserHistory(userHistoryCache);
       } catch (error) {
         console.error(error);
@@ -9059,7 +9239,7 @@
           p_user_id: userId,
         });
         if (error) throw error;
-        renderPointsDetailEntries(data || [], Number(totalPoints ?? 0));
+        renderPointsDetailEntries(applyKnockoutScoreFallbackToHistory(data || []), Number(totalPoints ?? 0));
       } catch (error) {
         console.error(error);
         if (pointsDetailBody) {

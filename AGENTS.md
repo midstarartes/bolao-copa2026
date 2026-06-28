@@ -647,6 +647,8 @@ Antes de qualquer commit:
   - quando o palpite de mata-mata tem placar empatado, o salvamento e bloqueado porque nao ha seletor manual de quem avanca no fluxo padrao;
   - palpites de mata-mata ja salvos passam a restaurar o campo `winner_team` quando existir no banco;
   - foi criado o patch SQL `patch-033-knockout-winner-fallback.sql` para a funcao `app_prediction_result_hit` aceitar a direcao do placar como fallback em mata-mata quando `winner_team` antigo estiver vazio e o placar oficial nao for empate.
+  - como paliativo ate aplicar o SQL no Supabase, o frontend compensa visualmente ranking, historico e detalhamento admin para palpites antigos de mata-mata sem `winner_team`, quando o placar permite inferir o classificado;
+  - a compensacao visual considera `palpite-duplo`, `zerar-adversario` e `meia-adversario` quando os dados estao disponiveis no frontend.
 - Por que foi alterado:
   - a pontuacao de mata-mata dependia de `winner_team`, mas o frontend salvava palpites normais com `p_winner_team = null`;
   - isso fazia palpites corretos por vencedor/classificado nao pontuarem corretamente.
@@ -658,7 +660,7 @@ Antes de qualquer commit:
   - afeta pontuacao, ranking, historico e missoes ligados aos jogos de mata-mata;
   - nao altera regras de fase de grupos;
   - nao altera dados de usuarios, moedas, buffs, API, Vercel ou GitHub por si so;
-  - o patch SQL precisa ser aplicado no Supabase para corrigir a pontuacao calculada pelo banco.
+  - ate aplicar o patch SQL, a correcao fica visual no frontend e a fonte real do banco continua pendente.
 - Areas afetadas:
   - frontend/palpites: afetado;
   - Supabase/pontuacao: patch criado, pendente de aplicacao no banco;
@@ -672,7 +674,8 @@ Antes de qualquer commit:
   - `npm.cmd run build`.
 - Pendencias:
   - aplicar `supabase/patch-033-knockout-winner-fallback.sql` no Supabase de producao;
-  - validar no ranking/historico apos aplicar o patch.
+  - validar no ranking/historico apos o deploy do paliativo;
+  - validar novamente apos aplicar o patch SQL definitivo.
 
 ### Sessao 2026-06-28 - preenchimento visual dos 16 avos
 
