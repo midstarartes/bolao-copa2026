@@ -640,6 +640,40 @@ Antes de qualquer commit:
 
 ## 32. Registro de mudanças do AGENTS.md
 
+### Sessao 2026-06-28 - preenchimento visual dos 16 avos
+
+- O que foi alterado:
+  - os jogos da fase `16 AVOS DE FINAL` passaram a resolver automaticamente os placeholders `1A`, `2B`, `3ABCDF` e equivalentes usando os resultados oficiais ja salvos na tabela `matches`;
+  - os primeiros e segundos colocados sao calculados por pontos, saldo de gols e gols pro;
+  - os melhores terceiros seguem a ordem oficial informada/confirmada: `COD`, `SWE`, `GHA`, `ECU/EQU`, `BIH`, `ALG`, `PAR`, `SEN`, usando `EQU` como codigo interno do projeto para Equador;
+  - a distribuicao dos terceiros nos confrontos usa a matriz oficial da combinacao atual de terceiros classificados `B/D/E/F/I/J/K/L`;
+  - a resolucao acontece apenas em memoria no frontend, antes de renderizar os cards e preencher selects administrativos.
+- Por que foi alterado:
+  - apos o fim da fase de grupos, os cards do mata-mata ainda exibiam placeholders em vez das selecoes classificadas.
+- Arquivos modificados:
+  - `design-lab.html`
+  - `AGENTS.md`
+- Impacto no bolao:
+  - alteracao visual/operacional nos jogos de mata-mata;
+  - nao altera pontuacao, ranking, palpites existentes, usuarios, moedas, Supabase, banco de dados, API, Vercel ou GitHub;
+  - as opcoes exibidas para palpites/resultados dos 16 avos passam a mostrar as selecoes reais calculadas pelos resultados oficiais.
+- Areas afetadas:
+  - visual/jogos: afetado;
+  - admin/resultados: afetado apenas na exibicao/opcoes dos jogos de 16 avos;
+  - Supabase/API/deploy: sem alteracao.
+- Testes ou verificacoes feitos:
+  - `git status`;
+  - leitura do `AGENTS.md`;
+  - leitura dos commits recentes;
+  - consulta read-only da tabela `matches` no Supabase;
+  - comparacao dos melhores terceiros com a imagem oficial fornecida pelo usuario.
+  - verificacao da matriz oficial de terceiros para a combinacao `B/D/E/F/I/J/K/L`;
+  - verificacao de sintaxe do JavaScript embutido com `node --check` em arquivo temporario;
+  - `npm.cmd run build`.
+- Pendencias:
+  - validar visualmente no navegador/celular se os cards dos 16 avos aparecem com as selecoes corretas;
+  - publicar somente apos revisao/autorizacao do usuario.
+
 ### Sessao 2026-06-23 - ordenacao e exibicao da aba FILTROS
 
 - O que foi alterado:

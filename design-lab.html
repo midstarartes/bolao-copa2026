@@ -8619,6 +8619,142 @@
       return TEAM_ALIAS_TO_CODE[normalizeTextForApi(name)] || String(name || "").slice(0, 3).toUpperCase();
     }
 
+    const OFFICIAL_THIRD_PLACE_CODE_ORDER = ["COD", "SWE", "GHA", "EQU", "BIH", "ALG", "PAR", "SEN"];
+    const OFFICIAL_THIRD_PLACE_GROUP_BY_WINNER_SEED = {
+      "1A": "E",
+      "1B": "J",
+      "1D": "B",
+      "1E": "D",
+      "1G": "I",
+      "1I": "F",
+      "1K": "L",
+      "1L": "K",
+    };
+
+    function getGroupLetter(groupName) {
+      const normalized = fixTeamEncoding(groupName).toUpperCase();
+      const match = normalized.match(/GRUPO\s+([A-L])/);
+      return match ? match[1] : "";
+    }
+
+    function buildGroupStandings(matches) {
+      const teams = new Map();
+
+      function getTeam(groupName, teamName, teamCode) {
+        const group = getGroupLetter(groupName);
+        const code = String(teamCode || getTeamCodeFromName(teamName) || "").toUpperCase();
+        const key = `${group}|${code || normalizeTextForApi(teamName)}`;
+        if (!teams.has(key)) {
+          teams.set(key, {
+            group,
+            team: teamName,
+            code,
+            points: 0,
+            goalDiff: 0,
+            goalsFor: 0,
+            goalsAgainst: 0,
+          });
+        }
+        return teams.get(key);
+      }
+
+      matches
+        .filter((match) => match.phase === "group" && match.score_home != null && match.score_away != null)
+        .forEach((match) => {
+          const homeScore = Number(match.score_home);
+          const awayScore = Number(match.score_away);
+          if (!Number.isFinite(homeScore) || !Number.isFinite(awayScore)) return;
+
+          const home = getTeam(match.group_name, match.home_team, match.home_code);
+          const away = getTeam(match.group_name, match.away_team, match.away_code);
+          home.goalsFor += homeScore;
+          home.goalsAgainst += awayScore;
+          away.goalsFor += awayScore;
+          away.goalsAgainst += homeScore;
+          home.goalDiff = home.goalsFor - home.goalsAgainst;
+          away.goalDiff = away.goalsFor - away.goalsAgainst;
+
+          if (homeScore > awayScore) home.points += 3;
+          else if (awayScore > homeScore) away.points += 3;
+          else {
+            home.points += 1;
+            away.points += 1;
+          }
+        });
+
+      const groups = {};
+      teams.forEach((team) => {
+        if (!team.group) return;
+        if (!groups[team.group]) groups[team.group] = [];
+        groups[team.group].push(team);
+      });
+
+      Object.values(groups).forEach((groupTeams) => {
+        groupTeams.sort((left, right) =>
+          right.points - left.points ||
+          right.goalDiff - left.goalDiff ||
+          right.goalsFor - left.goalsFor ||
+          fixTeamEncoding(left.team).localeCompare(fixTeamEncoding(right.team), "pt-BR")
+        );
+      });
+
+      return groups;
+    }
+
+    function resolveKnockoutPlaceholders(matches) {
+      const groups = buildGroupStandings(matches);
+      const thirdTeams = OFFICIAL_THIRD_PLACE_CODE_ORDER
+        .map((code) => Object.values(groups).map((group) => group[2]).find((team) => team?.code === code))
+        .filter(Boolean);
+      const usedThirdCodes = new Set();
+
+      function resolveSeed(seedCode, opponentSeedCode = "") {
+        const code = String(seedCode || "").toUpperCase();
+        const directSeed = code.match(/^([12])([A-L])$/);
+        if (directSeed) {
+          const position = Number(directSeed[1]) - 1;
+          return groups[directSeed[2]]?.[position] || null;
+        }
+
+        const thirdSeed = code.match(/^3([A-L]+)$/);
+        if (thirdSeed) {
+          const opponentSeed = String(opponentSeedCode || "").toUpperCase();
+          const assignedGroup = OFFICIAL_THIRD_PLACE_GROUP_BY_WINNER_SEED[opponentSeed];
+          if (assignedGroup && thirdSeed[1].includes(assignedGroup)) {
+            return groups[assignedGroup]?.[2] || null;
+          }
+
+          const allowedGroups = new Set(thirdSeed[1].split(""));
+          const team = thirdTeams.find((entry) => allowedGroups.has(entry.group) && !usedThirdCodes.has(entry.code));
+          if (team) usedThirdCodes.add(team.code);
+          return team || null;
+        }
+
+        return null;
+      }
+
+      const resolvedRound32Matches = new Map();
+      [...matches]
+        .filter((match) => match.phase === "round32")
+        .sort((left, right) => Number(left.match_number || 0) - Number(right.match_number || 0))
+        .forEach((match) => {
+          const home = resolveSeed(match.home_code, match.away_code);
+          const away = resolveSeed(match.away_code, match.home_code);
+          resolvedRound32Matches.set(match.id, {
+            ...match,
+            home_team: home?.team || match.home_team,
+            away_team: away?.team || match.away_team,
+            home_code: home?.code || match.home_code,
+            away_code: away?.code || match.away_code,
+          });
+        });
+
+      return matches.map((match) => {
+        if (match.phase !== "round32") return match;
+        return resolvedRound32Matches.get(match.id) || match;
+      });
+    }
+
     function matchHasOfficialResult(match) {
       return match?.score_home != null && match?.score_away != null;
     }
@@ -10390,7 +10526,7 @@
           .order("starts_at", { ascending: true })
           .order("match_number", { ascending: true });
         if (error) throw error;
-        const matches = data && data.length > 0 ? data : DEFAULT_MATCHES;
+        const matches = data && data.length > 0 ? resolveKnockoutPlaceholders(data) : DEFAULT_MATCHES;
         matchRecords = matches;
         populateResultsMatchOptions();
         fillAdminMatchOptions();
