@@ -6502,7 +6502,7 @@
           </article>
           <article class="mission-card">
             <div class="mission-copy">
-              <p class="mission-title">Acertar quem <span class="mission-highlight">avança</span> em todos os jogos das oitavas</p>
+              <p class="mission-title">Acertar o <span class="mission-highlight">resultado</span> em todos os jogos das oitavas</p>
               <p class="mission-reward">🪙🪙🪙🪙 +4 moedas</p>
             </div>
             <div class="mission-progress is-neutral">0/8</div>
@@ -6643,13 +6643,12 @@
                   <p class="rules-availability">16 avos · Oitavas · Quartas de Final</p>
                   <div class="rules-lines">
                     <p>Placar exato <span class="rules-note">(90 min + acréscimos)</span> → <span class="rules-points-positive">+2,0</span></p>
-                    <p>Acertar quem avança → <span class="rules-points-positive">+1,0</span></p>
-                    <p>Errar quem avança → <span class="rules-points-negative">−0,2</span></p>
+                    <p>Acertar vencedor ou empate <span class="rules-note">(90 min + acréscimos)</span> → <span class="rules-points-positive">+1,0</span></p>
+                    <p>Errar resultado → <span class="rules-points-negative">−0,2</span></p>
                     <p>Sem palpite em jogo encerrado → <span class="rules-points-negative">−0,2</span></p>
                   </div>
                   <div class="rules-info">
-                    <strong>Placar exato</strong> considera somente 90 min + acréscimos.<br>
-                    <strong>Quem avança</strong> considera o resultado final — incluindo prorrogação e pênaltis.
+                    <strong>Placar e resultado</strong> consideram somente 90 min + acréscimos.
                   </div>
                 </section>
 
@@ -6658,8 +6657,8 @@
                   <p class="rules-availability">Semifinal · Final · Disputa de 3° Lugar</p>
                   <div class="rules-lines">
                     <p>Placar exato <span class="rules-note">(90 min + acréscimos)</span> → <span class="rules-points-positive">+3,0</span></p>
-                    <p>Acertar vencedor / campeão / 3° → <span class="rules-points-positive">+2,0</span></p>
-                    <p>Errar vencedor → <span class="rules-points-negative">−0,5</span></p>
+                    <p>Acertar vencedor ou empate <span class="rules-note">(90 min + acréscimos)</span> → <span class="rules-points-positive">+2,0</span></p>
+                    <p>Errar resultado → <span class="rules-points-negative">−0,5</span></p>
                     <p>Sem palpite em jogo encerrado → <span class="rules-points-negative">−0,5</span></p>
                   </div>
                 </section>
@@ -6709,11 +6708,11 @@
                 <section class="rules-section">
                   <h3 class="rules-title">⚡ Regra Geral</h3>
                   <div class="rules-highlight">
-                    Cada jogo gera <strong>apenas uma pontuação</strong>. As pontuações <strong>não se somam</strong>: placar exato já inclui o acerto de vencedor/quem avança — você recebe o maior nível alcançado, não a soma.
+                    Cada jogo gera <strong>apenas uma pontuação</strong>. As pontuações <strong>não se somam</strong>: placar exato já inclui o acerto de vencedor ou empate — você recebe o maior nível alcançado, não a soma.
                   </div>
                   <div class="rules-example">
                     Acertou o placar exato → <strong>+2,0</strong> (não +2,0 + 1,0)<br>
-                    Acertou quem avança, errou o placar → <strong>+1,0</strong>
+                    Acertou vencedor ou empate, errou o placar → <strong>+1,0</strong>
                   </div>
                 </section>
 
@@ -6764,7 +6763,7 @@
                   <p class="rules-lines"><span class="rules-cost">🪙 1 moeda</span></p>
                   <div class="rules-lines">
                     <p>Placar exato → recebe <strong>3 moedas</strong></p>
-                    <p>Acertou resultado / quem avança → recebe <strong>2 moedas</strong></p>
+                    <p>Acertou vencedor ou empate → recebe <strong>2 moedas</strong></p>
                     <p>Errou → <strong>0</strong> <span class="rules-note">(perde a moeda apostada)</span></p>
                   </div>
                   <div class="rules-divider"></div>
@@ -6831,7 +6830,7 @@
                   <div class="rules-divider"></div>
                   <div class="rules-info">
                     <strong>Placar exato</strong> considera apenas 90 min + acréscimos.<br>
-                    Prorrogação e pênaltis determinam quem avança, mas <strong>não</strong> alteram a pontuação de placar.
+                    Prorrogação e pênaltis determinam quem avança, mas <strong>não</strong> alteram a pontuação do bolão por jogo.
                   </div>
                 </section>
 
@@ -8473,11 +8472,11 @@
       return getPhaseTypeForScoring(phaseLabel, phase) === "knockout_decisive" ? -0.5 : -0.2;
     }
 
-    function hasSameWinnerByScore(homeA, awayA, homeB, awayB) {
+    function hasSameResultByScore(homeA, awayA, homeB, awayB) {
       const diffA = Number(homeA) - Number(awayA);
       const diffB = Number(homeB) - Number(awayB);
       if (!Number.isFinite(diffA) || !Number.isFinite(diffB)) return false;
-      if (diffA === 0 || diffB === 0) return false;
+      if (diffA === 0 && diffB === 0) return true;
       return (diffA > 0 && diffB > 0) || (diffA < 0 && diffB < 0);
     }
 
@@ -8485,9 +8484,7 @@
       if (!match || !prediction || prediction.winner_team) return 0;
       if (getPhaseTypeForScoring(match.phase_label, match.phase) === "group") return 0;
       if (match.score_home == null || match.score_away == null) return 0;
-      if (Number(match.score_home) === Number(match.score_away)) return 0;
-      if (Number(prediction.home_score) === Number(prediction.away_score)) return 0;
-      if (!hasSameWinnerByScore(prediction.home_score, prediction.away_score, match.score_home, match.score_away)) return 0;
+      if (!hasSameResultByScore(prediction.home_score, prediction.away_score, match.score_home, match.score_away)) return 0;
       if (Number(prediction.home_score) === Number(match.score_home) && Number(prediction.away_score) === Number(match.score_away)) return 0;
 
       const userId = prediction.user_id;
@@ -8594,9 +8591,7 @@
       if (!entry || entry.was_predicted === false || entry.predicted_winner) return 0;
       if (getPhaseTypeForScoring(entry.phase_label, "") === "group") return 0;
       if (entry.match_status !== "completed" || entry.official_home == null || entry.official_away == null) return 0;
-      if (Number(entry.official_home) === Number(entry.official_away)) return 0;
-      if (Number(entry.predicted_home) === Number(entry.predicted_away)) return 0;
-      if (!hasSameWinnerByScore(entry.predicted_home, entry.predicted_away, entry.official_home, entry.official_away)) return 0;
+      if (!hasSameResultByScore(entry.predicted_home, entry.predicted_away, entry.official_home, entry.official_away)) return 0;
       if (entry.exact_hit || entry.result_hit) return 0;
 
       const multiplier = Number(entry.total_multiplier || 1);
@@ -12462,14 +12457,6 @@
 
         const homeScore = Number.parseInt(inputs[0].value || "0", 10);
         const awayScore = Number.parseInt(inputs[1].value || "0", 10);
-        const isKnockout = fixture && isKnockoutMatch(getFixtureMatchRecord(fixture));
-        if (isKnockout && homeScore === awayScore) {
-          inputs.forEach((input) => {
-            input.disabled = false;
-          });
-          showFeedback("No mata-mata, informe um placar com vencedor para definir quem avança.", "error");
-          return;
-        }
         const winnerTeam = fixture ? getPredictionWinnerTeam(fixture, { home: homeScore, away: awayScore }) : null;
 
         button.dataset.mode = "saved";

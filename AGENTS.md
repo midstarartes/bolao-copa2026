@@ -261,12 +261,12 @@ Resumo confirmado:
   - ausência: `-0.2`
 - Mata-mata inicial:
   - placar exato: `+2.0`
-  - acertar classificado/vencedor: `+1.0`
+  - acertar vencedor ou empate no placar de 90 min + acrescimos: `+1.0`
   - errar: `-0.2`
   - ausência: `-0.2`
 - Mata-mata decisivo:
   - placar exato: `+3.0`
-  - acertar classificado/vencedor: `+2.0`
+  - acertar vencedor ou empate no placar de 90 min + acrescimos: `+2.0`
   - errar: `-0.5`
   - ausência: `-0.5`
 
@@ -639,6 +639,40 @@ Antes de qualquer commit:
 3. confirmar que a trava está ativa neste PC.
 
 ## 32. Registro de mudanças do AGENTS.md
+
+### Sessao 2026-06-29 - mata-mata por resultado do placar
+
+- O que foi alterado:
+  - textos da aba `Regras` foram atualizados para trocar `Acertar quem avança` por `Acertar vencedor ou empate (90 min + acréscimos)`;
+  - palpites empatados no mata-mata voltaram a poder ser salvos pelos usuarios;
+  - a compensacao visual temporaria do frontend passou a considerar acerto de resultado no mata-mata igual a fase de grupos: vitoria da casa, empate ou vitoria do visitante no placar de 90 min + acrescimos;
+  - foi criado o patch SQL `patch-034-knockout-result-by-score.sql`, que sobrescreve `app_prediction_result_hit` para usar resultado do placar em todas as fases e tambem ajusta a missao das oitavas para contar `result_hit`.
+- Por que foi alterado:
+  - a regra desejada para o mata-mata passou a ser igual a fase de grupos no criterio de resultado, mantendo apenas pontuacoes maiores;
+  - a trava anterior impedia palpite de empate no mata-mata, o que contrariava a nova regra.
+- Arquivos modificados:
+  - `design-lab.html`
+  - `supabase/patch-034-knockout-result-by-score.sql`
+  - `AGENTS.md`
+- Impacto no bolao:
+  - afeta pontuacao, ranking, historico e missoes de resultado no mata-mata;
+  - nao altera resultados oficiais, usuarios, moedas, extras, API, Vercel ou GitHub por si so;
+  - ate aplicar o patch SQL no Supabase, a correcao continua sendo compensada visualmente no frontend.
+- Areas afetadas:
+  - regras/visual: textos ajustados;
+  - frontend/palpites: empate liberado no mata-mata;
+  - frontend/ranking/historico: compensacao visual ajustada;
+  - Supabase/pontuacao: patch criado, pendente de aplicacao no banco.
+- Testes ou verificacoes feitos:
+  - `git status`;
+  - leitura do `AGENTS.md`;
+  - leitura dos commits recentes;
+  - revisao de trechos relacionados a `app_prediction_result_hit`, compensacao de ranking/historico e salvamento de palpites.
+  - verificacao de sintaxe do JavaScript embutido com `node --check` em arquivo temporario;
+  - `npm.cmd run build`.
+- Pendencias:
+  - aplicar `supabase/patch-034-knockout-result-by-score.sql` no Supabase de producao;
+  - validar no site publicado um palpite empatado em jogo de mata-mata.
 
 ### Sessao 2026-06-28 - correcao de pontuacao do mata-mata
 
