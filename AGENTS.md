@@ -640,6 +640,28 @@ Antes de qualquer commit:
 
 ## 32. Registro de mudanças do AGENTS.md
 
+### Sessao 2026-06-29 - transparencia no detalhamento de extras do ranking
+
+- O que foi alterado:
+  - o detalhamento `(Y + Z de Ex.)` no ranking passou a ter 50% de transparencia.
+- Por que foi alterado:
+  - reduzir o peso visual do detalhamento dos extras em relacao a pontuacao principal.
+- Arquivos modificados:
+  - `design-lab.html`
+  - `AGENTS.md`
+- Impacto no bolao:
+  - alteracao apenas visual no ranking;
+  - nao altera pontuacao, regras, palpites, usuarios, Supabase, API, Vercel ou GitHub.
+- Areas afetadas:
+  - visual/ranking: afetado.
+- Testes ou verificacoes feitos:
+  - `git status`;
+  - verificacao de sintaxe do JavaScript embutido como modulo ESM;
+  - `git diff --check`;
+  - `npm.cmd run build`.
+- Pendencias:
+  - nenhuma.
+
 ### Sessao 2026-06-29 - extras abaixo da pontuacao e cards com acerto/erro
 
 - O que foi alterado:
