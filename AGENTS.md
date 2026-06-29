@@ -640,6 +640,34 @@ Antes de qualquer commit:
 
 ## 32. Registro de mudanças do AGENTS.md
 
+### Sessao 2026-06-29 - extras abaixo da pontuacao e cards com acerto/erro
+
+- O que foi alterado:
+  - no ranking, o detalhamento `X (Y + Z de Ex.)` passou a exibir `Y + Z de Ex.` abaixo da pontuacao principal, dentro do mesmo card;
+  - o destaque verde de `Z de Ex.` foi mantido;
+  - na aba Extras, cards com resultado oficial lançado passam a ficar verdes quando o usuario acertou e vermelhos quando errou;
+  - cards sem resultado oficial lancado permanecem no visual normal.
+- Por que foi alterado:
+  - melhorar a leitura da pontuacao total no ranking e dar feedback visual imediato dos palpites extras ja apurados.
+- Arquivos modificados:
+  - `design-lab.html`
+  - `AGENTS.md`
+- Impacto no bolao:
+  - alteracao visual no ranking e na aba Extras;
+  - nao altera pontuacao, regras, palpites salvos, usuarios, Supabase, API, Vercel ou GitHub.
+- Areas afetadas:
+  - visual/ranking: afetado;
+  - visual/extras: afetado;
+  - demais areas: sem alteracao funcional.
+- Testes ou verificacoes feitos:
+  - `git status`;
+  - leitura dos commits recentes;
+  - verificacao de sintaxe do JavaScript embutido como modulo ESM;
+  - `git diff --check`;
+  - `npm.cmd run build`.
+- Pendencias:
+  - validar visualmente no ranking e na aba Extras apos deploy.
+
 ### Sessao 2026-06-29 - exibicao detalhada de extras no ranking
 
 - O que foi alterado:

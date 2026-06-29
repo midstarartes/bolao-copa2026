@@ -1953,8 +1953,10 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 4px;
+      flex-direction: column;
+      gap: 2px;
       width: 100%;
+      position: relative;
       border: 0;
       background: transparent;
       color: inherit;
@@ -1979,6 +1981,10 @@
 
     .ranking-points-button::after {
       content: "ver";
+      position: absolute;
+      right: 2px;
+      top: 50%;
+      transform: translateY(-50%);
       padding: 1px 6px;
       border-radius: 999px;
       border: 1px solid rgba(253, 230, 138, 0.22);
@@ -1993,6 +1999,14 @@
 
     .ranking-extra-points {
       color: #86efac;
+    }
+
+    .ranking-points-breakdown {
+      display: block;
+      color: rgba(253, 230, 138, 0.7);
+      font-size: 0.75em;
+      line-height: 1.15;
+      opacity: 0.82;
     }
 
     .ranking-inactive-divider {
@@ -3160,6 +3174,26 @@
         0 0 24px rgba(255,255,255,0.08),
         inset 0 1px 0 rgba(255,255,255,0.16),
         inset 0 -10px 16px rgba(0, 0, 0, 0.24);
+    }
+
+    .extras-card--mini.is-extra-hit {
+      border-color: rgba(34,197,94,0.34);
+      background:
+        linear-gradient(180deg, rgba(74,222,128,0.22), rgba(21,128,61,0.10) 46%, rgba(0,0,0,0.26) 100%),
+        rgba(7,33,18,0.74);
+      box-shadow:
+        0 0 22px rgba(34,197,94,0.18),
+        inset 0 1px 0 rgba(255,255,255,0.14);
+    }
+
+    .extras-card--mini.is-result-miss {
+      border-color: rgba(248,113,113,0.32);
+      background:
+        linear-gradient(180deg, rgba(248,113,113,0.18), rgba(127,29,29,0.12) 48%, rgba(0,0,0,0.30) 100%),
+        rgba(39,8,8,0.76);
+      box-shadow:
+        0 0 18px rgba(248,113,113,0.12),
+        inset 0 1px 0 rgba(255,255,255,0.12);
     }
 
     .extras-card-flag-fill {
@@ -7820,6 +7854,17 @@
       "total-gols": "total_goals",
     };
 
+    const extrasOfficialResultMap = {
+      champion: "champion",
+      runner_up: "runner_up",
+      third_place: "third_place",
+      fourth_place: "fourth_place",
+      top_scorer: "top_scorer",
+      best_group_stage_team: "best_group_stage_team",
+      tournament_zebra: "zebra_team",
+      total_goals: "total_goals",
+    };
+
     const FLAG_CODE_MAP = {
       ALG: "dz",
       ARG: "ar",
@@ -9140,7 +9185,7 @@
           const totalPoints = Number(entry.total_points ?? 0);
           const gamePoints = totalPoints - bonusPoints;
           const bonusSuffix = bonusPoints > 0
-            ? ` <small style="opacity:.78;font-size:.75em">(${formatRankingPoints(gamePoints)} + <span class="ranking-extra-points">${formatRankingPoints(bonusPoints)} de Ex.</span>)</small>`
+            ? `<small class="ranking-points-breakdown">(${formatRankingPoints(gamePoints)} + <span class="ranking-extra-points">${formatRankingPoints(bonusPoints)} de Ex.</span>)</small>`
             : "";
           const pointsContent = `${formatRankingPoints(totalPoints)}${bonusSuffix}`;
           const pointsMarkup = currentUser?.isAdmin && entry.user_id
@@ -12229,6 +12274,7 @@
     function applyExtrasDraft(draft = {}) {
       extraSelectCards.forEach((card) => {
         card.classList.remove("is-filled");
+        card.classList.remove("is-extra-hit", "is-result-miss");
         card.dataset.selectionType = "";
         card.dataset.teamName = "";
         card.dataset.textValue = "";
@@ -12252,6 +12298,43 @@
           applyExtraTextSelection(card, savedValue.value);
         }
       });
+    }
+
+    function getExtraDraftRawValue(extraKey) {
+      const draftValue = getExtrasDraft()[extraKey];
+      if (!draftValue) return null;
+      return draftValue.type === "team" ? draftValue.name : draftValue.value;
+    }
+
+    async function updateExtrasResultStates() {
+      if (!BACKEND_ENABLED || getCurrentUser()?.isAdmin) {
+        extraSelectCards.forEach((card) => card.classList.remove("is-extra-hit", "is-result-miss"));
+        return;
+      }
+
+      try {
+        const { data, error } = await supabase.rpc("app_get_bonus_results");
+        if (error) throw error;
+        const officialResults = data || {};
+
+        extraSelectCards.forEach((card) => {
+          card.classList.remove("is-extra-hit", "is-result-miss");
+          const extraKey = card.dataset.extraSelect;
+          const fieldName = extrasFieldMap[extraKey];
+          const officialKey = extrasOfficialResultMap[fieldName];
+          const officialValue = officialResults?.[officialKey];
+          const hasOfficial = officialValue !== null && officialValue !== undefined && officialValue !== "";
+          if (!fieldName || !officialKey || !hasOfficial) return;
+
+          const rawValue = getExtraDraftRawValue(extraKey);
+          const hasAnswer = rawValue !== null && rawValue !== undefined && rawValue !== "";
+          const isCorrect = hasAnswer && normalizeExtraAnswer(rawValue) === normalizeExtraAnswer(officialValue);
+          card.classList.add(isCorrect ? "is-extra-hit" : "is-result-miss");
+        });
+      } catch (error) {
+        console.error(error);
+        extraSelectCards.forEach((card) => card.classList.remove("is-extra-hit", "is-result-miss"));
+      }
     }
 
     function updateExtrasBadge() {
@@ -12324,6 +12407,7 @@
       }
 
       showAutosaveMsg("Palpite salvo ✓");
+      await updateExtrasResultStates();
     }
 
     async function restoreExtrasSelections() {
@@ -12375,6 +12459,7 @@
       applyExtrasDraft(storedSelections);
 
       updateExtrasBadge();
+      await updateExtrasResultStates();
     }
 
     function clearBuffFeedback() {
