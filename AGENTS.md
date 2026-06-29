@@ -640,6 +640,35 @@ Antes de qualquer commit:
 
 ## 32. Registro de mudanças do AGENTS.md
 
+### Sessao 2026-06-29 - liberar detalhamento de pontos para todos
+
+- O que foi alterado:
+  - o botao `ver` no total de pontos do ranking passou a aparecer para todos os usuarios, nao apenas para ADMIN;
+  - usuarios comuns podem abrir o mesmo modal de detalhamento de pontos de qualquer participante;
+  - para ADMIN, o modal continua usando a RPC `app_get_user_history`;
+  - para usuario comum, o detalhamento e montado por leitura das tabelas publicas `matches`, `predictions`, `match_buffs` e `app_users`, evitando a restricao atual da RPC para `p_user_id` de terceiros.
+- Por que foi alterado:
+  - dar transparencia para todos conferirem a pontuacao dos participantes no ranking.
+- Arquivos modificados:
+  - `design-lab.html`
+  - `AGENTS.md`
+- Impacto no bolao:
+  - altera a visibilidade do detalhamento de pontos no frontend;
+  - nao altera pontuacao, regras, palpites, usuarios, Supabase, API, Vercel ou GitHub;
+  - nao muda permissoes no banco, apenas reutiliza leituras ja publicas para montar o modal.
+- Areas afetadas:
+  - visual/ranking: afetado;
+  - transparencia/historico: afetado no frontend;
+  - Supabase: sem patch SQL nesta alteracao.
+- Testes ou verificacoes feitos:
+  - `git status`;
+  - leitura dos commits recentes;
+  - verificacao de sintaxe do JavaScript embutido como modulo ESM;
+  - `git diff --check`;
+  - `npm.cmd run build`.
+- Pendencias:
+  - validar como usuario comum abrindo o `ver` de outro participante apos deploy.
+
 ### Sessao 2026-06-29 - limite de nome real no ranking
 
 - O que foi alterado:

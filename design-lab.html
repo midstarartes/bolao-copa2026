@@ -9193,7 +9193,7 @@
             ? `<small class="ranking-points-breakdown">(${formatRankingPoints(gamePoints)} + <span class="ranking-extra-points">${formatRankingPoints(bonusPoints)} de Ex.</span>)</small>`
             : "";
           const pointsContent = `${formatRankingPoints(totalPoints)}${bonusSuffix}`;
-          const pointsMarkup = currentUser?.isAdmin && entry.user_id
+          const pointsMarkup = entry.user_id
             ? `<p class="ranking-metric ranking-metric--points"><button class="ranking-points-button" type="button" data-points-user-id="${escapeHtml(entry.user_id)}" data-points-nickname="${escapeHtml(entry.nickname || "")}" data-points-real-name="${escapeHtml(entry.real_name || "")}" data-points-total="${escapeHtml(String(entry.total_points ?? 0))}">${pointsContent}</button></p>`
             : `<p class="ranking-metric ranking-metric--points">${pointsContent}</p>`;
 
@@ -9770,9 +9770,107 @@
       `;
     }
 
+    function getAppliedBuffsLabel(userBuffs) {
+      return (userBuffs || [])
+        .map((buff) => buffIdToLabel(buff.buff_id))
+        .filter(Boolean)
+        .join(", ");
+    }
+
+    function getAbsencePointsForMatch(match) {
+      if (Number(match?.match_number || 0) <= 3) return 0;
+      if (getPhaseTypeForScoring(match?.phase_label, match?.phase) === "knockout_decisive") return -0.5;
+      return -0.2;
+    }
+
+    async function loadPointsDetailEntriesFromTables(userId) {
+      const [{ data: userRow, error: userError }, { data: predictions, error: predictionsError }, { data: buffs, error: buffsError }] = await Promise.all([
+        supabase
+          .from("app_users")
+          .select("id,created_at,nickname")
+          .eq("id", userId)
+          .maybeSingle(),
+        supabase
+          .from("predictions")
+          .select("match_id,home_score,away_score,winner_team")
+          .eq("user_id", userId),
+        supabase
+          .from("match_buffs")
+          .select("user_id,match_id,buff_id,target_nickname"),
+      ]);
+      if (userError) throw userError;
+      if (predictionsError) throw predictionsError;
+      if (buffsError) throw buffsError;
+      if (!userRow) throw new Error("Usuário não encontrado.");
+
+      const userCreatedAt = userRow.created_at ? new Date(userRow.created_at).getTime() : null;
+      const predictionByMatchId = new Map((predictions || []).map((prediction) => [prediction.match_id, prediction]));
+      const buffsByUserMatch = new Map();
+      const buffsByMatch = new Map();
+      (buffs || []).forEach((buff) => {
+        const userMatchKey = `${buff.user_id}|${buff.match_id}`;
+        if (!buffsByUserMatch.has(userMatchKey)) buffsByUserMatch.set(userMatchKey, []);
+        buffsByUserMatch.get(userMatchKey).push(buff);
+        if (!buffsByMatch.has(buff.match_id)) buffsByMatch.set(buff.match_id, []);
+        buffsByMatch.get(buff.match_id).push(buff);
+      });
+      const userIdByNickname = new Map([[normalizeTextForApi(userRow.nickname || ""), userRow.id]]);
+
+      return getOfficialCompletedMatchesForAproveitamento()
+        .filter((match) => {
+          const matchStartsAt = new Date(match.starts_at || 0).getTime();
+          return !(Number.isFinite(userCreatedAt) && Number.isFinite(matchStartsAt) && matchStartsAt < userCreatedAt);
+        })
+        .map((match) => {
+          const prediction = predictionByMatchId.get(match.id);
+          const missed = !prediction;
+          const exactHit = !missed && Number(prediction.home_score) === Number(match.score_home) && Number(prediction.away_score) === Number(match.score_away);
+          const resultHit = !missed && hasSameResultByScore(prediction.home_score, prediction.away_score, match.score_home, match.score_away);
+          const userBuffs = buffsByUserMatch.get(`${userId}|${match.id}`) || [];
+          const points = missed
+            ? getAbsencePointsForMatch(match)
+            : getPredictionAdjustedPoints({
+              user: { id: userId },
+              match,
+              prediction,
+              buffsByUserMatch,
+              buffsByMatch,
+              userIdByNickname,
+            });
+
+          return {
+            match_id: match.id,
+            match_number: match.match_number,
+            phase_label: match.phase_label,
+            group_name: match.group_name,
+            starts_at: match.starts_at,
+            home_team: match.home_team,
+            away_team: match.away_team,
+            official_home: match.score_home,
+            official_away: match.score_away,
+            official_extra_home: match.extra_time_home,
+            official_extra_away: match.extra_time_away,
+            official_winner: match.winner_team,
+            predicted_home: prediction?.home_score ?? null,
+            predicted_away: prediction?.away_score ?? null,
+            predicted_winner: prediction?.winner_team ?? null,
+            exact_hit: exactHit,
+            result_hit: resultHit,
+            points_awarded: points,
+            raw_points: points,
+            total_multiplier: userBuffs.some((buff) => buff.buff_id === "palpite-duplo") ? 2 : 1,
+            cancelled_by_rival: false,
+            applied_buffs: getAppliedBuffsLabel(userBuffs),
+            rival_cancel_target: null,
+            match_status: "completed",
+            was_predicted: !missed,
+          };
+        });
+    }
+
     async function openAdminPointsDetailModal({ userId, nickname, realName, totalPoints }) {
       const currentUser = getCurrentUser();
-      if (!currentUser?.isAdmin || !userId || !BACKEND_ENABLED) return;
+      if (!currentUser || !userId || !BACKEND_ENABLED) return;
 
       if (pointsDetailTitle) pointsDetailTitle.textContent = `Pontos de ${nickname || "jogador"}`;
       if (pointsDetailSubtitle) pointsDetailSubtitle.textContent = realName || "Detalhamento por jogo concluído";
@@ -9781,12 +9879,17 @@
       pointsDetailModal?.setAttribute("aria-hidden", "false");
 
       try {
-        const { data, error } = await supabase.rpc("app_get_user_history", {
-          p_token: getBackendToken(),
-          p_user_id: userId,
-        });
-        if (error) throw error;
-        renderPointsDetailEntries(applyKnockoutScoreFallbackToHistory(data || []), Number(totalPoints ?? 0));
+        if (currentUser.isAdmin) {
+          const { data, error } = await supabase.rpc("app_get_user_history", {
+            p_token: getBackendToken(),
+            p_user_id: userId,
+          });
+          if (error) throw error;
+          renderPointsDetailEntries(applyKnockoutScoreFallbackToHistory(data || []), Number(totalPoints ?? 0));
+        } else {
+          const entries = await loadPointsDetailEntriesFromTables(userId);
+          renderPointsDetailEntries(entries, Number(totalPoints ?? 0));
+        }
       } catch (error) {
         console.error(error);
         if (pointsDetailBody) {
