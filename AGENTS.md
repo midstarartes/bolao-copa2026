@@ -640,6 +640,32 @@ Antes de qualquer commit:
 
 ## 32. Registro de mudanças do AGENTS.md
 
+### Sessao 2026-06-29 - exibicao detalhada de extras no ranking
+
+- O que foi alterado:
+  - a pontuacao total no ranking passou a exibir, quando houver extras, o formato `X (Y + Z de Ex.)`;
+  - `X` representa o total geral, `Y` representa pontos sem extras e `Z` representa apenas os pontos obtidos em extras;
+  - o trecho `Z de Ex.` foi destacado em verde.
+- Por que foi alterado:
+  - deixar claro quanto da pontuacao total veio dos palpites extras.
+- Arquivos modificados:
+  - `design-lab.html`
+  - `AGENTS.md`
+- Impacto no bolao:
+  - alteracao apenas visual no ranking;
+  - nao altera pontuacao, ranking real, palpites, usuarios, Supabase, API, Vercel ou GitHub.
+- Areas afetadas:
+  - visual/ranking: afetado;
+  - demais areas: sem alteracao funcional.
+- Testes ou verificacoes feitos:
+  - `git status`;
+  - leitura dos commits recentes;
+  - verificacao de sintaxe do JavaScript embutido como modulo ESM;
+  - `git diff --check`;
+  - `npm.cmd run build`.
+- Pendencias:
+  - validar visualmente no ranking publicado apos deploy.
+
 ### Sessao 2026-06-29 - correcao do ranking apos resultado extra parcial
 
 - O que foi alterado:

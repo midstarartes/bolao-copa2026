@@ -1991,6 +1991,10 @@
       text-shadow: none;
     }
 
+    .ranking-extra-points {
+      color: #86efac;
+    }
+
     .ranking-inactive-divider {
       height: 1px;
       margin: 14px 0 8px;
@@ -2032,7 +2036,8 @@
     .ranking-card--inactive .ranking-metric,
     .ranking-card--inactive .ranking-metric--points,
     .ranking-card--inactive .ranking-points-button,
-    .ranking-card--inactive .ranking-points-button::after {
+    .ranking-card--inactive .ranking-points-button::after,
+    .ranking-card--inactive .ranking-extra-points {
       color: rgba(203, 213, 225, 0.72);
       text-shadow: 0 3px 10px rgba(0, 0, 0, 0.42);
     }
@@ -9132,8 +9137,12 @@
           const playerMarkup = buildPlayerMarkup(entry, isCurrent, isInactive ? false : isLanterninha);
           const exactMarkup = `<p class="ranking-metric">${Number(entry.exact_scores ?? 0)}</p>`;
           const bonusPoints = Number(entry.bonus_points ?? 0);
-          const bonusSuffix = bonusPoints > 0 ? ` <small style="opacity:.6;font-size:.75em">(+${formatRankingPoints(bonusPoints)} extra)</small>` : "";
-          const pointsContent = `${formatRankingPoints(entry.total_points ?? 0)}${bonusSuffix}`;
+          const totalPoints = Number(entry.total_points ?? 0);
+          const gamePoints = totalPoints - bonusPoints;
+          const bonusSuffix = bonusPoints > 0
+            ? ` <small style="opacity:.78;font-size:.75em">(${formatRankingPoints(gamePoints)} + <span class="ranking-extra-points">${formatRankingPoints(bonusPoints)} de Ex.</span>)</small>`
+            : "";
+          const pointsContent = `${formatRankingPoints(totalPoints)}${bonusSuffix}`;
           const pointsMarkup = currentUser?.isAdmin && entry.user_id
             ? `<p class="ranking-metric ranking-metric--points"><button class="ranking-points-button" type="button" data-points-user-id="${escapeHtml(entry.user_id)}" data-points-nickname="${escapeHtml(entry.nickname || "")}" data-points-real-name="${escapeHtml(entry.real_name || "")}" data-points-total="${escapeHtml(String(entry.total_points ?? 0))}">${pointsContent}</button></p>`
             : `<p class="ranking-metric ranking-metric--points">${pointsContent}</p>`;
