@@ -640,6 +640,40 @@ Antes de qualquer commit:
 
 ## 32. Registro de mudanças do AGENTS.md
 
+### Sessao 2026-06-29 - correcao do ranking apos resultado extra parcial
+
+- O que foi alterado:
+  - identificado que salvar `FRANCA/FRANÇA` como melhor campanha da fase de grupos ativou o calculo de extras e quebrou a RPC `app_get_leaderboard`;
+  - o erro real vinha de `app_score_bonus_prediction`, que podia retornar literais `integer` em colunas declaradas como `numeric`;
+  - criado o patch SQL `patch-036-fix-bonus-score-return-types.sql` para corrigir os casts de retorno da funcao de bonus;
+  - o frontend ganhou um fallback de ranking por tabelas publicas quando a RPC `app_get_leaderboard` falhar;
+  - o fallback calcula pontos principais, ausencia, buffs principais, extras ja lancados e o novo aproveitamento `exato - resultado - erro`.
+- Por que foi alterado:
+  - impedir que um resultado extra parcial deixe o ranking principal vazio.
+- Arquivos modificados:
+  - `design-lab.html`
+  - `supabase/patch-036-fix-bonus-score-return-types.sql`
+  - `AGENTS.md`
+- Impacto no bolao:
+  - restaura a exibicao do ranking quando a RPC falhar por erro no calculo de bonus;
+  - nao altera dados de usuarios, palpites, resultados oficiais, moedas, buffs, Vercel ou GitHub por si so;
+  - a correcao definitiva do banco depende de aplicar o patch SQL no Supabase.
+- Areas afetadas:
+  - ranking/frontend: afetado com fallback de contingencia;
+  - Supabase: patch criado, pendente de aplicacao;
+  - pontuacao oficial no banco: sem alteracao ate aplicar o patch.
+- Testes ou verificacoes feitos:
+  - `git status`;
+  - leitura dos commits recentes;
+  - consulta read-only de `app_get_bonus_results`, confirmando `best_group_stage_team = FRANÇA`;
+  - consulta read-only de `app_get_leaderboard`, confirmando erro SQL `Returned type integer does not match expected type numeric`;
+  - verificacao de sintaxe do JavaScript embutido como modulo ESM;
+  - `git diff --check`;
+  - `npm.cmd run build`.
+- Pendencias:
+  - aplicar `supabase/patch-036-fix-bonus-score-return-types.sql` no Supabase de producao;
+  - depois de aplicar, confirmar que `app_get_leaderboard` volta a responder sem usar fallback.
+
 ### Sessao 2026-06-29 - aproveitamento em formato exato-resultado-erro
 
 - O que foi alterado:

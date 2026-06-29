@@ -8540,6 +8540,90 @@
       return (diffA > 0 && diffB > 0) || (diffA < 0 && diffB < 0);
     }
 
+    function getPredictionBasePoints(match, prediction) {
+      if (!match || !prediction || match.score_home == null || match.score_away == null) return 0;
+      const exactHit = Number(prediction.home_score) === Number(match.score_home) && Number(prediction.away_score) === Number(match.score_away);
+      const resultHit = hasSameResultByScore(prediction.home_score, prediction.away_score, match.score_home, match.score_away);
+      const phaseType = getPhaseTypeForScoring(match.phase_label, match.phase);
+      if (phaseType === "group") {
+        if (exactHit) return 1;
+        if (resultHit) return 0.5;
+        return -0.1;
+      }
+      if (phaseType === "knockout_decisive") {
+        if (exactHit) return 3;
+        if (resultHit) return 2;
+        return -0.5;
+      }
+      if (exactHit) return 2;
+      if (resultHit) return 1;
+      return -0.2;
+    }
+
+    function getPredictionAdjustedPoints({ user, match, prediction, buffsByUserMatch, buffsByMatch, userIdByNickname }) {
+      let points = getPredictionBasePoints(match, prediction);
+      const userBuffs = buffsByUserMatch.get(`${user.id}|${match.id}`) || [];
+      const hasDrawProtected = userBuffs.some((buff) => buff.buff_id === "draw-protected" || buff.buff_id === "empate-protegido");
+      const hasPalpiteDuplo = userBuffs.some((buff) => buff.buff_id === "palpite-duplo");
+
+      if (
+        hasDrawProtected &&
+        Number(prediction.home_score) !== Number(prediction.away_score) &&
+        Number(match.score_home) === Number(match.score_away) &&
+        points < 0
+      ) {
+        points = 0;
+      }
+
+      if (hasPalpiteDuplo) points *= 2;
+
+      const rivalBuffs = buffsByMatch.get(match.id) || [];
+      const cancelledByRival = rivalBuffs.some((buff) =>
+        buff.buff_id === "zerar-adversario" &&
+        userIdByNickname.get(normalizeTextForApi(buff.target_nickname || "")) === user.id
+      );
+      const halvedByRival = rivalBuffs.some((buff) =>
+        buff.buff_id === "meia-adversario" &&
+        userIdByNickname.get(normalizeTextForApi(buff.target_nickname || "")) === user.id
+      );
+
+      if (cancelledByRival) return 0;
+      if (halvedByRival) return points / 2;
+      return points;
+    }
+
+    function getBonusScoreFallback({ prediction, bonusResults, closestTotalGoalsDiff }) {
+      if (!prediction || !bonusResults || Object.keys(bonusResults).length === 0) return 0;
+      const sameText = (left, right) =>
+        String(left || "").trim().toLowerCase() &&
+        String(left || "").trim().toLowerCase() === String(right || "").trim().toLowerCase();
+      let total = 0;
+      if (sameText(prediction.champion, bonusResults.champion)) total += 8;
+      if (sameText(prediction.runner_up, bonusResults.runner_up)) total += 5;
+      if (sameText(prediction.third_place, bonusResults.third_place)) total += 3;
+      if (sameText(prediction.fourth_place, bonusResults.fourth_place)) total += 2;
+      if (sameText(prediction.top_scorer, bonusResults.top_scorer)) total += 4;
+      if (sameText(prediction.best_group_stage_team, bonusResults.best_group_stage_team)) total += 3;
+
+      const officialGoals = Number(bonusResults.total_goals);
+      const predictedGoals = Number(prediction.total_goals);
+      if (Number.isFinite(officialGoals) && Number.isFinite(predictedGoals) && closestTotalGoalsDiff != null) {
+        if (Math.abs(predictedGoals - officialGoals) === closestTotalGoalsDiff) total += 4;
+      }
+
+      const zebraTeam = String(bonusResults.zebra_team || "").trim().toLowerCase();
+      const zebraPhases = Number(bonusResults.zebra_phases_advanced || 0);
+      if (zebraTeam && zebraPhases > 0 && sameText(prediction.tournament_zebra, zebraTeam)) {
+        const multiplier = new Map([
+          ["curaçao", 4], ["haiti", 4], ["catar", 4], ["panamá", 4], ["tunísia", 4], ["jordânia", 4], ["cabo verde", 4], ["rd congo", 4],
+          ["austrália", 3], ["uzbequistão", 3], ["iraque", 3], ["irã", 3], ["nova zelândia", 3], ["bósnia e herzegovina", 3], ["áfrica do sul", 3], ["costa do marfim", 3],
+          ["canadá", 2], ["egito", 2], ["gana", 2], ["argélia", 2], ["república tcheca", 2], ["paraguai", 2], ["escócia", 2], ["arábia saudita", 2],
+        ]).get(zebraTeam) || 1;
+        total += zebraPhases * 2 * multiplier;
+      }
+      return total;
+    }
+
     function getPredictedKnockoutFallbackDelta({ match, prediction, userEntry, buffsByUserMatch, userIdByNickname }) {
       if (!match || !prediction || prediction.winner_team) return 0;
       if (getPhaseTypeForScoring(match.phase_label, match.phase) === "group") return 0;
@@ -8825,6 +8909,139 @@
       );
     }
 
+    async function loadLeaderboardFromTablesFallback() {
+      const [
+        usersResponse,
+        predictionsResponse,
+        buffsResponse,
+        bonusPredictionsResponse,
+        bonusResultsResponse,
+      ] = await Promise.all([
+        supabase
+          .from("app_users")
+          .select("id,nickname,real_name,avatar_type,avatar_value,previous_rank,created_at,is_admin,is_blocked"),
+        supabase
+          .from("predictions")
+          .select("user_id,match_id,home_score,away_score,winner_team"),
+        supabase
+          .from("match_buffs")
+          .select("user_id,match_id,buff_id,target_nickname"),
+        supabase
+          .from("bonus_predictions")
+          .select("user_id,champion,runner_up,third_place,fourth_place,top_scorer,best_group_stage_team,tournament_zebra,total_goals"),
+        supabase.rpc("app_get_bonus_results"),
+      ]);
+
+      const responses = [usersResponse, predictionsResponse, buffsResponse, bonusPredictionsResponse, bonusResultsResponse];
+      const failed = responses.find((response) => response.error);
+      if (failed) throw failed.error;
+
+      const users = (usersResponse.data || []).filter((user) => !user.is_admin && !user.is_blocked);
+      const predictions = predictionsResponse.data || [];
+      const buffs = buffsResponse.data || [];
+      const bonusPredictions = bonusPredictionsResponse.data || [];
+      const bonusResults = bonusResultsResponse.data || {};
+      const completedMatches = getOfficialCompletedMatchesForAproveitamento();
+      const matchById = new Map(matchRecords.map((match) => [match.id, match]));
+      const predictionByUserMatch = new Map(predictions.map((prediction) => [`${prediction.user_id}|${prediction.match_id}`, prediction]));
+      const userIdByNickname = new Map(users.map((user) => [normalizeTextForApi(user.nickname || ""), user.id]));
+      const buffsByUserMatch = new Map();
+      const buffsByMatch = new Map();
+      buffs.forEach((buff) => {
+        const userMatchKey = `${buff.user_id}|${buff.match_id}`;
+        if (!buffsByUserMatch.has(userMatchKey)) buffsByUserMatch.set(userMatchKey, []);
+        buffsByUserMatch.get(userMatchKey).push(buff);
+        if (!buffsByMatch.has(buff.match_id)) buffsByMatch.set(buff.match_id, []);
+        buffsByMatch.get(buff.match_id).push(buff);
+      });
+
+      const bonusByUserId = new Map(bonusPredictions.map((prediction) => [prediction.user_id, prediction]));
+      const officialGoals = Number(bonusResults.total_goals);
+      const closestTotalGoalsDiff = Number.isFinite(officialGoals)
+        ? Math.min(...bonusPredictions
+          .filter((prediction) => prediction.total_goals != null)
+          .map((prediction) => Math.abs(Number(prediction.total_goals) - officialGoals)))
+        : null;
+
+      return users.map((user) => {
+        const userCreatedAt = user.created_at ? new Date(user.created_at).getTime() : null;
+        const stats = completedMatches.reduce((accumulator, match) => {
+          const matchStartsAt = new Date(match.starts_at || 0).getTime();
+          if (Number.isFinite(userCreatedAt) && Number.isFinite(matchStartsAt) && matchStartsAt < userCreatedAt) {
+            return accumulator;
+          }
+
+          const prediction = predictionByUserMatch.get(`${user.id}|${match.id}`);
+          if (!prediction) {
+            if (Number(match.match_number || 0) > 3) {
+              accumulator.gamePoints += getPhaseTypeForScoring(match.phase_label, match.phase) === "group"
+                ? -0.2
+                : getMissPointsForPrediction(match.phase_label, match.phase);
+            }
+            accumulator.aproveitamentoMiss += 1;
+            return accumulator;
+          }
+
+          const exactHit = Number(prediction.home_score) === Number(match.score_home) && Number(prediction.away_score) === Number(match.score_away);
+          const resultHit = hasSameResultByScore(prediction.home_score, prediction.away_score, match.score_home, match.score_away);
+          accumulator.gamePoints += getPredictionAdjustedPoints({
+            user,
+            match,
+            prediction,
+            buffsByUserMatch,
+            buffsByMatch,
+            userIdByNickname,
+          });
+          if (exactHit) {
+            accumulator.exactScores += 1;
+            accumulator.correctResults += 1;
+            accumulator.aproveitamentoExact += 1;
+          } else if (resultHit) {
+            accumulator.correctResults += 1;
+            accumulator.aproveitamentoResult += 1;
+          } else {
+            accumulator.aproveitamentoMiss += 1;
+          }
+          return accumulator;
+        }, {
+          gamePoints: 0,
+          exactScores: 0,
+          correctResults: 0,
+          aproveitamentoExact: 0,
+          aproveitamentoResult: 0,
+          aproveitamentoMiss: 0,
+        });
+
+        const bonusPoints = getBonusScoreFallback({
+          prediction: bonusByUserId.get(user.id),
+          bonusResults,
+          closestTotalGoalsDiff: Number.isFinite(closestTotalGoalsDiff) ? closestTotalGoalsDiff : null,
+        });
+
+        return {
+          user_id: user.id,
+          nickname: user.nickname,
+          real_name: user.real_name,
+          avatar_type: user.avatar_type,
+          avatar_value: user.avatar_value,
+          exact_scores: stats.exactScores,
+          correct_results: stats.correctResults,
+          total_points: stats.gamePoints + bonusPoints,
+          bonus_points: bonusPoints,
+          previous_rank: user.previous_rank,
+          aproveitamento_exact: stats.aproveitamentoExact,
+          aproveitamento_result: stats.aproveitamentoResult,
+          aproveitamento_miss: stats.aproveitamentoMiss,
+        };
+      }).sort((left, right) =>
+        Number(right.total_points || 0) - Number(left.total_points || 0) ||
+        Number(right.exact_scores || 0) - Number(left.exact_scores || 0) ||
+        Number(right.aproveitamento_result || 0) - Number(left.aproveitamento_result || 0) ||
+        Number(left.aproveitamento_miss || 0) - Number(right.aproveitamento_miss || 0) ||
+        String(left.nickname || "").localeCompare(String(right.nickname || ""), "pt-BR")
+      );
+    }
+
     async function splitInactiveRankingEntries(entries) {
       if (!BACKEND_ENABLED || !Array.isArray(entries) || entries.length === 0) {
         return { activeEntries: entries || [], inactiveEntries: [] };
@@ -9044,8 +9261,16 @@
         updateLanterninhaIndicators();
       } catch (error) {
         console.error(error);
-        lanterninhaUserId = null;
-        renderRanking([]);
+        try {
+          const fallbackEntries = await loadLeaderboardFromTablesFallback();
+          const { activeEntries, inactiveEntries } = await splitInactiveRankingEntries(fallbackEntries);
+          lanterninhaUserId = activeEntries.length >= 2 ? (activeEntries[activeEntries.length - 1].user_id || null) : null;
+          renderRanking(activeEntries, lanterninhaUserId, inactiveEntries);
+        } catch (fallbackError) {
+          console.error(fallbackError);
+          lanterninhaUserId = null;
+          renderRanking([]);
+        }
         updateLanterninhaIndicators();
       }
     }
