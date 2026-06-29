@@ -640,6 +640,30 @@ Antes de qualquer commit:
 
 ## 32. Registro de mudanças do AGENTS.md
 
+### Sessao 2026-06-29 - limite de nome real no ranking
+
+- O que foi alterado:
+  - o nome real exibido abaixo do apelido no ranking passou a mostrar no maximo dois nomes;
+  - quando houver apenas um nome, ele permanece com apenas um nome;
+  - a alteracao afeta somente a exibicao no ranking, mantendo o nome completo original nos dados e demais fluxos.
+- Por que foi alterado:
+  - melhorar o encaixe visual dos cards do ranking.
+- Arquivos modificados:
+  - `design-lab.html`
+  - `AGENTS.md`
+- Impacto no bolao:
+  - alteracao apenas visual no ranking;
+  - nao altera usuarios, cadastro, pontuacao, regras, Supabase, API, Vercel ou GitHub.
+- Areas afetadas:
+  - visual/ranking: afetado.
+- Testes ou verificacoes feitos:
+  - `git status`;
+  - verificacao de sintaxe do JavaScript embutido como modulo ESM;
+  - `git diff --check`;
+  - `npm.cmd run build`.
+- Pendencias:
+  - nenhuma.
+
 ### Sessao 2026-06-29 - transparencia no detalhamento de extras do ranking
 
 - O que foi alterado:

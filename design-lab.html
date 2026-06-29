@@ -8869,6 +8869,10 @@
       return "0 - 0 - 0";
     }
 
+    function getRankingDisplayRealName(realName) {
+      return String(realName || "").trim().split(/\s+/).filter(Boolean).slice(0, 2).join(" ");
+    }
+
     async function applyAproveitamentoRecordToLeaderboard(entries) {
       if (!Array.isArray(entries) || entries.length === 0) return entries || [];
 
@@ -9157,12 +9161,13 @@
           : "";
         const aproveitamentoRecord = getAproveitamentoRecordLabel(entry);
         const aprovPct = `<span class="ranking-player-aproveit">${aproveitamentoRecord} aproveit.</span>`;
+        const displayRealName = getRankingDisplayRealName(entry.real_name);
         return `
           <div class="ranking-player">
             ${avatarMarkup}
             <div>
               <p class="ranking-player-name">${escapeHtml(entry.nickname)}${lanterninhaTag}</p>
-              <p class="ranking-player-real${isCurrent ? " ranking-player-you" : ""}">${isCurrent ? "Você • " : ""}${escapeHtml(entry.real_name)}${aprovPct ? " " + aprovPct : ""}</p>
+              <p class="ranking-player-real${isCurrent ? " ranking-player-you" : ""}">${isCurrent ? "Você • " : ""}${escapeHtml(displayRealName)}${aprovPct ? " " + aprovPct : ""}</p>
             </div>
           </div>
         `;
