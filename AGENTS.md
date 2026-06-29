@@ -640,6 +640,42 @@ Antes de qualquer commit:
 
 ## 32. Registro de mudanças do AGENTS.md
 
+### Sessao 2026-06-29 - aproveitamento em formato exato-resultado-erro
+
+- O que foi alterado:
+  - o aproveitamento deixou de ser exibido como percentual no ranking e passou ao formato `placar exato - vencedor/empate - erro`;
+  - jogos encerrados sem palpite passam a contar como erro no aproveitamento;
+  - a ordenacao visual do ranking passou a considerar, apos pontos e placares exatos, mais acertos de vencedor/empate e menos erros;
+  - a aba Regras foi atualizada para explicar o novo formato de aproveitamento e os criterios de desempate;
+  - foi criado o patch SQL `patch-035-leaderboard-record-aproveitamento.sql` para ajustar a RPC `app_get_leaderboard` no Supabase com os novos campos e a nova ordenacao real.
+- Por que foi alterado:
+  - substituir a regra percentual por um registro de desempenho semelhante ao modelo de vitorias/empates/derrotas da NFL.
+- Arquivos modificados:
+  - `design-lab.html`
+  - `supabase/patch-035-leaderboard-record-aproveitamento.sql`
+  - `AGENTS.md`
+- Impacto no bolao:
+  - afeta a exibicao do aproveitamento no ranking e a regra de desempate relacionada ao aproveitamento;
+  - nao altera pontos ja calculados, moedas, buffs, extras, usuarios, autenticacao, API, Vercel ou GitHub;
+  - enquanto o patch SQL nao for aplicado no Supabase, o frontend calcula um fallback visual usando `matches`, `predictions` e `app_users`.
+- Areas afetadas:
+  - ranking: afetado;
+  - regras: afetada;
+  - Supabase: patch criado, pendente de aplicacao no banco;
+  - pontuacao por jogo: sem alteracao.
+- Testes ou verificacoes feitos:
+  - `git status`;
+  - leitura do `AGENTS.md`;
+  - leitura dos commits recentes;
+  - verificacao localizada da RPC `app_get_leaderboard`;
+  - verificacao de sintaxe do JavaScript embutido como modulo ESM;
+  - `git diff --check`;
+  - `npm.cmd run build`.
+- Pendencias:
+  - aplicar `supabase/patch-035-leaderboard-record-aproveitamento.sql` no Supabase de producao;
+  - validar visualmente o ranking em desktop e celular apos deploy;
+  - publicar somente apos revisao/autorizacao do usuario.
+
 ### Sessao 2026-06-29 - ranking de inativos por falta de palpite
 
 - O que foi alterado:

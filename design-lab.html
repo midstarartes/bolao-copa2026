@@ -6898,9 +6898,10 @@
                   <div class="rules-lines">
                     <p><span class="rules-points-positive">1°</span> &nbsp;Maior total de pontos</p>
                     <p><span class="rules-points-positive">2°</span> &nbsp;Mais placares exatos</p>
-                    <p>3° &nbsp;Melhor aproveitamento (%)</p>
-                    <p>4° &nbsp;Acertou o campeão da Copa</p>
-                    <p>5° &nbsp;Ordem alfabética pelo apelido</p>
+                    <p>3° &nbsp;Mais acertos de vencedor ou empate</p>
+                    <p>4° &nbsp;Menos erros no aproveitamento</p>
+                    <p>5° &nbsp;Acertou o campeão da Copa</p>
+                    <p>6° &nbsp;Ordem alfabética pelo apelido</p>
                   </div>
                   <div class="rules-divider"></div>
                   <p class="rules-note">Critérios aplicados em ordem — o próximo só é usado se ainda houver empate.</p>
@@ -6909,14 +6910,14 @@
                 <section class="rules-section">
                   <h3 class="rules-title">O que é Aproveitamento?</h3>
                   <div class="rules-lines">
-                    <p>Proporção entre os pontos que você obteve e os pontos máximos possíveis nos jogos em que palpitou.</p>
+                    <p>Registro no formato <strong>placar exato - vencedor/empate - erro</strong>, inspirado no modelo de vitórias/empates/derrotas.</p>
+                    <p>Jogo encerrado sem palpite registrado conta como erro.</p>
                   </div>
                   <div class="rules-example">
-                    Fórmula: <strong>pontos obtidos ÷ pontos máximos palpitados</strong><br>
-                    Exemplo: 3 jogos de grupos palpitados (máx. 3,0 pts). Obteve 1,9 → <strong>63%</strong>
+                    Exemplo: em 10 jogos, 2 placares exatos, 5 acertos de vencedor/empate e 3 erros → <strong>2 - 5 - 3</strong>
                   </div>
                   <div class="rules-highlight">
-                    Não considera buffs, moedas, penalidade de ausência nem palpites extras — é o desempenho puro nos palpites.
+                    Para desempate, a ordem é: mais placares exatos, mais acertos de vencedor/empate, menos erros.
                   </div>
                 </section>
 
@@ -8709,6 +8710,121 @@
         .slice(0, limit);
     }
 
+    function getOfficialCompletedMatchesForAproveitamento() {
+      return [...matchRecords]
+        .filter((match) =>
+          String(match.status || "").toLowerCase() === "completed" &&
+          match.score_home != null &&
+          match.score_away != null
+        )
+        .sort((left, right) => {
+          const leftDate = new Date(left.starts_at || 0).getTime();
+          const rightDate = new Date(right.starts_at || 0).getTime();
+          if (leftDate !== rightDate) return leftDate - rightDate;
+          return Number(left.match_number || 0) - Number(right.match_number || 0);
+        });
+    }
+
+    function getAproveitamentoRecordLabel(entry) {
+      const exact = Number(entry?.aproveitamento_exact);
+      const result = Number(entry?.aproveitamento_result);
+      const miss = Number(entry?.aproveitamento_miss);
+      if ([exact, result, miss].every(Number.isFinite)) {
+        return `${exact} - ${result} - ${miss}`;
+      }
+      return "0 - 0 - 0";
+    }
+
+    async function applyAproveitamentoRecordToLeaderboard(entries) {
+      if (!Array.isArray(entries) || entries.length === 0) return entries || [];
+
+      const hasRecordFields = entries.every((entry) =>
+        entry.aproveitamento_exact != null &&
+        entry.aproveitamento_result != null &&
+        entry.aproveitamento_miss != null
+      );
+
+      let recordEntries = entries;
+
+      if (!hasRecordFields && BACKEND_ENABLED) {
+        try {
+          const completedMatches = getOfficialCompletedMatchesForAproveitamento();
+          const userIds = entries.map((entry) => entry.user_id).filter(Boolean);
+          if (!completedMatches.length || !userIds.length) return entries;
+
+          const matchIds = completedMatches.map((match) => match.id);
+          const [{ data: predictions, error: predictionsError }, { data: users, error: usersError }] = await Promise.all([
+            supabase
+              .from("predictions")
+              .select("user_id,match_id,home_score,away_score")
+              .in("match_id", matchIds)
+              .in("user_id", userIds),
+            supabase
+              .from("app_users")
+              .select("id,created_at")
+              .in("id", userIds),
+          ]);
+          if (predictionsError) throw predictionsError;
+          if (usersError) throw usersError;
+
+          const createdAtByUserId = new Map((users || []).map((user) => [
+            user.id,
+            user.created_at ? new Date(user.created_at).getTime() : null,
+          ]));
+          const predictionByUserMatch = new Map((predictions || []).map((prediction) => [
+            `${prediction.user_id}|${prediction.match_id}`,
+            prediction,
+          ]));
+
+          recordEntries = entries.map((entry) => {
+            const userCreatedAt = createdAtByUserId.get(entry.user_id);
+            const stats = completedMatches.reduce((accumulator, match) => {
+              const matchStartsAt = new Date(match.starts_at || 0).getTime();
+              if (Number.isFinite(userCreatedAt) && Number.isFinite(matchStartsAt) && matchStartsAt < userCreatedAt) {
+                return accumulator;
+              }
+
+              const prediction = predictionByUserMatch.get(`${entry.user_id}|${match.id}`);
+              if (!prediction) {
+                accumulator.miss += 1;
+                return accumulator;
+              }
+
+              const exactHit =
+                Number(prediction.home_score) === Number(match.score_home) &&
+                Number(prediction.away_score) === Number(match.score_away);
+              if (exactHit) {
+                accumulator.exact += 1;
+              } else if (hasSameResultByScore(prediction.home_score, prediction.away_score, match.score_home, match.score_away)) {
+                accumulator.result += 1;
+              } else {
+                accumulator.miss += 1;
+              }
+              return accumulator;
+            }, { exact: 0, result: 0, miss: 0 });
+
+            return {
+              ...entry,
+              aproveitamento_exact: stats.exact,
+              aproveitamento_result: stats.result,
+              aproveitamento_miss: stats.miss,
+            };
+          });
+        } catch (error) {
+          console.error(error);
+          return entries;
+        }
+      }
+
+      return [...recordEntries].sort((left, right) =>
+        Number(right.total_points || 0) - Number(left.total_points || 0) ||
+        Number(right.exact_scores || 0) - Number(left.exact_scores || 0) ||
+        Number(right.aproveitamento_result || 0) - Number(left.aproveitamento_result || 0) ||
+        Number(left.aproveitamento_miss || 0) - Number(right.aproveitamento_miss || 0) ||
+        String(left.nickname || "").localeCompare(String(right.nickname || ""), "pt-BR")
+      );
+    }
+
     async function splitInactiveRankingEntries(entries) {
       if (!BACKEND_ENABLED || !Array.isArray(entries) || entries.length === 0) {
         return { activeEntries: entries || [], inactiveEntries: [] };
@@ -8772,9 +8888,8 @@
         const lanterninhaTag = isLanterninha
           ? `<span class="lanterninha-tag" title="Lanterninha">🏮</span>`
           : "";
-        const aprovPct = entry.aproveitamento != null
-          ? `<span class="ranking-player-aproveit">${Math.round(Number(entry.aproveitamento) * 100)}% aproveit.</span>`
-          : "";
+        const aproveitamentoRecord = getAproveitamentoRecordLabel(entry);
+        const aprovPct = `<span class="ranking-player-aproveit">${aproveitamentoRecord} aproveit.</span>`;
         return `
           <div class="ranking-player">
             ${avatarMarkup}
@@ -8920,7 +9035,9 @@
           p_token: getBackendToken() || null,
         });
         if (error) throw error;
-        const entries = await applyKnockoutScoreFallbackToLeaderboard(data || []);
+        const entries = await applyAproveitamentoRecordToLeaderboard(
+          await applyKnockoutScoreFallbackToLeaderboard(data || [])
+        );
         const { activeEntries, inactiveEntries } = await splitInactiveRankingEntries(entries);
         lanterninhaUserId = activeEntries.length >= 2 ? (activeEntries[activeEntries.length - 1].user_id || null) : null;
         renderRanking(activeEntries, lanterninhaUserId, inactiveEntries);
