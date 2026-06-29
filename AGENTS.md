@@ -640,6 +640,38 @@ Antes de qualquer commit:
 
 ## 32. Registro de mudanças do AGENTS.md
 
+### Sessao 2026-06-29 - ranking de inativos por falta de palpite
+
+- O que foi alterado:
+  - o ranking principal passou a separar visualmente participantes que estejam entre os 10 ultimos colocados e nao tenham palpite registrado nos ultimos 5 jogos com resultado oficial;
+  - esses participantes deixam de aparecer no ranking principal enquanto atenderem ao criterio de inatividade;
+  - foi criada uma secao abaixo do ranking principal, com divisoria e titulo `INATIVO, SEM PALPITE NOS ULTIMOS 5 JOGOS`;
+  - os cards da secao inativa reutilizam o visual do ranking, mas sem numeracao de posicao e com elementos em cinza;
+  - a verificacao e recalculada no carregamento do ranking, entao o participante volta automaticamente ao ranking principal quando tiver palpite em algum dos 5 ultimos jogos com resultado oficial.
+- Por que foi alterado:
+  - manter o ranking principal focado nos participantes ativos, sem remover o historico visual de quem parou de palpitar.
+- Arquivos modificados:
+  - `design-lab.html`
+  - `AGENTS.md`
+- Impacto no bolao:
+  - afeta somente a exibicao do ranking no frontend;
+  - nao altera pontuacao, regras, palpites salvos, usuarios, moedas, buffs, Supabase, SQL, API, Vercel ou GitHub;
+  - a RPC `app_get_leaderboard` continua sendo a fonte de pontuacao e ordenacao antes da separacao visual.
+- Areas afetadas:
+  - visual/ranking: afetado;
+  - Supabase: apenas leitura da tabela `predictions` para identificar atividade recente;
+  - pontuacao, historico, missoes, API, deploy e GitHub: sem alteracao funcional.
+- Testes ou verificacoes feitos:
+  - `git status`;
+  - leitura do `AGENTS.md`;
+  - leitura dos commits recentes;
+  - verificacao de sintaxe do JavaScript embutido como modulo ESM;
+  - `git diff --check`;
+  - `npm.cmd run build`.
+- Pendencias:
+  - validar visualmente no celular e desktop se a secao inativa aparece abaixo do ranking principal quando houver participantes no criterio;
+  - publicar somente apos revisao/autorizacao do usuario.
+
 ### Sessao 2026-06-29 - mata-mata por resultado do placar
 
 - O que foi alterado:

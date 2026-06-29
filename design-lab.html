@@ -1991,6 +1991,65 @@
       text-shadow: none;
     }
 
+    .ranking-inactive-divider {
+      height: 1px;
+      margin: 14px 0 8px;
+      background: linear-gradient(90deg, transparent, rgba(148, 163, 184, 0.48), transparent);
+      box-shadow: 0 0 8px rgba(148, 163, 184, 0.08);
+    }
+
+    .ranking-inactive-title {
+      margin: 0 0 8px;
+      color: rgba(203, 213, 225, 0.72);
+      font-size: 0.74rem;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    .ranking-card--inactive {
+      border-color: rgba(148, 163, 184, 0.18);
+      background:
+        linear-gradient(180deg, rgba(148, 163, 184, 0.14), rgba(100, 116, 139, 0.06) 18%, rgba(71, 85, 105, 0.04) 46%, rgba(15, 23, 42, 0.28) 100%),
+        linear-gradient(135deg, rgba(148, 163, 184, 0.08), rgba(255,255,255,0.01) 42%, rgba(30, 41, 59, 0.24));
+      box-shadow:
+        0 14px 26px rgba(0, 0, 0, 0.42),
+        inset 0 1px 0 rgba(255, 255, 255, 0.12),
+        inset 0 -12px 18px rgba(0, 0, 0, 0.28);
+      filter: grayscale(1);
+      opacity: 0.66;
+    }
+
+    .ranking-card--inactive::before {
+      opacity: 0.32;
+    }
+
+    .ranking-card--inactive .ranking-position,
+    .ranking-card--inactive .ranking-player-name,
+    .ranking-card--inactive .ranking-player-real,
+    .ranking-card--inactive .ranking-player-aproveit,
+    .ranking-card--inactive .ranking-metric,
+    .ranking-card--inactive .ranking-metric--points,
+    .ranking-card--inactive .ranking-points-button,
+    .ranking-card--inactive .ranking-points-button::after {
+      color: rgba(203, 213, 225, 0.72);
+      text-shadow: 0 3px 10px rgba(0, 0, 0, 0.42);
+    }
+
+    .ranking-card--inactive .ranking-points-button::after {
+      border-color: rgba(148, 163, 184, 0.24);
+      background: rgba(148, 163, 184, 0.08);
+    }
+
+    .ranking-card--inactive .ranking-points-button:hover,
+    .ranking-card--inactive .ranking-points-button:focus-visible {
+      background: rgba(148, 163, 184, 0.08);
+      box-shadow:
+        0 0 14px rgba(148, 163, 184, 0.1),
+        inset 0 0 0 1px rgba(148, 163, 184, 0.14);
+    }
+
     .ranking-placeholder {
       color: rgba(226, 232, 240, 0.5);
     }
@@ -8634,7 +8693,69 @@
       return "";
     }
 
-    function renderRanking(entries, lanterninhaId) {
+    function getLastOfficialCompletedMatches(limit = 5) {
+      return [...matchRecords]
+        .filter((match) =>
+          String(match.status || "").toLowerCase() === "completed" &&
+          match.score_home != null &&
+          match.score_away != null
+        )
+        .sort((left, right) => {
+          const rightDate = new Date(right.starts_at || 0).getTime();
+          const leftDate = new Date(left.starts_at || 0).getTime();
+          if (rightDate !== leftDate) return rightDate - leftDate;
+          return Number(right.match_number || 0) - Number(left.match_number || 0);
+        })
+        .slice(0, limit);
+    }
+
+    async function splitInactiveRankingEntries(entries) {
+      if (!BACKEND_ENABLED || !Array.isArray(entries) || entries.length === 0) {
+        return { activeEntries: entries || [], inactiveEntries: [] };
+      }
+
+      const lastCompletedMatches = getLastOfficialCompletedMatches(5);
+      if (lastCompletedMatches.length < 5) {
+        return { activeEntries: entries, inactiveEntries: [] };
+      }
+
+      const bottomEntries = entries.slice(Math.max(0, entries.length - 10)).filter((entry) => entry.user_id);
+      if (!bottomEntries.length) {
+        return { activeEntries: entries, inactiveEntries: [] };
+      }
+
+      try {
+        const matchIds = lastCompletedMatches.map((match) => match.id);
+        const bottomUserIds = bottomEntries.map((entry) => entry.user_id);
+        const { data, error } = await supabase
+          .from("predictions")
+          .select("user_id,match_id")
+          .in("match_id", matchIds)
+          .in("user_id", bottomUserIds);
+        if (error) throw error;
+
+        const recentlyActiveUserIds = new Set((data || []).map((prediction) => prediction.user_id));
+        const inactiveUserIds = new Set(
+          bottomEntries
+            .filter((entry) => !recentlyActiveUserIds.has(entry.user_id))
+            .map((entry) => entry.user_id)
+        );
+
+        if (!inactiveUserIds.size) {
+          return { activeEntries: entries, inactiveEntries: [] };
+        }
+
+        return {
+          activeEntries: entries.filter((entry) => !inactiveUserIds.has(entry.user_id)),
+          inactiveEntries: entries.filter((entry) => inactiveUserIds.has(entry.user_id)),
+        };
+      } catch (error) {
+        console.error(error);
+        return { activeEntries: entries, inactiveEntries: [] };
+      }
+    }
+
+    function renderRanking(entries, lanterninhaId, inactiveEntries = []) {
       if (!rankingRows || !rankingEmpty) return;
 
       const currentUser = getCurrentUser();
@@ -8665,14 +8786,18 @@
         `;
       };
 
-      rankingRows.innerHTML = slots
-        .map(({ position, entry, isCurrent }) => {
+      const buildRankingCard = ({ position, entry, isCurrent, isInactive = false }) => {
           const isLanterninha = Boolean(lanterninhaId && entry.user_id === lanterninhaId);
-          const classes = ["ranking-card", getRankingCardTone(position, slots.length)];
-          if (isCurrent) classes.push("ranking-card--current");
-          if (isLanterninha) classes.push("ranking-card--lanterninha");
+          const classes = ["ranking-card"];
+          if (isInactive) {
+            classes.push("ranking-card--inactive");
+          } else {
+            classes.push(getRankingCardTone(position, slots.length));
+            if (isCurrent) classes.push("ranking-card--current");
+            if (isLanterninha) classes.push("ranking-card--lanterninha");
+          }
 
-          const playerMarkup = buildPlayerMarkup(entry, isCurrent, isLanterninha);
+          const playerMarkup = buildPlayerMarkup(entry, isCurrent, isInactive ? false : isLanterninha);
           const exactMarkup = `<p class="ranking-metric">${Number(entry.exact_scores ?? 0)}</p>`;
           const bonusPoints = Number(entry.bonus_points ?? 0);
           const bonusSuffix = bonusPoints > 0 ? ` <small style="opacity:.6;font-size:.75em">(+${formatRankingPoints(bonusPoints)} extra)</small>` : "";
@@ -8680,25 +8805,50 @@
           const pointsMarkup = currentUser?.isAdmin && entry.user_id
             ? `<p class="ranking-metric ranking-metric--points"><button class="ranking-points-button" type="button" data-points-user-id="${escapeHtml(entry.user_id)}" data-points-nickname="${escapeHtml(entry.nickname || "")}" data-points-real-name="${escapeHtml(entry.real_name || "")}" data-points-total="${escapeHtml(String(entry.total_points ?? 0))}">${pointsContent}</button></p>`
             : `<p class="ranking-metric ranking-metric--points">${pointsContent}</p>`;
+
+          return `
+            <article class="${classes.filter(Boolean).join(" ")}">
+              <div class="ranking-card-grid">
+                <p class="ranking-position">${isInactive ? "" : `${position}º`}</p>
+                ${playerMarkup}
+                ${exactMarkup}
+                ${pointsMarkup}
+              </div>
+            </article>
+          `;
+      };
+
+      const activeMarkup = slots
+        .map(({ position, entry, isCurrent }) => {
           // Divisor apenas após o pódio
           const dividerMarkup = position === 3 && slots.length > position
             ? `<div class="ranking-divider" aria-hidden="true"></div>`
             : "";
 
           return `
-            <article class="${classes.filter(Boolean).join(" ")}">
-              <div class="ranking-card-grid">
-                <p class="ranking-position">${position}º</p>
-                ${playerMarkup}
-                ${exactMarkup}
-                ${pointsMarkup}
-              </div>
-            </article>
+            ${buildRankingCard({ position, entry, isCurrent })}
             ${dividerMarkup}
           `;
         })
         .join("");
-      rankingEmpty.classList.toggle("is-visible", entries.length === 0);
+
+      const inactiveMarkup = inactiveEntries.length
+        ? `
+          <div class="ranking-inactive-divider" aria-hidden="true"></div>
+          <p class="ranking-inactive-title">INATIVO, SEM PALPITE NOS ÚLTIMOS 5 JOGOS</p>
+          ${inactiveEntries
+            .map((entry) => buildRankingCard({
+              position: null,
+              entry,
+              isCurrent: Boolean(currentUser?.id && entry.user_id === currentUser.id),
+              isInactive: true,
+            }))
+            .join("")}
+        `
+        : "";
+
+      rankingRows.innerHTML = `${activeMarkup}${inactiveMarkup}`;
+      rankingEmpty.classList.toggle("is-visible", entries.length === 0 && inactiveEntries.length === 0);
     }
 
     function updateLanterninhaIndicators() {
@@ -8771,8 +8921,9 @@
         });
         if (error) throw error;
         const entries = await applyKnockoutScoreFallbackToLeaderboard(data || []);
-        lanterninhaUserId = entries.length >= 2 ? (entries[entries.length - 1].user_id || null) : null;
-        renderRanking(entries, lanterninhaUserId);
+        const { activeEntries, inactiveEntries } = await splitInactiveRankingEntries(entries);
+        lanterninhaUserId = activeEntries.length >= 2 ? (activeEntries[activeEntries.length - 1].user_id || null) : null;
+        renderRanking(activeEntries, lanterninhaUserId, inactiveEntries);
         updateLanterninhaIndicators();
       } catch (error) {
         console.error(error);
