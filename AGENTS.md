@@ -640,6 +640,30 @@ Antes de qualquer commit:
 
 ## 32. Registro de mudanças do AGENTS.md
 
+### Sessao 2026-06-30 - fundo preto aplicado no poster
+
+- O que foi alterado:
+  - o fundo do `body` e do `html` foi reduzido para preto solido;
+  - a textura pontilhada preta passou a ser aplicada diretamente no `.poster`, que acompanha todo o conteudo visivel da pagina;
+  - o uso de `background-attachment: fixed` foi removido do fundo para evitar diferenca de tonalidade entre topo e fim em navegadores mobile.
+- Por que foi alterado:
+  - corrigir a diferenca visual em que o topo da pagina aparecia mais acinzentado e o fim mais escuro.
+- Arquivos modificados:
+  - `design-lab.html`
+  - `AGENTS.md`
+- Impacto no bolao:
+  - alteracao apenas visual global do fundo;
+  - nao altera saldos, historico, pontuacao, ranking, palpites, usuarios, Supabase, API, Vercel ou GitHub.
+- Areas afetadas:
+  - visual/fundo: afetado em todas as abas.
+- Testes ou verificacoes feitos:
+  - `git status`;
+  - leitura dos commits recentes;
+  - `git diff --check`;
+  - `npm.cmd run build`.
+- Pendencias:
+  - validar no celular apos publicacao usando URL com cache bust.
+
 ### Sessao 2026-06-30 - resumo no card amarelo do topo
 
 - O que foi alterado:

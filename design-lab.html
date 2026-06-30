@@ -24,6 +24,9 @@
       --bg-mid: #050506;
       color-scheme: dark;
       --bg-bottom: #050506;
+      --page-texture:
+        radial-gradient(rgba(255, 255, 255, 0.052) 0.7px, transparent 0.9px),
+        radial-gradient(rgba(255, 255, 255, 0.018) 1.2px, transparent 1.4px);
       --panel: rgba(255, 255, 255, 0.045);
       --line: rgba(255, 255, 255, 0.18);
       --text: #fbfbfc;
@@ -40,13 +43,7 @@
       min-height: 100vh;
       font-family: "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
       color: var(--text);
-      background-color: #000;
-      background-image:
-        radial-gradient(rgba(255, 255, 255, 0.07) 0.7px, transparent 0.9px),
-        radial-gradient(rgba(255, 255, 255, 0.025) 1.2px, transparent 1.4px);
-      background-size: 4px 4px, 9px 9px;
-      background-position: 0 0, 2px 2px;
-      background-attachment: fixed;
+      background: #000;
       position: relative;
       overflow-x: hidden;
       -webkit-text-size-adjust: 100%;
@@ -57,6 +54,7 @@
       width: 100%;
       max-width: 100%;
       overflow-x: hidden;
+      background: #000;
     }
 
     body::before {
@@ -83,6 +81,10 @@
       gap: 8px;
       position: relative;
       isolation: isolate;
+      background-color: #000;
+      background-image: var(--page-texture);
+      background-size: 4px 4px, 9px 9px;
+      background-position: 0 0, 2px 2px;
     }
 
     .poster::before {
