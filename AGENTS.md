@@ -646,6 +646,7 @@ Antes de qualquer commit:
   - o fundo do `body` e do `html` foi reduzido para preto solido;
   - a textura pontilhada preta passou a ser aplicada diretamente no `.poster`, que acompanha todo o conteudo visivel da pagina;
   - o uso de `background-attachment: fixed` foi removido do fundo para evitar diferenca de tonalidade entre topo e fim em navegadores mobile.
+  - a textura foi movida para uma camada fixa de viewport e teve a opacidade reduzida para manter a pagina preta de forma uniforme.
 - Por que foi alterado:
   - corrigir a diferenca visual em que o topo da pagina aparecia mais acinzentado e o fim mais escuro.
 - Arquivos modificados:
