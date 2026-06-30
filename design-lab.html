@@ -240,80 +240,97 @@
     }
 
     .coins-card {
-      min-width: 116px;
-      min-height: 58px;
-      border: 1px solid rgba(255, 255, 255, 0.14);
-      border-radius: 16px;
-      display: inline-block;
-      padding: 5px 14px;
-      background:
-        linear-gradient(180deg, rgba(255, 234, 162, 0.24), rgba(173, 126, 18, 0.14) 24%, rgba(124, 81, 5, 0.9) 100%),
-        linear-gradient(135deg, #a16207, #d4a017 52%, #6b4f05);
+      flex: 1 1 0;
+      min-width: 0;
+      min-height: 62px;
+      display: inline-grid;
+      grid-template-columns: minmax(0, 1fr);
+      align-items: stretch;
+      gap: 5px;
+      padding: 0;
+      background: transparent;
       color: #fffbed;
       text-decoration: none;
       text-transform: uppercase;
       letter-spacing: 0.16em;
       font-size: 0.92rem;
       font-weight: 900;
-      box-shadow:
-        0 18px 32px rgba(0, 0, 0, 0.5),
-        0 8px 18px rgba(5, 12, 28, 0.36),
-        inset 0 1px 0 rgba(255, 255, 255, 0.26),
-        inset 0 -12px 20px rgba(0, 0, 0, 0.24);
-      overflow: hidden;
-      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+      box-shadow: none;
+      overflow: visible;
       position: relative;
       cursor: default;
     }
 
     .coins-card::before {
-      content: "🪙";
-      position: absolute;
-      inset: 0;
-      display: grid;
-      place-items: center;
-      font-size: clamp(3.7rem, 7vw, 5rem);
-      line-height: 1;
-      opacity: 0.8;
-      pointer-events: none;
+      content: none;
     }
 
     .coins-card::after {
-      content: "";
-      position: absolute;
-      inset: 1px;
-      border-radius: 15px;
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
-      pointer-events: none;
+      content: none;
     }
 
     .coins-card-value {
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
+      position: relative;
       z-index: 1;
-      font-size: 3.22rem;
+      display: grid;
+      grid-template-rows: 20% 10% 70%;
+      align-items: stretch;
+      min-width: 0;
+      height: 100%;
+      gap: 0;
       line-height: 1;
       letter-spacing: 0;
       color: #fffbed;
-      text-shadow: 0 2px 6px rgba(0, 0, 0, 0.42);
-      justify-self: center;
+      justify-self: stretch;
       text-align: center;
+      white-space: nowrap;
     }
 
     .coins-card-label {
-      display: block;
-      position: absolute;
-      left: 50%;
-      bottom: 5px;
-      transform: translateX(-50%);
-      z-index: 1;
+      display: grid;
+      place-items: center;
+      min-width: 0;
+      font-size: 0.5rem;
       line-height: 1;
-      font-size: 0.58rem;
-      letter-spacing: 0.12em;
-      margin-top: 0;
+      letter-spacing: 0.07em;
+      opacity: 0.82;
+      overflow: hidden;
+      text-overflow: clip;
+      align-self: stretch;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 9px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.16), rgba(255,255,255,0.04) 18%, rgba(255,255,255,0.01) 46%, rgba(0,0,0,0.22) 100%),
+        linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01) 42%, rgba(0,0,0,0.18));
+      box-shadow:
+        0 8px 14px rgba(0, 0, 0, 0.42),
+        inset 0 1px 0 rgba(255, 255, 255, 0.22),
+        inset 0 -8px 14px rgba(0, 0, 0, 0.3);
+    }
+
+    .coins-card-number {
+      display: grid;
+      place-items: center;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: clip;
+      font-size: clamp(1.55rem, 3.4vw, 2.35rem);
+      font-weight: 1000;
+      grid-row: 3;
+      align-self: stretch;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 12px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.16), rgba(255,255,255,0.04) 18%, rgba(255,255,255,0.01) 46%, rgba(0,0,0,0.22) 100%),
+        linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01) 42%, rgba(0,0,0,0.18));
+      box-shadow:
+        0 12px 20px rgba(0, 0, 0, 0.42),
+        inset 0 1px 0 rgba(255, 255, 255, 0.26),
+        inset 0 -10px 16px rgba(0, 0, 0, 0.2);
+      text-shadow:
+        0 3px 0 rgba(0, 0, 0, 0.95),
+        0 8px 18px rgba(0, 0, 0, 0.9),
+        0 0 14px rgba(255, 255, 255, 0.18);
     }
 
     .auth-modal {
@@ -663,24 +680,27 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      flex: 1 1 auto;
-      padding: 8px 12px;
-      border-radius: 16px;
+      width: 100%;
+      min-height: 36px;
+      padding: 6px 14px;
+      border-radius: 14px;
       border: 1px solid rgba(255, 255, 255, 0.14);
       background:
-        linear-gradient(180deg, rgba(110, 205, 98, 0.24), rgba(44, 112, 37, 0.12) 28%, rgba(15, 73, 12, 0.88) 100%),
-        linear-gradient(135deg, #1b5f18, #0f490c 52%, #082706);
-      color: #d4f7cc;
-      font-size: clamp(0.78rem, 1.35vw, 1.08rem);
+        linear-gradient(180deg, rgba(255,255,255,0.16), rgba(255,255,255,0.04) 18%, rgba(255,255,255,0.01) 46%, rgba(0,0,0,0.22) 100%),
+        linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01) 42%, rgba(0,0,0,0.18));
+      color: #fffbed;
+      font-size: clamp(0.84rem, 1.75vw, 1.28rem);
       font-weight: 900;
-      letter-spacing: 0.1em;
+      letter-spacing: 0.22em;
       text-transform: uppercase;
       text-align: center;
-      line-height: 1.14;
+      line-height: 1;
       text-wrap: balance;
       box-shadow:
-        0 10px 18px rgba(0, 0, 0, 0.36),
-        inset 0 1px 0 rgba(255, 255, 255, 0.22);
+        0 18px 34px rgba(0, 0, 0, 0.56),
+        0 4px 12px rgba(0, 0, 0, 0.34),
+        inset 0 1px 0 rgba(255, 255, 255, 0.24),
+        inset 0 -12px 20px rgba(0, 0, 0, 0.34);
     }
 
     .header h1 {
@@ -5784,12 +5804,16 @@
       }
 
       .coins-card-value {
-        font-size: 2.68rem;
+        grid-template-rows: 20% 10% 70%;
       }
 
       .coins-card-label {
-        font-size: 0.5rem;
-        letter-spacing: 0.1em;
+        font-size: 0.42rem;
+        letter-spacing: 0.04em;
+      }
+
+      .coins-card-number {
+        font-size: clamp(1.3rem, 6.2vw, 1.85rem);
       }
 
       .header-eyebrow {
@@ -5797,11 +5821,11 @@
       }
 
       .header-edition {
-        min-height: 42px;
-        padding: 6px 8px;
-        font-size: clamp(0.62rem, 2.35vw, 0.78rem);
-        line-height: 1.12;
-        letter-spacing: 0.08em;
+        min-height: 30px;
+        padding: 5px 8px;
+        font-size: clamp(0.68rem, 3.05vw, 0.86rem);
+        line-height: 1;
+        letter-spacing: 0.14em;
       }
 
       .header h1 {
@@ -6607,12 +6631,27 @@
 <body>
   <main class="poster">
     <header class="header">
+      <h1>BOLÃO COPA <img class="header-logo" src="https://commons.wikimedia.org/wiki/Special:FilePath/2026%20FIFA%20World%20Cup%20emblem.svg" alt="Logo oficial da Copa do Mundo 2026"></h1>
+      <span class="header-edition">Edição especial entre amigos</span>
       <div class="header-eyebrow">
-        <div class="coins-card" aria-label="Moedas">
-          <span class="coins-card-value" id="coins-card-value">0</span>
-          <span class="coins-card-label">Moedas</span>
+        <div class="coins-card" aria-label="Posição no ranking">
+          <span class="coins-card-value">
+            <span class="coins-card-label">Posição</span>
+            <span class="coins-card-number" id="coins-card-position">-</span>
+          </span>
         </div>
-        <span class="header-edition">Edição especial<br>entre amigos</span>
+        <div class="coins-card" aria-label="Pontos no ranking">
+          <span class="coins-card-value">
+            <span class="coins-card-label">Pontos</span>
+            <span class="coins-card-number" id="coins-card-points">-</span>
+          </span>
+        </div>
+        <div class="coins-card" aria-label="Moedas disponíveis">
+          <span class="coins-card-value">
+            <span class="coins-card-label">Moedas</span>
+            <span class="coins-card-number" id="coins-card-value">0</span>
+          </span>
+        </div>
         <div class="account-switcher">
           <a class="login-card" href="#" aria-label="Login">
             <span class="login-card-avatar" id="login-card-avatar" aria-hidden="true"></span>
@@ -6624,7 +6663,6 @@
           <button class="quick-switch-button" id="quick-switch-button" type="button" aria-live="polite"></button>
         </div>
       </div>
-      <h1>BOLÃO COPA <img class="header-logo" src="https://commons.wikimedia.org/wiki/Special:FilePath/2026%20FIFA%20World%20Cup%20emblem.svg" alt="Logo oficial da Copa do Mundo 2026"></h1>
       <p>Vá até a aba &ldquo;REGRAS&rdquo; para entender como funcionará tudo</p>
     </header>
 
@@ -7944,6 +7982,8 @@
     const pointsDetailSubtitle = document.getElementById("points-detail-subtitle");
     const pointsDetailBody = document.getElementById("points-detail-body");
     const coinsCardValue = document.getElementById("coins-card-value");
+    const coinsCardPosition = document.getElementById("coins-card-position");
+    const coinsCardPoints = document.getElementById("coins-card-points");
     const missionsTabCoins = document.getElementById("missions-tab-coins");
     const coinsHistoryList = document.getElementById("coins-history-list");
     const extrasNavBadge = document.getElementById("extras-nav-badge");
@@ -8606,11 +8646,28 @@
     function updateCoinsCard() {
       const currentCoins = String(getCurrentUserCoins());
       coinsCardValue.textContent = currentCoins;
+      if (!getCurrentUser()?.id) {
+        if (coinsCardPosition) coinsCardPosition.textContent = "-";
+        if (coinsCardPoints) coinsCardPoints.textContent = "-";
+      }
       if (missionsTabCoins) missionsTabCoins.textContent = currentCoins;
       if (buffsCoins) {
         buffsCoins.textContent = `Moedas: ${getCurrentUserCoins()}`;
       }
       refreshCoinHistoryIfVisible();
+    }
+
+    function updateTopStatsCardFromRanking(entries = []) {
+      const currentUser = getCurrentUser();
+      if (!currentUser?.id) {
+        if (coinsCardPosition) coinsCardPosition.textContent = "-";
+        if (coinsCardPoints) coinsCardPoints.textContent = "-";
+        return;
+      }
+      const userIndex = entries.findIndex((entry) => entry.user_id === currentUser.id);
+      const userEntry = userIndex >= 0 ? entries[userIndex] : null;
+      if (coinsCardPosition) coinsCardPosition.textContent = userEntry ? `${userIndex + 1}º` : "-";
+      if (coinsCardPoints) coinsCardPoints.textContent = userEntry ? formatRankingPoints(userEntry.total_points ?? 0) : "-";
     }
 
     function getBuffCoinCost(buff) {
@@ -9998,6 +10055,7 @@
 
       rankingRows.innerHTML = `${activeMarkup}${inactiveMarkup}`;
       rankingEmpty.classList.toggle("is-visible", entries.length === 0 && inactiveEntries.length === 0);
+      updateTopStatsCardFromRanking(entries);
     }
 
     function updateLanterninhaIndicators() {

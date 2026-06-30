@@ -640,6 +640,34 @@ Antes de qualquer commit:
 
 ## 32. Registro de mudanças do AGENTS.md
 
+### Sessao 2026-06-30 - resumo no card amarelo do topo
+
+- O que foi alterado:
+  - o card amarelo superior deixou de exibir apenas moedas;
+  - o resumo do participante passou a usar tres cards amarelos separados para `Posicao`, `Pontos` e `Moedas`;
+  - cada coluna amarela passou a ter dois mini-cards empilhados, um para o rotulo e outro para o numero, com separacao visual entre eles;
+  - o icone de moeda de fundo foi removido;
+  - os numeros foram mantidos em negrito com sombra e distribuidos nas tres estatisticas;
+  - o titulo `Bolao Copa` com a logo foi movido para aparecer acima dos cards do topo.
+  - o card verde `Edicao especial entre amigos` passou a ficar logo abaixo do titulo, em largura total, com menor altura, fonte ajustada e maior espacamento entre letras.
+  - os mini-cards de rotulo/numero e o card de titulo passaram para o visual preto metalico dos cards de palpite;
+  - os numeros das estatisticas do topo foram aumentados.
+- Por que foi alterado:
+  - concentrar no topo os principais dados do participante sem aumentar a area ocupada.
+- Arquivos modificados:
+  - `design-lab.html`
+  - `AGENTS.md`
+- Impacto no bolao:
+  - alteracao apenas visual;
+  - nao altera saldos, historico, pontuacao, ranking, palpites, Supabase, API, Vercel ou GitHub.
+- Areas afetadas:
+  - visual/topo/ranking/moedas: afetado.
+- Testes ou verificacoes feitos:
+  - `git diff --check`;
+  - `npm.cmd run build`.
+- Pendencias:
+  - publicar somente se autorizado.
+
 ### Sessao 2026-06-30 - ajuste retroativo do historico de moedas legado
 
 - O que foi alterado:
