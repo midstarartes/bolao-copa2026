@@ -640,6 +640,625 @@ Antes de qualquer commit:
 
 ## 32. Registro de mudanças do AGENTS.md
 
+### Sessao 2026-06-30 - ajuste retroativo do historico de moedas legado
+
+- O que foi alterado:
+  - o historico local de moedas passou a registrar um ajuste legado de `-2` moedas para `LORDEWEL`, `Carneiro` e `tDniels`;
+  - o ajuste representa debitos antigos de buffs removidos pela migracao de regras, sem detalhe original recuperavel em `match_buffs`;
+  - o saldo real do usuario `LORDEWEL` foi definido para `7` moedas via RPC administrativa, refletindo o debito de `-4` do buff `palpite-duplo` aplicado pelo ADMIN no jogo 76, Brasil x Japao.
+- Por que foi alterado:
+  - eliminar a diferenca generica entre historico reconstruido e saldo atual;
+  - manter o historico transparente sobre o debito legado que ja afetava o saldo, mas perdeu a linha original na migracao;
+  - corrigir o saldo real do `LORDEWEL`, que nao havia sido debitado quando o ADMIN aplicou o buff.
+- Arquivos modificados:
+  - `design-lab.html`
+  - `AGENTS.md`
+- Impacto no bolao:
+  - afeta a exibicao local do historico de moedas;
+  - afeta o saldo real do `LORDEWEL` no Supabase, de `11` para `7` moedas;
+  - nao altera pontuacao, ranking, palpites, resultados oficiais, Vercel ou GitHub.
+- Areas afetadas:
+  - moedas/historico: afetado;
+  - Supabase/usuarios: saldo do `LORDEWEL` ajustado via ADMIN;
+  - visual local: historico passa a explicar o debito legado.
+- Testes ou verificacoes feitos:
+  - `git status`;
+  - leitura dos commits recentes;
+  - consulta via Supabase REST/RPC para auditar `LORDEWEL`, `Carneiro` e `tDniels`;
+  - verificacao de que os tres fecharam com diferenca `0` entre saldo atual e historico reconstruido apos o ajuste legado.
+- Pendencias:
+  - aplicar no Supabase, em momento autorizado, o patch definitivo para futuros buffs do ADMIN debitarem/devolverem moedas automaticamente.
+
+### Sessao 2026-06-30 - mercado fechado e debito admin de buffs
+
+- O que foi alterado:
+  - no historico local de moedas, apostas de moeda com mercado fechado e ainda sem settlement passaram a entrar no card do jogo como `Aposta` com `Retorno: pendente`;
+  - criado o patch SQL `supabase/patch-037-admin-buff-coins.sql` para fazer buffs aplicados manualmente pelo ADMIN debitarem moedas quando criados e devolverem moedas quando removidos;
+  - o patch SQL tambem registra no payload da auditoria o custo/devolucao e saldo apos a operacao.
+- Por que foi alterado:
+  - considerar moedas retidas em jogos cujo mercado ja fechou;
+  - evitar que futuros buffs adicionados pelo ADMIN fiquem sem debitar o saldo do usuario.
+- Arquivos modificados:
+  - `design-lab.html`
+  - `supabase/patch-037-admin-buff-coins.sql`
+  - `AGENTS.md`
+- Impacto no bolao:
+  - alteracao local no historico de moedas;
+  - patch de Supabase criado, mas ainda nao aplicado no banco;
+  - se aplicado no Supabase, afeta futuras aplicacoes/remocoes manuais de buffs pelo ADMIN, debitando/devolvendo moedas.
+- Areas afetadas:
+  - visual/moedas/historico: afetado localmente;
+  - Supabase/admin/buffs/moedas: patch criado, pendente de aplicacao.
+- Testes ou verificacoes feitos:
+  - `git diff --check`;
+  - `npm.cmd run build`;
+  - consulta read-only para recalcular categorias de moedas do LORDEWEL.
+- Pendencias:
+  - decidir se o historico deve refletir saldo real atual ou saldo esperado com debitos administrativos retroativos;
+  - aplicar o patch SQL no Supabase apenas com autorizacao explicita.
+
+### Sessao 2026-06-30 - data de buffs no historico pela hora do jogo
+
+- O que foi alterado:
+  - no historico de moedas, buffs que nao sao aposta de moeda passaram a usar como data da movimentacao o dia do jogo, com horario de 1 hora antes do inicio;
+  - isso faz os buffs fechados aparecerem no historico cronologico do jogo correspondente, incluindo os casos de LORDEWEL nos jogos 17 e 31.
+- Por que foi alterado:
+  - refletir no historico os gastos de buffs que estavam registrados no jogo, mas precisavam aparecer na linha cronologica correta para conferencia de saldo.
+- Arquivos modificados:
+  - `design-lab.html`
+  - `AGENTS.md`
+- Impacto no bolao:
+  - alteracao visual/local no historico de moedas;
+  - nao altera saldos gravados, regras, pontuacao, ranking, palpites, Supabase, API, Vercel ou GitHub.
+- Areas afetadas:
+  - visual/moedas/historico: afetado.
+- Testes ou verificacoes feitos:
+  - `git diff --check`;
+  - `npm.cmd run build`.
+- Pendencias:
+  - validar visualmente no navegador local antes de publicar.
+
+### Sessao 2026-06-30 - ajuste do card edicao especial
+
+- O que foi alterado:
+  - o texto do card `Edicao especial entre amigos` foi aumentado;
+  - a quebra foi controlada em duas linhas equilibradas;
+  - o texto passou a ocupar melhor o card sem cortar palavras.
+- Por que foi alterado:
+  - melhorar o preenchimento visual do card central do topo.
+- Arquivos modificados:
+  - `design-lab.html`
+  - `AGENTS.md`
+- Impacto no bolao:
+  - alteracao apenas visual/local no topo da interface;
+  - nao altera saldos, regras, pontuacao, ranking, palpites, Supabase, API, Vercel ou GitHub.
+- Areas afetadas:
+  - visual/topo: afetado.
+- Testes ou verificacoes feitos:
+  - `git diff --check`;
+  - `npm.cmd run build`.
+- Pendencias:
+  - validar visualmente no navegador local antes de publicar.
+
+### Sessao 2026-06-30 - centralizacao do saldo no card de moedas
+
+- O que foi alterado:
+  - o numero do card de moedas superior foi centralizado horizontal e verticalmente em relacao ao card;
+  - o numero foi aumentado novamente;
+  - a palavra `Moedas` foi fixada na parte inferior do card.
+- Por que foi alterado:
+  - melhorar o enquadramento visual do saldo no card superior.
+- Arquivos modificados:
+  - `design-lab.html`
+  - `AGENTS.md`
+- Impacto no bolao:
+  - alteracao apenas visual/local no topo da interface;
+  - nao altera saldos, regras, pontuacao, ranking, palpites, Supabase, API, Vercel ou GitHub.
+- Areas afetadas:
+  - visual/moedas/topo: afetado.
+- Testes ou verificacoes feitos:
+  - `git diff --check`;
+  - `npm.cmd run build`.
+- Pendencias:
+  - validar visualmente no navegador local antes de publicar.
+
+### Sessao 2026-06-30 - numero do card de moedas 30 por cento maior
+
+- O que foi alterado:
+  - o numero do card de moedas superior foi aumentado em cerca de 30%;
+  - o numero foi centralizado no card;
+  - o tamanho responsivo no mobile tambem foi ajustado na mesma proporcao.
+- Por que foi alterado:
+  - dar mais destaque ao saldo de moedas no topo.
+- Arquivos modificados:
+  - `design-lab.html`
+  - `AGENTS.md`
+- Impacto no bolao:
+  - alteracao apenas visual/local no topo da interface;
+  - nao altera saldos, regras, pontuacao, ranking, palpites, Supabase, API, Vercel ou GitHub.
+- Areas afetadas:
+  - visual/moedas/topo: afetado.
+- Testes ou verificacoes feitos:
+  - `git diff --check`;
+  - `npm.cmd run build`.
+- Pendencias:
+  - validar visualmente no navegador local antes de publicar.
+
+### Sessao 2026-06-30 - refinamento do numero no card de moedas do topo
+
+- O que foi alterado:
+  - o numero de moedas no card superior ficou maior;
+  - a palavra `Moedas` foi deslocada mais para baixo;
+  - o ajuste responsivo do tamanho do numero tambem foi ampliado.
+- Por que foi alterado:
+  - melhorar a hierarquia visual do saldo de moedas.
+- Arquivos modificados:
+  - `design-lab.html`
+  - `AGENTS.md`
+- Impacto no bolao:
+  - alteracao apenas visual/local no topo da interface;
+  - nao altera saldos, regras, pontuacao, ranking, palpites, Supabase, API, Vercel ou GitHub.
+- Areas afetadas:
+  - visual/moedas/topo: afetado.
+- Testes ou verificacoes feitos:
+  - `git diff --check`;
+  - `npm.cmd run build`.
+- Pendencias:
+  - validar visualmente no navegador local antes de publicar.
+
+### Sessao 2026-06-30 - card de moedas do topo com icone grande
+
+- O que foi alterado:
+  - o card de moedas do topo passou a usar o icone de moeda preenchendo o fundo do card com 80% de opacidade;
+  - o numero de moedas ficou maior e sobreposto ao icone;
+  - a palavra `Moedas` ficou abaixo do numero em tamanho menor;
+  - ajustes responsivos foram feitos para nao reduzir o numero no mobile.
+- Por que foi alterado:
+  - dar mais destaque visual ao saldo de moedas do usuario no topo da tela.
+- Arquivos modificados:
+  - `design-lab.html`
+  - `AGENTS.md`
+- Impacto no bolao:
+  - alteracao apenas visual/local no topo da interface;
+  - nao altera saldos, regras, pontuacao, ranking, palpites, Supabase, API, Vercel ou GitHub.
+- Areas afetadas:
+  - visual/moedas/topo: afetado.
+- Testes ou verificacoes feitos:
+  - `git diff --check`;
+  - `npm.cmd run build`.
+- Pendencias:
+  - validar visualmente no navegador local antes de publicar.
+
+### Sessao 2026-06-30 - destaque do titulo historico de moedas
+
+- O que foi alterado:
+  - o titulo `Historico de moedas` ficou maior;
+  - passou a usar vermelho sem transparencia;
+  - foi deslocado uma linha abaixo da posicao anterior.
+- Por que foi alterado:
+  - aumentar o destaque visual da divisao entre missoes e historico.
+- Arquivos modificados:
+  - `design-lab.html`
+  - `AGENTS.md`
+- Impacto no bolao:
+  - alteracao apenas visual/local na aba Moedas;
+  - nao altera saldos, regras, pontuacao, ranking, palpites, Supabase, API, Vercel ou GitHub.
+- Areas afetadas:
+  - visual/moedas: afetado.
+- Testes ou verificacoes feitos:
+  - `git diff --check`;
+  - `npm.cmd run build`.
+- Pendencias:
+  - validar visualmente no navegador local antes de publicar.
+
+### Sessao 2026-06-30 - ajuste visual e ordenacao das missoes
+
+- O que foi alterado:
+  - na aba Moedas, a linha de acoes das missoes passou a usar proporcao aproximada de 20% para o progresso e 80% para o botao de resgate;
+  - as missoes sao reordenadas para mostrar primeiro as nao resgatadas, priorizando as mais proximas de completar;
+  - missoes ja resgatadas aparecem abaixo e com 50% de transparencia;
+  - nos botoes de missoes resgatadas, a quantidade de moedas aparece antes de `Resgatado`.
+- Por que foi alterado:
+  - melhorar a leitura e priorizar as missoes ainda acionaveis pelo usuario.
+- Arquivos modificados:
+  - `design-lab.html`
+  - `AGENTS.md`
+- Impacto no bolao:
+  - alteracao visual/local na aba Moedas;
+  - nao altera saldos, regras, pontuacao, ranking, palpites, Supabase, API, Vercel ou GitHub.
+- Areas afetadas:
+  - visual/moedas/missoes: afetado.
+- Testes ou verificacoes feitos:
+  - `git diff --check`;
+  - `npm.cmd run build`.
+- Pendencias:
+  - validar visualmente no navegador local antes de publicar.
+
+### Sessao 2026-06-30 - cards expansivos no historico de moedas
+
+- O que foi alterado:
+  - os cards do historico de moedas passaram a iniciar recolhidos;
+  - por padrao exibem apenas titulo e saldo do card;
+  - uma seta clicavel expande o card para mostrar data, detalhamento e saldo parcial;
+  - a seta muda de orientacao quando o card esta aberto.
+- Por que foi alterado:
+  - reduzir a poluicao visual do historico mantendo o detalhamento disponivel sob demanda.
+- Arquivos modificados:
+  - `design-lab.html`
+  - `AGENTS.md`
+- Impacto no bolao:
+  - alteracao apenas visual/local no historico de moedas;
+  - nao altera saldos gravados, regras, pontuacao, ranking, palpites, Supabase, API, Vercel ou GitHub.
+- Areas afetadas:
+  - visual/moedas: afetado.
+- Testes ou verificacoes feitos:
+  - `git diff --check`;
+  - `npm.cmd run build`.
+- Pendencias:
+  - validar visualmente no navegador local antes de publicar.
+
+### Sessao 2026-06-30 - visual das moedas em espera por linha
+
+- O que foi alterado:
+  - no card `Moedas em espera`, cada jogo passou a ocupar uma linha dentro do mesmo card;
+  - as siglas dos jogos pendentes usam fonte cinza com transparencia;
+  - os detalhes de jogos pendentes passaram a exibir bolinhas de bandeiras ao lado das siglas, no mesmo padrao dos titulos dos cards de jogos.
+- Por que foi alterado:
+  - melhorar a leitura das moedas pendentes sem poluir o card com detalhes de buff/aposta.
+- Arquivos modificados:
+  - `design-lab.html`
+  - `AGENTS.md`
+- Impacto no bolao:
+  - alteracao apenas visual/local no historico de moedas;
+  - nao altera saldos gravados, regras, pontuacao, ranking, palpites, Supabase, API, Vercel ou GitHub.
+- Areas afetadas:
+  - visual/moedas: afetado.
+- Testes ou verificacoes feitos:
+  - `git diff --check`;
+  - `npm.cmd run build`.
+- Pendencias:
+  - validar visualmente no navegador local antes de publicar.
+
+### Sessao 2026-06-30 - rotulos curtos de buffs no historico de moedas
+
+- O que foi alterado:
+  - no historico de moedas, os buffs passaram a usar rotulos curtos:
+    - `Dobrou`;
+    - `Proteger`;
+    - `Anular`;
+    - `Meiar`;
+  - o buff de aposta de moeda permanece como aposta.
+- Por que foi alterado:
+  - reduzir o tamanho dos detalhes dentro dos cards do historico de moedas.
+- Arquivos modificados:
+  - `design-lab.html`
+  - `AGENTS.md`
+- Impacto no bolao:
+  - alteracao apenas visual/local no historico de moedas;
+  - nao altera saldos, regras, pontuacao, ranking, palpites, Supabase, API, Vercel ou GitHub.
+- Areas afetadas:
+  - visual/moedas: afetado.
+- Testes ou verificacoes feitos:
+  - `git diff --check`;
+  - `npm.cmd run build`.
+- Pendencias:
+  - validar visualmente no navegador local antes de publicar.
+
+### Sessao 2026-06-30 - alinhamento das bandeiras no titulo de moedas
+
+- O que foi alterado:
+  - nos titulos dos cards de jogos do historico de moedas, a bandeira do time da casa passou a ficar a direita da sigla;
+  - a bandeira do visitante permanece antes da sigla;
+  - o separador do confronto usa `x` minusculo.
+- Por que foi alterado:
+  - alinhar o titulo ao formato visual esperado `AAA bandeira x bandeira BBB`.
+- Arquivos modificados:
+  - `design-lab.html`
+  - `AGENTS.md`
+- Impacto no bolao:
+  - alteracao apenas visual/local no historico de moedas;
+  - nao altera saldos, regras, pontuacao, ranking, palpites, Supabase, API, Vercel ou GitHub.
+- Areas afetadas:
+  - visual/moedas: afetado.
+- Testes ou verificacoes feitos:
+  - `git diff --check`;
+  - `npm.cmd run build`.
+- Pendencias:
+  - validar visualmente no navegador local antes de publicar.
+
+### Sessao 2026-06-30 - titulos com siglas e bandeiras no historico de moedas
+
+- O que foi alterado:
+  - os cards de jogos no historico de moedas passaram a usar o titulo `Moedas em AAA x BBB`;
+  - `AAA` e `BBB` sao as siglas das selecoes;
+  - cada sigla exibe ao lado uma bolinha com a bandeira da selecao, em tamanho reduzido e alinhado na mesma linha.
+- Por que foi alterado:
+  - melhorar a identificacao visual dos jogos no historico de moedas sem usar nomes longos.
+- Arquivos modificados:
+  - `design-lab.html`
+  - `AGENTS.md`
+- Impacto no bolao:
+  - alteracao apenas visual/local no historico de moedas;
+  - nao altera saldos, regras, pontuacao, ranking, palpites, Supabase, API, Vercel ou GitHub.
+- Areas afetadas:
+  - visual/moedas: afetado.
+- Testes ou verificacoes feitos:
+  - `git diff --check`;
+  - `npm.cmd run build`.
+- Pendencias:
+  - validar visualmente no navegador local antes de publicar.
+
+### Sessao 2026-06-30 - moedas em espera resumidas por jogo
+
+- O que foi alterado:
+  - o card `Moedas em espera` deixou de detalhar tipo de aposta ou buff;
+  - agora ele agrupa por jogo e mostra apenas o confronto e a quantidade total de moedas pendentes naquele jogo;
+  - o saldo do card e o saldo parcial geral foram mantidos.
+- Por que foi alterado:
+  - simplificar a leitura das moedas ainda pendentes em jogos futuros.
+- Arquivos modificados:
+  - `design-lab.html`
+  - `AGENTS.md`
+- Impacto no bolao:
+  - alteracao apenas visual/local no historico de moedas;
+  - nao altera saldos gravados, regras, pontuacao, ranking, palpites, Supabase, API, Vercel ou GitHub.
+- Areas afetadas:
+  - visual/moedas: afetado.
+- Testes ou verificacoes feitos:
+  - `git diff --check`;
+  - `npm.cmd run build`.
+- Pendencias:
+  - validar visualmente no navegador local antes de publicar.
+
+### Sessao 2026-06-30 - moedas em espera no historico
+
+- O que foi alterado:
+  - o historico de moedas passou a exibir ao final um card `Moedas em espera`;
+  - esse card lista jogos futuros com mercado ainda aberto em que o usuario tem moedas aplicadas em buff ou aposta;
+  - cada detalhe mostra o confronto e o valor pendente;
+  - o saldo do card e o saldo parcial consideram essas moedas em espera e mudam conforme o usuario aplica ou remove moedas nesses jogos.
+- Por que foi alterado:
+  - separar movimentacoes efetivadas de moedas ainda reversiveis em jogos futuros.
+- Arquivos modificados:
+  - `design-lab.html`
+  - `AGENTS.md`
+- Impacto no bolao:
+  - alteracao visual/local no historico de moedas;
+  - nao altera saldos gravados, regras, pontuacao, ranking, palpites, Supabase, API, Vercel ou GitHub.
+- Areas afetadas:
+  - visual/moedas: afetado.
+- Testes ou verificacoes feitos:
+  - `git diff --check`;
+  - `npm.cmd run build`.
+- Pendencias:
+  - validar visualmente no navegador local antes de publicar.
+
+### Sessao 2026-06-30 - titulo de jogo simplificado no historico de moedas
+
+- O que foi alterado:
+  - os cards de jogos no historico de moedas passaram a usar apenas o titulo `A x B`, sem o prefixo `Moedas em`.
+- Por que foi alterado:
+  - deixar o historico mais limpo visualmente.
+- Arquivos modificados:
+  - `design-lab.html`
+  - `AGENTS.md`
+- Impacto no bolao:
+  - alteracao apenas visual/local no historico de moedas;
+  - nao altera saldos, regras, pontuacao, ranking, palpites, Supabase, API, Vercel ou GitHub.
+- Areas afetadas:
+  - visual/moedas: afetado.
+- Testes ou verificacoes feitos:
+  - `git diff --check`;
+  - `npm.cmd run build`.
+- Pendencias:
+  - validar visualmente no navegador local antes de publicar.
+
+### Sessao 2026-06-30 - titulos resumidos no historico de moedas
+
+- O que foi alterado:
+  - o card de missoes no historico de moedas passou a usar o titulo `Missoes resgatadas`;
+  - os cards de jogos passaram a usar o formato `Moedas em A x B`.
+- Por que foi alterado:
+  - deixar os titulos do historico de moedas mais curtos e legiveis.
+- Arquivos modificados:
+  - `design-lab.html`
+  - `AGENTS.md`
+- Impacto no bolao:
+  - alteracao apenas visual/local no historico de moedas;
+  - nao altera saldos, regras, pontuacao, ranking, palpites, Supabase, API, Vercel ou GitHub.
+- Areas afetadas:
+  - visual/moedas: afetado.
+- Testes ou verificacoes feitos:
+  - `git diff --check`;
+  - `npm.cmd run build`.
+- Pendencias:
+  - validar visualmente no navegador local antes de publicar.
+
+### Sessao 2026-06-30 - saldo parcial no historico de moedas
+
+- O que foi alterado:
+  - cada card do historico de moedas passou a exibir abaixo do saldo do card a linha `S. Parcial: X 🪙`;
+  - o saldo parcial e calculado cronologicamente conforme a ordem dos cards;
+  - o texto do saldo parcial usa fonte menor e cinza com 50% de transparencia.
+- Por que foi alterado:
+  - facilitar a conferencia do saldo acumulado ao longo do historico.
+- Arquivos modificados:
+  - `design-lab.html`
+  - `AGENTS.md`
+- Impacto no bolao:
+  - alteracao apenas visual/local no historico de moedas;
+  - nao altera saldos, regras, pontuacao, ranking, palpites, Supabase, API, Vercel ou GitHub.
+- Areas afetadas:
+  - visual/moedas: afetado.
+- Testes ou verificacoes feitos:
+  - `git diff --check`;
+  - `npm.cmd run build`.
+- Pendencias:
+  - validar visualmente no navegador local antes de publicar.
+
+### Sessao 2026-06-30 - historico de moedas agrupado por jogo
+
+- O que foi alterado:
+  - no historico de moedas, gastos e retornos de moedas ligados a jogos passaram a ser agrupados em um unico card por confronto;
+  - o titulo do card usa o formato `Moedas no jogo A x B`;
+  - a data permanece abaixo do titulo, sem incluir o texto de resultado da aposta;
+  - cada card detalha apostas, retornos e buffs daquele jogo, com o saldo final do jogo exibido a direita.
+- Por que foi alterado:
+  - facilitar a conferencia das movimentacoes de moedas por partida.
+- Arquivos modificados:
+  - `design-lab.html`
+  - `AGENTS.md`
+- Impacto no bolao:
+  - alteracao visual/local no historico de moedas;
+  - nao altera saldos, pontuacao, ranking, palpites, Supabase, API, Vercel ou GitHub.
+- Areas afetadas:
+  - visual/moedas: afetado.
+- Testes ou verificacoes feitos:
+  - `git diff --check`;
+  - `npm.cmd run build`.
+- Pendencias:
+  - validar visualmente no navegador local antes de publicar.
+
+### Sessao 2026-06-30 - retrospecto sem abreviacao no ranking
+
+- O que foi alterado:
+  - removida a abreviacao `aproveit.` do ranking;
+  - o ranking passou a mostrar somente os numeros do retrospecto no formato `placar exato - vencedor/empate - erro`;
+  - a publicacao foi feita isoladamente por uma worktree limpa para nao incluir alteracoes locais de historico de moedas.
+- Por que foi alterado:
+  - deixar a linha do ranking mais limpa e direta no celular.
+- Arquivos modificados:
+  - `design-lab.html`
+  - `AGENTS.md`
+- Impacto no bolao:
+  - alteracao apenas visual no ranking;
+  - nao altera pontuacao, regras, palpites, usuarios, Supabase, API, moedas ou GitHub.
+- Areas afetadas:
+  - visual/ranking: afetado;
+  - Vercel: publicado somente este ajuste visual.
+- Testes ou verificacoes feitos:
+  - `git status`;
+  - leitura do `AGENTS.md`;
+  - leitura dos commits recentes;
+  - validacao na worktree limpa com `node --check` do JavaScript embutido;
+  - `git diff --check`;
+  - `npm.cmd run build`;
+  - deploy de producao na Vercel para `bolao-copa2026`;
+  - verificacao do HTML publicado confirmando ausencia de `aproveit.`.
+- Pendencias:
+  - nenhuma para este ajuste;
+  - alteracoes locais de historico de moedas continuam nao publicadas.
+
+### Sessao 2026-06-29 - botao ver do ranking no apelido
+
+- O que foi alterado:
+  - no ranking, o selo/botao `ver` saiu da coluna de pontos e passou a aparecer antes do apelido do participante;
+  - a coluna de pontos ficou sem o selo sobreposto, evitando cobrir a pontuacao no celular;
+  - o botao `ver` usa o mesmo detalhamento de pontos ja existente.
+- Por que foi alterado:
+  - corrigir sobreposicao visual no mobile em que o `VER` tampava os pontos.
+- Arquivos modificados:
+  - `design-lab.html`
+  - `AGENTS.md`
+- Impacto no bolao:
+  - alteracao visual no ranking;
+  - nao altera pontuacao, ranking real, moedas, historico de moedas, palpites, usuarios, Supabase, API ou GitHub.
+- Areas afetadas:
+  - visual/ranking: afetado;
+  - Vercel: publicado em producao somente com este ajuste visual;
+  - historico de moedas: nao publicado nesta alteracao.
+- Testes ou verificacoes feitos:
+  - worktree temporaria limpa baseada em `HEAD` para publicar somente este ajuste;
+  - verificacao de sintaxe do JavaScript embutido como modulo ESM;
+  - `git diff --check`;
+  - `npm.cmd run build`;
+  - validacao mobile local em `127.0.0.1:4174`;
+  - deploy de producao no projeto correto `bolao-copa2026`;
+  - validacao mobile em `https://bolao-copa2026-alpha.vercel.app/design-lab.html`, confirmando `overlap: false` entre `ver` e pontos.
+- Pendencias:
+  - nenhuma para o ajuste visual publicado;
+  - as alteracoes locais de historico de moedas continuam nao publicadas.
+
+### Sessao 2026-06-29 - aposta e ganho de moeda no mesmo card
+
+- O que foi alterado:
+  - no historico de moedas, a movimentacao de `Aposta de moeda` passou a reunir no mesmo card o gasto da aposta e o ganho liquidado do mesmo jogo;
+  - o card mostra o valor liquido no lado direito e detalha internamente `Aposta: -X` e `Ganho: +Y` ou `Ganho: pendente`;
+  - a exibicao separada `Ganho da aposta de moeda` deixou de ser criada como um segundo card.
+- Por que foi alterado:
+  - facilitar a conferencia visual de cada aposta de moeda por jogo.
+- Arquivos modificados:
+  - `design-lab.html`
+  - `AGENTS.md`
+- Impacto no bolao:
+  - alteracao apenas visual/organizacional no historico de moedas;
+  - nao altera saldo real, ranking, pontuacao, palpites, usuarios, Supabase, API, Vercel ou GitHub.
+- Areas afetadas:
+  - visual/moedas: afetado;
+  - demais areas: sem alteracao funcional.
+- Testes ou verificacoes feitos:
+  - `git status`;
+  - leitura dos commits recentes;
+  - verificacao de sintaxe do JavaScript embutido como modulo ESM;
+  - `git diff --check`;
+  - `npm.cmd run build`.
+- Pendencias:
+  - validar visualmente no navegador local logado em usuario com aposta de moeda.
+
+### Sessao 2026-06-29 - selecoes no historico de moedas
+
+- O que foi alterado:
+  - no historico de moedas, linhas que referenciam `Jogo X` agora tambem mostram as selecoes da partida.
+- Por que foi alterado:
+  - facilitar a conferencia das movimentacoes de moedas ligadas a buffs e apostas.
+- Arquivos modificados:
+  - `design-lab.html`
+  - `AGENTS.md`
+- Impacto no bolao:
+  - alteracao apenas visual/consultiva na aba Moedas;
+  - nao altera saldos, pontuacao, regras, Supabase, API, Vercel ou GitHub.
+- Areas afetadas:
+  - visual/moedas: afetado.
+- Testes ou verificacoes feitos:
+  - verificacao de sintaxe do JavaScript embutido como modulo ESM;
+  - `git diff --check`;
+  - `npm.cmd run build`.
+- Pendencias:
+  - validar visualmente na previa local.
+
+### Sessao 2026-06-29 - historico pessoal de moedas
+
+- O que foi alterado:
+  - a aba Moedas ganhou uma secao `Historico de moedas` abaixo das missoes;
+  - o historico e reconstruido retroativamente para o usuario logado com base nos dados efetivos salvos;
+  - entram no historico: moedas iniciais, missoes resgatadas, gastos em buffs ativos, apostas de moedas ativas, ganhos de apostas ja liquidadas e ajustes administrativos quando houver auditoria disponivel;
+  - buffs/apostas cancelados nao aparecem, porque nao permanecem em `match_buffs`;
+  - ganhos de aposta so aparecem quando a aposta esta `settled = true`;
+  - quando o saldo atual nao fecha com as transacoes retroativas reconstruiveis, aparece uma linha explicita de reconciliacao `Saldo efetivado sem detalhe retroativo`.
+- Por que foi alterado:
+  - dar transparencia pessoal sobre entradas e saidas de moedas sem criar transacoes falsas para eventos que nao possuem timestamp historico salvo.
+- Arquivos modificados:
+  - `design-lab.html`
+  - `AGENTS.md`
+- Impacto no bolao:
+  - alteracao visual/consultiva na aba Moedas;
+  - nao altera saldo de moedas, missoes, buffs, apostas, usuarios, Supabase, API, Vercel ou GitHub;
+  - nao executa liquidacao de apostas, apenas le dados ja salvos.
+- Areas afetadas:
+  - visual/moedas: afetado;
+  - transparencia pessoal: afetado;
+  - banco/Supabase: sem patch SQL nesta alteracao.
+- Testes ou verificacoes feitos:
+  - `git status`;
+  - leitura dos commits recentes;
+  - revisao dos trechos de missoes, buffs, coin-bet e auditoria admin;
+  - consulta read-only de `app_users` para confirmar formato de `mission_claims`;
+  - verificacao de sintaxe do JavaScript embutido como modulo ESM;
+  - `git diff --check`;
+  - `npm.cmd run build`.
+- Pendencias:
+  - validar visualmente na aba Moedas com usuarios reais apos deploy.
+
 ### Sessao 2026-06-29 - liberar detalhamento de pontos para todos
 
 - O que foi alterado:

@@ -244,10 +244,8 @@
       min-height: 58px;
       border: 1px solid rgba(255, 255, 255, 0.14);
       border-radius: 16px;
-      display: inline-grid;
-      place-items: center;
-      gap: 2px;
-      padding: 8px 20px;
+      display: inline-block;
+      padding: 5px 14px;
       background:
         linear-gradient(180deg, rgba(255, 234, 162, 0.24), rgba(173, 126, 18, 0.14) 24%, rgba(124, 81, 5, 0.9) 100%),
         linear-gradient(135deg, #a16207, #d4a017 52%, #6b4f05);
@@ -269,12 +267,14 @@
     }
 
     .coins-card::before {
-      content: "";
+      content: "🪙";
       position: absolute;
       inset: 0;
-      background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.18), transparent 32%),
-        radial-gradient(circle at 22% 18%, rgba(255, 255, 255, 0.16), transparent 26%);
+      display: grid;
+      place-items: center;
+      font-size: clamp(3.7rem, 7vw, 5rem);
+      line-height: 1;
+      opacity: 0.8;
       pointer-events: none;
     }
 
@@ -289,16 +289,31 @@
     }
 
     .coins-card-value {
-      font-size: 0.58rem;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 1;
+      font-size: 3.22rem;
       line-height: 1;
-      letter-spacing: 0.08em;
-      color: rgba(255, 249, 219, 0.92);
+      letter-spacing: 0;
+      color: #fffbed;
       text-shadow: 0 2px 6px rgba(0, 0, 0, 0.42);
+      justify-self: center;
+      text-align: center;
     }
 
     .coins-card-label {
       display: block;
+      position: absolute;
+      left: 50%;
+      bottom: 5px;
+      transform: translateX(-50%);
+      z-index: 1;
       line-height: 1;
+      font-size: 0.58rem;
+      letter-spacing: 0.12em;
+      margin-top: 0;
     }
 
     .auth-modal {
@@ -656,11 +671,13 @@
         linear-gradient(180deg, rgba(110, 205, 98, 0.24), rgba(44, 112, 37, 0.12) 28%, rgba(15, 73, 12, 0.88) 100%),
         linear-gradient(135deg, #1b5f18, #0f490c 52%, #082706);
       color: #d4f7cc;
-      font-size: 0.64rem;
+      font-size: clamp(0.78rem, 1.35vw, 1.08rem);
       font-weight: 900;
-      letter-spacing: 0.12em;
+      letter-spacing: 0.1em;
       text-transform: uppercase;
       text-align: center;
+      line-height: 1.14;
+      text-wrap: balance;
       box-shadow:
         0 10px 18px rgba(0, 0, 0, 0.36),
         inset 0 1px 0 rgba(255, 255, 255, 0.22);
@@ -1577,7 +1594,7 @@
       padding: 10px 14px;
       border-radius: 16px;
       display: grid;
-      grid-template-columns: minmax(0, 1fr) auto auto;
+      grid-template-columns: minmax(0, 1fr) minmax(58px, 0.2fr) minmax(180px, 0.8fr);
       align-items: center;
       gap: 14px;
       background:
@@ -1647,7 +1664,8 @@
     .mission-progress {
       position: relative;
       z-index: 1;
-      min-width: 88px;
+      width: 100%;
+      min-width: 0;
       min-height: 40px;
       padding: 8px 12px;
       border-radius: 14px;
@@ -1698,8 +1716,8 @@
     .mission-claim {
       position: relative;
       z-index: 1;
-      width: 172px;
-      min-width: 172px;
+      width: 100%;
+      min-width: 0;
       min-height: 40px;
       padding: 8px 14px;
       border-radius: 14px;
@@ -1745,6 +1763,248 @@
       box-shadow:
         0 12px 20px rgba(0,0,0,0.3),
         inset 0 1px 0 rgba(255,255,255,0.16);
+    }
+
+    .coins-history-list {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      padding-top: 8px;
+    }
+
+    .coins-history-card {
+      width: 100%;
+      min-height: 54px;
+      padding: 10px 14px;
+      border-radius: 16px;
+      display: block;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.13), rgba(255,255,255,0.04) 18%, rgba(255,255,255,0.01) 46%, rgba(0,0,0,0.22) 100%),
+        linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01) 42%, rgba(0,0,0,0.16));
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow:
+        0 12px 24px rgba(0, 0, 0, 0.34),
+        inset 0 1px 0 rgba(255,255,255,0.14);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .mission-card.is-claimed {
+      opacity: 0.5;
+    }
+
+    .coins-history-toggle {
+      width: 100%;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 12px;
+      border: 0;
+      background: transparent;
+      color: inherit;
+      font: inherit;
+      text-align: left;
+      padding: 0;
+      cursor: pointer;
+    }
+
+    .coins-history-toggle:focus-visible {
+      outline: 1px solid rgba(253,230,138,0.42);
+      outline-offset: 4px;
+      border-radius: 8px;
+    }
+
+    .coins-history-main {
+      min-width: 0;
+    }
+
+    .coins-history-content {
+      display: none;
+      padding-top: 7px;
+    }
+
+    .coins-history-card.is-expanded .coins-history-content {
+      display: block;
+    }
+
+    .coins-history-caret {
+      color: rgba(226,232,240,0.58);
+      font-size: 0.78rem;
+      line-height: 1;
+      transition: transform 160ms ease;
+    }
+
+    .coins-history-card.is-expanded .coins-history-caret {
+      transform: rotate(180deg);
+    }
+
+    .coins-history-title {
+      margin: 0;
+      color: #f8fafc;
+      font-size: 0.82rem;
+      font-weight: 900;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .coins-history-match-title {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      min-width: 0;
+      max-width: 100%;
+      white-space: nowrap;
+    }
+
+    .coins-history-team {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .coins-history-flag {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      overflow: hidden;
+      flex: 0 0 16px;
+      border: 1px solid rgba(255,255,255,0.32);
+      background: rgba(15,23,42,0.72);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.18),
+        0 2px 6px rgba(0,0,0,0.28);
+    }
+
+    .coins-history-flag img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+    }
+
+    .coins-history-flag-fallback {
+      width: 100%;
+      height: 100%;
+      display: grid;
+      place-items: center;
+      color: rgba(226,232,240,0.82);
+      font-size: 0.42rem;
+      font-weight: 900;
+      letter-spacing: 0;
+    }
+
+    .coins-history-meta {
+      margin: 2px 0 0;
+      color: rgba(226,232,240,0.62);
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+    }
+
+    .coins-history-details {
+      margin: 5px 0 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+
+    .coins-history-details.is-waiting {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 6px;
+    }
+
+    .coins-history-detail {
+      padding: 3px 7px;
+      border-radius: 999px;
+      background: rgba(15,23,42,0.34);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: rgba(226,232,240,0.76);
+      font-size: 0.64rem;
+      font-weight: 900;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .coins-history-detail.is-waiting {
+      width: fit-content;
+      max-width: 100%;
+      color: rgba(203,213,225,0.5);
+      border-color: rgba(148,163,184,0.16);
+      background: rgba(15,23,42,0.22);
+    }
+
+    .coins-history-detail.is-waiting.is-negative {
+      color: rgba(203,213,225,0.5);
+      border-color: rgba(148,163,184,0.16);
+    }
+
+    .coins-history-detail.is-waiting .coins-history-match-title {
+      gap: 4px;
+    }
+
+    .coins-history-detail.is-waiting .coins-history-team {
+      color: rgba(203,213,225,0.5);
+    }
+
+    .coins-history-detail.is-positive {
+      color: #86efac;
+      border-color: rgba(134,239,172,0.24);
+    }
+
+    .coins-history-detail.is-negative {
+      color: #fca5a5;
+      border-color: rgba(252,165,165,0.24);
+    }
+
+    .coins-history-amount {
+      color: rgba(226,232,240,0.82);
+      font-size: 0.92rem;
+      font-weight: 900;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+    }
+
+    .coins-history-amount.is-positive {
+      color: #86efac;
+    }
+
+    .coins-history-amount.is-negative {
+      color: #fca5a5;
+    }
+
+    .coins-history-balance {
+      display: flex;
+      flex-direction: row;
+      align-items: flex-end;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    .coins-history-expanded-balance {
+      margin-top: 6px;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .coins-history-partial {
+      color: rgba(203,213,225,0.5);
+      font-size: 0.62rem;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      white-space: nowrap;
+    }
+
+    .coins-history-empty {
+      padding: 14px 12px;
+      color: rgba(226,232,240,0.62);
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      text-align: center;
+      text-transform: uppercase;
     }
 
     .ranking-card--gold {
@@ -1904,7 +2164,59 @@
       font-weight: 900;
       letter-spacing: 0.04em;
       text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 6px;
       white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .ranking-view-chip {
+      flex: 0 0 auto;
+      padding: 1px 6px;
+      border-radius: 999px;
+      border: 1px solid rgba(253, 230, 138, 0.22);
+      background: rgba(253, 230, 138, 0.08);
+      color: rgba(253, 230, 138, 0.74);
+      font-size: 0.52rem;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      line-height: 1.35;
+      text-transform: uppercase;
+      text-shadow: none;
+    }
+
+    .ranking-view-button {
+      min-width: 0;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 0;
+      background: transparent;
+      color: inherit;
+      font: inherit;
+      letter-spacing: inherit;
+      text-transform: inherit;
+      text-shadow: inherit;
+      padding: 0;
+      cursor: pointer;
+    }
+
+    .ranking-view-button:hover .ranking-view-chip,
+    .ranking-view-button:focus-visible .ranking-view-chip {
+      background: rgba(253, 230, 138, 0.14);
+      box-shadow:
+        0 0 14px rgba(253, 230, 138, 0.12),
+        inset 0 0 0 1px rgba(253, 230, 138, 0.18);
+    }
+
+    .ranking-view-button:focus-visible {
+      outline: none;
+    }
+
+    .ranking-name-text {
+      min-width: 0;
       overflow: hidden;
       text-overflow: ellipsis;
     }
@@ -1979,24 +2291,6 @@
       transform: translateY(-1px);
     }
 
-    .ranking-points-button::after {
-      content: "ver";
-      position: absolute;
-      right: 2px;
-      top: 50%;
-      transform: translateY(-50%);
-      padding: 1px 6px;
-      border-radius: 999px;
-      border: 1px solid rgba(253, 230, 138, 0.22);
-      background: rgba(253, 230, 138, 0.08);
-      color: rgba(253, 230, 138, 0.74);
-      font-size: 0.52rem;
-      font-weight: 900;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      text-shadow: none;
-    }
-
     .ranking-extra-points {
       color: #86efac;
     }
@@ -2050,13 +2344,13 @@
     .ranking-card--inactive .ranking-metric,
     .ranking-card--inactive .ranking-metric--points,
     .ranking-card--inactive .ranking-points-button,
-    .ranking-card--inactive .ranking-points-button::after,
+    .ranking-card--inactive .ranking-view-chip,
     .ranking-card--inactive .ranking-extra-points {
       color: rgba(203, 213, 225, 0.72);
       text-shadow: 0 3px 10px rgba(0, 0, 0, 0.42);
     }
 
-    .ranking-card--inactive .ranking-points-button::after {
+    .ranking-card--inactive .ranking-view-chip {
       border-color: rgba(148, 163, 184, 0.24);
       background: rgba(148, 163, 184, 0.08);
     }
@@ -5480,14 +5774,21 @@
         border-radius: 14px;
       }
 
-      .coins-card-value,
       .login-card-user {
         font-size: 0.5rem;
       }
 
-      .coins-card-label,
       .login-card-label {
         font-size: 0.72rem;
+        letter-spacing: 0.1em;
+      }
+
+      .coins-card-value {
+        font-size: 2.68rem;
+      }
+
+      .coins-card-label {
+        font-size: 0.5rem;
         letter-spacing: 0.1em;
       }
 
@@ -5498,8 +5799,9 @@
       .header-edition {
         min-height: 42px;
         padding: 6px 8px;
-        font-size: 0.52rem;
-        line-height: 1.15;
+        font-size: clamp(0.62rem, 2.35vw, 0.78rem);
+        line-height: 1.12;
+        letter-spacing: 0.08em;
       }
 
       .header h1 {
@@ -5784,7 +6086,7 @@
       }
 
       .mission-card {
-        grid-template-columns: minmax(0, 1fr) auto auto;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 4fr);
         gap: 8px;
         padding: 10px 10px 12px;
       }
@@ -5800,15 +6102,16 @@
       }
 
       .mission-progress {
-        min-width: 72px;
+        width: 100%;
+        min-width: 0;
         min-height: 34px;
         padding: 6px 8px;
         font-size: 0.66rem;
       }
 
       .mission-claim {
-        width: 132px;
-        min-width: 132px;
+        width: 100%;
+        min-width: 0;
         min-height: 34px;
         padding: 6px 8px;
         font-size: 0.62rem;
@@ -6288,6 +6591,17 @@
       color: rgba(255,255,255,0.42);
       white-space: nowrap;
     }
+
+    .missions-section-header--history {
+      margin-top: 1.2em;
+    }
+
+    .missions-section-header--history .missions-section-header-label {
+      color: #ef4444;
+      font-size: 0.92rem;
+      font-weight: 900;
+      text-shadow: 0 3px 10px rgba(0,0,0,0.46);
+    }
   </style>
 </head>
 <body>
@@ -6298,7 +6612,7 @@
           <span class="coins-card-value" id="coins-card-value">0</span>
           <span class="coins-card-label">Moedas</span>
         </div>
-        <span class="header-edition">Edição especial entre amigos</span>
+        <span class="header-edition">Edição especial<br>entre amigos</span>
         <div class="account-switcher">
           <a class="login-card" href="#" aria-label="Login">
             <span class="login-card-avatar" id="login-card-avatar" aria-hidden="true"></span>
@@ -6638,6 +6952,12 @@
             <div class="mission-progress is-neutral">0/1</div>
             <button class="mission-claim is-locked" type="button" disabled>🪙 Resgatar</button>
           </article>
+        </div>
+        <div class="missions-section-header missions-section-header--history">
+          <span class="missions-section-header-label">Histórico de moedas</span>
+        </div>
+        <div class="coins-history-list" id="coins-history-list">
+          <p class="coins-history-empty">Faça login para ver seu histórico de moedas.</p>
         </div>
       </section>
       <section class="tab-panel is-hidden is-empty" id="tab-filtros" aria-label="Filtros administrativos">
@@ -7625,6 +7945,7 @@
     const pointsDetailBody = document.getElementById("points-detail-body");
     const coinsCardValue = document.getElementById("coins-card-value");
     const missionsTabCoins = document.getElementById("missions-tab-coins");
+    const coinsHistoryList = document.getElementById("coins-history-list");
     const extrasNavBadge = document.getElementById("extras-nav-badge");
     const missionsNavBadge = document.getElementById("missions-nav-badge");
     const statusFilter = document.getElementById("filter-status");
@@ -7650,6 +7971,7 @@
     const authFeedback = document.getElementById("auth-feedback");
     const welcomeModal = document.getElementById("welcome-modal");
     const welcomeButton = document.getElementById("welcome-button");
+    const missionsList = document.querySelector(".missions-list");
     const missionCards = Array.from(document.querySelectorAll(".mission-card"));
     const rankingRows = document.getElementById("ranking-rows");
     const rankingEmpty = document.getElementById("ranking-empty");
@@ -8004,6 +8326,30 @@
       "cancelar-adversario": { reward: 1, total: 1 }
     };
 
+    const coinHistoryLegacyAdjustments = {
+      lordewel: [
+        {
+          title: "Buff legado removido",
+          meta: "Migração de buffs antigos · detalhe original não registrado",
+          amount: -2,
+        },
+      ],
+      carneiro: [
+        {
+          title: "Buff legado removido",
+          meta: "Migração de buffs antigos · detalhe original não registrado",
+          amount: -2,
+        },
+      ],
+      tdniels: [
+        {
+          title: "Buff legado removido",
+          meta: "Migração de buffs antigos · detalhe original não registrado",
+          amount: -2,
+        },
+      ],
+    };
+
     const missionOrder = [
       "finalizar-cadastro",
       "palpitar-primeiro-jogo",
@@ -8264,6 +8610,414 @@
       if (buffsCoins) {
         buffsCoins.textContent = `Moedas: ${getCurrentUserCoins()}`;
       }
+      refreshCoinHistoryIfVisible();
+    }
+
+    function getBuffCoinCost(buff) {
+      if (!buff) return 0;
+      if (buff.buff_id === "coin-bet") {
+        const amount = Number.parseInt(buff.target_nickname || "1", 10);
+        return Number.isFinite(amount) && amount > 0 ? amount : 1;
+      }
+      return buffCatalog.find((entry) => entry.id === buff.buff_id)?.cost || 0;
+    }
+
+    function formatCoinHistoryDate(value, fallback = "Data não registrada") {
+      if (!value) return fallback;
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return fallback;
+      return formatDateTimeShort(value);
+    }
+
+    function formatCoinAmount(amount) {
+      if (amount === null || amount === undefined) return "";
+      const numeric = Number(amount);
+      if (!Number.isFinite(numeric)) return "";
+      if (numeric > 0) return `+${numeric} 🪙`;
+      if (numeric < 0) return `${numeric} 🪙`;
+      return "0 🪙";
+    }
+
+    function addCoinHistoryEntry(entries, entry) {
+      entries.push({
+        sortTime: Number.isFinite(new Date(entry.sortDate || entry.date).getTime())
+          ? new Date(entry.sortDate || entry.date).getTime()
+          : 0,
+        order: entries.length,
+        ...entry,
+      });
+    }
+
+    function getMissionHistoryTitle(missionId) {
+      const card = missionCards.find((missionCard) => missionCard.dataset.missionId === missionId);
+      const title = card?.querySelector(".mission-title")?.textContent?.trim();
+      return title || missionId;
+    }
+
+    function renderCoinHistory(entries) {
+      if (!coinsHistoryList) return;
+      if (!getCurrentUser()?.username) {
+        coinsHistoryList.innerHTML = `<p class="coins-history-empty">Faça login para ver seu histórico de moedas.</p>`;
+        return;
+      }
+      if (!entries.length) {
+        coinsHistoryList.innerHTML = `<p class="coins-history-empty">Nenhuma movimentação de moedas encontrada.</p>`;
+        return;
+      }
+
+      let partialBalance = 0;
+      coinsHistoryList.innerHTML = entries
+        .sort((left, right) => left.sortTime - right.sortTime || left.order - right.order)
+        .map((entry) => {
+          partialBalance += Number(entry.amount || 0);
+          const amountClass = Number(entry.amount || 0) > 0
+            ? " is-positive"
+            : Number(entry.amount || 0) < 0 ? " is-negative" : "";
+          const amountText = entry.amountText || formatCoinAmount(entry.amount);
+          const titleMarkup = entry.titleMarkup || escapeHtml(entry.title);
+          const detailsMarkup = Array.isArray(entry.details) && entry.details.length
+            ? `
+                <div class="coins-history-details${entry.detailsClass ? ` ${escapeHtml(entry.detailsClass)}` : ""}">
+                  ${entry.details.map((detail) => {
+                    const detailClass = Number(detail.amount || 0) > 0
+                      ? " is-positive"
+                      : Number(detail.amount || 0) < 0 ? " is-negative" : "";
+                    const customClass = detail.className ? ` ${escapeHtml(detail.className)}` : "";
+                    return `<span class="coins-history-detail${detailClass}${customClass}">${detail.labelMarkup || escapeHtml(detail.label)}</span>`;
+                  }).join("")}
+                </div>
+              `
+            : "";
+          const metaMarkup = entry.meta
+            ? `<p class="coins-history-meta">${escapeHtml(entry.meta)}</p>`
+            : "";
+          return `
+            <article class="coins-history-card">
+              <button class="coins-history-toggle" type="button" aria-expanded="false">
+                <span class="coins-history-main">
+                  <span class="coins-history-title">${titleMarkup}</span>
+                </span>
+                <span class="coins-history-balance">
+                  <span class="coins-history-amount${amountClass}">${escapeHtml(amountText)}</span>
+                  <span class="coins-history-caret" aria-hidden="true">▾</span>
+                </span>
+              </button>
+              <div class="coins-history-content">
+                ${metaMarkup}
+                ${detailsMarkup}
+                <div class="coins-history-expanded-balance">
+                  <span class="coins-history-partial">S. Parcial: ${escapeHtml(String(partialBalance))} 🪙</span>
+                </div>
+              </div>
+            </article>
+          `;
+        })
+        .join("");
+    }
+
+    function getCoinBetAward(match, prediction, betAmount = 1) {
+      if (!match || !prediction || match.score_home == null || match.score_away == null) {
+        return { amount: 0, outcome: "loss" };
+      }
+      const exactHit = Number(prediction.home_score) === Number(match.score_home)
+        && Number(prediction.away_score) === Number(match.score_away);
+      if (exactHit) return { amount: betAmount * 3, outcome: "Placar exato" };
+      if (hasSameResultByScore(prediction.home_score, prediction.away_score, match.score_home, match.score_away)) {
+        return { amount: betAmount * 2, outcome: "Resultado certo" };
+      }
+      return { amount: 0, outcome: "Erro" };
+    }
+
+    function getCoinHistoryBuffLabel(buffId) {
+      return {
+        "palpite-duplo": "Dobrou",
+        "draw-protected": "Proteger",
+        "zerar-adversario": "Anular",
+        "meia-adversario": "Meiar",
+      }[buffId] || buffIdToLabel(buffId);
+    }
+
+    function getCoinHistoryMatchTitle(match, fallback) {
+      if (match?.home_team && match?.away_team) {
+        const homeCode = match.home_code || getTeamCodeFromName(match.home_team) || fixTeamEncoding(match.home_team);
+        const awayCode = match.away_code || getTeamCodeFromName(match.away_team) || fixTeamEncoding(match.away_team);
+        return `${homeCode} x ${awayCode}`;
+      }
+      return fallback || "Jogo sem identificação";
+    }
+
+    function buildCoinHistoryTeamTitlePart(code = "", teamName = "", flagSide = "left") {
+      const safeCode = escapeHtml(code || "?");
+      const safeTeamName = escapeHtml(teamName || code || "Seleção");
+      const flagUrl = getFlagUrl(code);
+      const flagMarkup = flagUrl
+        ? `<span class="coins-history-flag"><img src="${flagUrl}" alt="Bandeira de ${safeTeamName}" loading="lazy"></span>`
+        : `<span class="coins-history-flag"><span class="coins-history-flag-fallback">${safeCode.slice(0, 2)}</span></span>`;
+      return flagSide === "right"
+        ? `<span class="coins-history-team"><span>${safeCode}</span>${flagMarkup}</span>`
+        : `<span class="coins-history-team">${flagMarkup}<span>${safeCode}</span></span>`;
+    }
+
+    function buildCoinHistoryMatchTitleMarkup(match, fallback) {
+      if (!match?.home_team || !match?.away_team) {
+        return escapeHtml(fallback || "Jogo sem identificação");
+      }
+      const homeCode = match.home_code || getTeamCodeFromName(match.home_team) || "?";
+      const awayCode = match.away_code || getTeamCodeFromName(match.away_team) || "?";
+      return `
+        <span class="coins-history-match-title">
+          <span>Moedas em</span>
+          ${buildCoinHistoryTeamTitlePart(homeCode, match.home_team, "right")}
+          <span>x</span>
+          ${buildCoinHistoryTeamTitlePart(awayCode, match.away_team)}
+        </span>
+      `;
+    }
+
+    function buildWaitingCoinDetailMarkup(match, fallback, amount) {
+      return `${buildCoinHistoryMatchTitleMarkup(match, fallback)} <span>${escapeHtml(formatCoinAmount(amount))}</span>`;
+    }
+
+    function isMatchOpenForCoinHistory(match) {
+      if (!match) return false;
+      const status = String(match.status || "").toLowerCase();
+      const hasOfficialResult = match.score_home != null && match.score_away != null;
+      const startsAt = new Date(match.starts_at || "").getTime();
+      const marketOpen = Number.isFinite(startsAt)
+        ? Date.now() < startsAt - 30 * 60 * 1000
+        : false;
+      return !hasOfficialResult && status !== "completed" && status !== "cancelled" && marketOpen;
+    }
+
+    function getCoinHistoryMovementDate(buff, match) {
+      if (buff?.buff_id !== "coin-bet" && match?.starts_at) {
+        const startsAt = new Date(match.starts_at).getTime();
+        if (Number.isFinite(startsAt)) {
+          return new Date(startsAt - 60 * 60 * 1000).toISOString();
+        }
+      }
+      return buff?.created_at || match?.starts_at || "";
+    }
+
+    async function loadCoinHistory() {
+      if (!coinsHistoryList) return;
+      const currentUser = getCurrentUser();
+      if (!currentUser?.id || currentUser.isAdmin || !BACKEND_ENABLED) {
+        renderCoinHistory([]);
+        return;
+      }
+
+      coinsHistoryList.innerHTML = `<p class="coins-history-empty">Carregando histórico de moedas...</p>`;
+
+      try {
+        const [userResponse, buffsResponse, predictionsResponse, auditResponse] = await Promise.all([
+          supabase
+            .from("app_users")
+            .select("id,nickname,coins,created_at,updated_at,mission_claims")
+            .eq("id", currentUser.id)
+            .maybeSingle(),
+          supabase
+            .from("match_buffs")
+            .select("id,user_id,match_id,buff_id,target_nickname,settled,created_at")
+            .eq("user_id", currentUser.id),
+          supabase
+            .from("predictions")
+            .select("match_id,home_score,away_score,winner_team")
+            .eq("user_id", currentUser.id),
+          supabase
+            .from("admin_audit_log")
+            .select("created_at,action_key,summary,payload,target_user_id")
+            .eq("target_user_id", currentUser.id)
+            .in("action_key", ["coins_adjusted", "coins_set"]),
+        ]);
+        if (userResponse.error) throw userResponse.error;
+        if (buffsResponse.error) throw buffsResponse.error;
+        if (predictionsResponse.error) throw predictionsResponse.error;
+
+        const user = userResponse.data;
+        if (!user) {
+          renderCoinHistory([]);
+          return;
+        }
+
+        const entries = [];
+        addCoinHistoryEntry(entries, {
+          title: "Moedas iniciais",
+          meta: `Cadastro · ${formatCoinHistoryDate(user.created_at)}`,
+          amount: 0,
+          date: user.created_at,
+        });
+
+        let missionRewardsTotal = 0;
+        Object.entries(user.mission_claims || {}).forEach(([missionId, claimed]) => {
+          if (!claimed) return;
+          const reward = missionDefinitions[missionId]?.reward;
+          if (!reward) return;
+          missionRewardsTotal += reward;
+        });
+        if (missionRewardsTotal > 0) {
+          addCoinHistoryEntry(entries, {
+            title: "Missões resgatadas",
+            meta: "Missões resgatadas · data original não registrada",
+            amount: missionRewardsTotal,
+            sortDate: user.created_at,
+          });
+        }
+
+        const legacyAdjustments = coinHistoryLegacyAdjustments[String(user.nickname || "").toLowerCase()] || [];
+        legacyAdjustments.forEach((adjustment) => {
+          addCoinHistoryEntry(entries, {
+            title: adjustment.title,
+            meta: adjustment.meta,
+            amount: adjustment.amount,
+            sortDate: user.created_at,
+            details: [
+              {
+                label: `${adjustment.title}: ${formatCoinAmount(adjustment.amount)}`,
+                amount: adjustment.amount,
+              },
+            ],
+          });
+        });
+
+        const matchById = new Map(matchRecords.map((match) => [match.id, match]));
+        const predictionByMatchId = new Map((predictionsResponse.data || []).map((prediction) => [prediction.match_id, prediction]));
+        const coinEntriesByMatchId = new Map();
+        const waitingCoinsByMatch = new Map();
+        let waitingCoinAmount = 0;
+
+        (buffsResponse.data || []).forEach((buff) => {
+          const match = matchById.get(buff.match_id);
+          const cost = getBuffCoinCost(buff);
+          const movementDetails = [];
+          let movementAmount = 0;
+          const matchTitle = getCoinHistoryMatchTitle(match, buff.match_id);
+          const isWaitingMovement = isMatchOpenForCoinHistory(match);
+          if (buff.buff_id === "coin-bet") {
+            if (isWaitingMovement) {
+              waitingCoinAmount -= cost;
+              const currentWaiting = waitingCoinsByMatch.get(buff.match_id) || { title: matchTitle, match, matchId: buff.match_id, amount: 0 };
+              currentWaiting.amount -= cost;
+              waitingCoinsByMatch.set(buff.match_id, currentWaiting);
+              return;
+            }
+            if (!buff.settled) {
+              movementAmount = -cost;
+              movementDetails.push({ label: `Aposta: ${formatCoinAmount(-cost)}`, amount: -cost });
+              movementDetails.push({ label: "Retorno: pendente", amount: 0 });
+            } else {
+            const award = buff.settled
+              ? getCoinBetAward(match, predictionByMatchId.get(buff.match_id), cost)
+              : { amount: 0, outcome: "Pendente" };
+            movementAmount = award.amount - cost;
+            movementDetails.push({ label: `Aposta: ${formatCoinAmount(-cost)}`, amount: -cost });
+            if (award.amount > 0) {
+              movementDetails.push({ label: `Retorno: ${formatCoinAmount(award.amount)}`, amount: award.amount });
+            } else {
+              movementDetails.push({ label: "Retorno: 0 🪙", amount: 0 });
+            }
+            }
+          } else if (cost > 0) {
+            if (isWaitingMovement) {
+              waitingCoinAmount -= cost;
+              const currentWaiting = waitingCoinsByMatch.get(buff.match_id) || { title: matchTitle, match, matchId: buff.match_id, amount: 0 };
+              currentWaiting.amount -= cost;
+              waitingCoinsByMatch.set(buff.match_id, currentWaiting);
+              return;
+            }
+            movementAmount = -cost;
+            movementDetails.push({ label: `${getCoinHistoryBuffLabel(buff.buff_id)}: ${formatCoinAmount(-cost)}`, amount: -cost });
+          }
+          if (!movementDetails.length) return;
+
+          const existing = coinEntriesByMatchId.get(buff.match_id);
+          const movementDate = getCoinHistoryMovementDate(buff, match);
+          const sortTime = Number.isFinite(new Date(movementDate).getTime())
+            ? new Date(movementDate).getTime()
+            : 0;
+          if (existing) {
+            existing.amount += movementAmount;
+            existing.details.push(...movementDetails);
+            if (sortTime && (!existing.sortTime || sortTime < existing.sortTime)) {
+              existing.sortTime = sortTime;
+              existing.date = movementDate;
+              existing.meta = `Movimentações efetivadas · ${formatCoinHistoryDate(movementDate)}`;
+            }
+          } else {
+            coinEntriesByMatchId.set(buff.match_id, {
+              title: getCoinHistoryMatchTitle(match, buff.match_id),
+              titleMarkup: buildCoinHistoryMatchTitleMarkup(match, buff.match_id),
+              meta: `Movimentações efetivadas · ${formatCoinHistoryDate(movementDate)}`,
+              amount: movementAmount,
+              date: movementDate,
+              sortTime,
+              details: movementDetails,
+            });
+          }
+        });
+        coinEntriesByMatchId.forEach((entry) => addCoinHistoryEntry(entries, entry));
+        if (waitingCoinsByMatch.size) {
+          const waitingCoinDetails = [...waitingCoinsByMatch.values()]
+            .map((entry) => ({
+              label: `${entry.title}: ${formatCoinAmount(entry.amount)}`,
+              labelMarkup: buildWaitingCoinDetailMarkup(entry.match, entry.matchId || entry.title, entry.amount),
+              amount: entry.amount,
+              className: "is-waiting",
+            }));
+          addCoinHistoryEntry(entries, {
+            title: "Moedas em espera",
+            meta: "",
+            amount: waitingCoinAmount,
+            sortDate: "9999-12-31T23:59:59.999Z",
+            detailsClass: "is-waiting",
+            details: waitingCoinDetails,
+          });
+        }
+
+        if (!auditResponse.error) {
+          (auditResponse.data || []).forEach((entry) => {
+            if (entry.action_key === "coins_adjusted") {
+              const delta = Number(entry.payload?.delta);
+              if (!Number.isFinite(delta) || delta === 0) return;
+              addCoinHistoryEntry(entries, {
+                title: "Ajuste manual do ADMIN",
+                meta: `${entry.summary || "Moedas ajustadas"} · ${formatCoinHistoryDate(entry.created_at)}`,
+                amount: delta,
+                date: entry.created_at,
+              });
+            } else if (entry.action_key === "coins_set") {
+              addCoinHistoryEntry(entries, {
+                title: "Saldo definido pelo ADMIN",
+                meta: `${entry.summary || "Saldo definido"} · ${formatCoinHistoryDate(entry.created_at)}`,
+                amountText: `Saldo ${Number(entry.payload?.coins ?? 0)} 🪙`,
+                amount: 0,
+                date: entry.created_at,
+              });
+            }
+          });
+        }
+
+        const reconstructedBalance = entries.reduce((total, entry) => total + Number(entry.amount || 0), 0);
+        const currentBalance = Number(user.coins ?? getCurrentUserCoins());
+        const balanceDiff = currentBalance - reconstructedBalance;
+        if (Number.isFinite(balanceDiff) && balanceDiff !== 0) {
+          addCoinHistoryEntry(entries, {
+            title: "Saldo efetivado sem detalhe retroativo",
+            meta: `Diferença entre histórico reconstruído e saldo atual · ${formatCoinHistoryDate(user.updated_at)}`,
+            amount: balanceDiff,
+            sortDate: user.updated_at,
+          });
+        }
+
+        renderCoinHistory(entries);
+      } catch (error) {
+        console.error(error);
+        coinsHistoryList.innerHTML = `<p class="coins-history-empty">Não foi possível carregar o histórico de moedas.</p>`;
+      }
+    }
+
+    function refreshCoinHistoryIfVisible() {
+      if (activePanel?.id === "tab-moedas") void loadCoinHistory();
     }
 
     function getQuickSwitchTarget(user = getCurrentUser()) {
@@ -9160,13 +9914,17 @@
           ? `<span class="lanterninha-tag" title="Lanterninha">🏮</span>`
           : "";
         const aproveitamentoRecord = getAproveitamentoRecordLabel(entry);
-        const aprovPct = `<span class="ranking-player-aproveit">${aproveitamentoRecord} aproveit.</span>`;
+        const aprovPct = `<span class="ranking-player-aproveit">${aproveitamentoRecord}</span>`;
         const displayRealName = getRankingDisplayRealName(entry.real_name);
+        const nameText = `<span class="ranking-name-text">${escapeHtml(entry.nickname)}${lanterninhaTag}</span>`;
+        const playerNameMarkup = entry.user_id
+          ? `<button class="ranking-view-button" type="button" data-points-user-id="${escapeHtml(entry.user_id)}" data-points-nickname="${escapeHtml(entry.nickname || "")}" data-points-real-name="${escapeHtml(entry.real_name || "")}" data-points-total="${escapeHtml(String(entry.total_points ?? 0))}"><span class="ranking-view-chip">ver</span>${nameText}</button>`
+          : nameText;
         return `
           <div class="ranking-player">
             ${avatarMarkup}
             <div>
-              <p class="ranking-player-name">${escapeHtml(entry.nickname)}${lanterninhaTag}</p>
+              <p class="ranking-player-name">${playerNameMarkup}</p>
               <p class="ranking-player-real${isCurrent ? " ranking-player-you" : ""}">${isCurrent ? "Você • " : ""}${escapeHtml(displayRealName)}${aprovPct ? " " + aprovPct : ""}</p>
             </div>
           </div>
@@ -11756,7 +12514,15 @@
 
     function refreshMissionCards() {
       const currentUser = getCurrentUser();
-      missionCards.forEach((card) => {
+      const cardStates = [];
+      missionCards.forEach((card, cardIndex) => {
+        if (!card.dataset.missionId && missionOrder[cardIndex]) {
+          const missionIdFromOrder = missionOrder[cardIndex];
+          card.dataset.missionId = missionIdFromOrder;
+          card.dataset.missionReward = String(missionDefinitions[missionIdFromOrder]?.reward || 0);
+          card.querySelector(".mission-progress")?.setAttribute("data-mission-progress", "");
+          card.querySelector(".mission-claim")?.setAttribute("data-mission-claim", missionIdFromOrder);
+        }
         const missionId = card.dataset.missionId;
         const progressChip = card.querySelector("[data-mission-progress]");
         const claimButton = card.querySelector("[data-mission-claim]");
@@ -11766,6 +12532,10 @@
         const userRecord = currentUser?.username ? getUserRecord(currentUser.username) : null;
         const claimed = Boolean(userRecord?.missionClaims?.[missionId]);
         const complete = progress.current >= progress.total;
+        const reward = missionDefinitions[missionId]?.reward ?? 0;
+        const ratio = progress.total > 0 ? Math.min(progress.current / progress.total, 1) : 0;
+
+        card.classList.toggle("is-claimed", claimed);
 
         progressChip.textContent = `${progress.current}/${progress.total}`;
         progressChip.classList.remove("is-neutral", "is-close", "is-complete");
@@ -11786,17 +12556,31 @@
 
         if (claimed) {
           claimButton.classList.add("is-claimed");
-          claimButton.textContent = "Resgatado";
+          claimButton.textContent = `${reward} 🪙 Resgatado`;
+          cardStates.push({ card, claimed, complete, ratio, remaining: Math.max(progress.total - progress.current, 0), order: missionOrder.indexOf(missionId) });
           return;
         }
 
-        claimButton.textContent = `${"🪙".repeat(missionDefinitions[missionId].reward)} Resgatar`;
+        claimButton.textContent = `${"🪙".repeat(reward)} Resgatar`;
 
         if (!complete || !currentUser?.username || currentUser?.isAdmin) {
           claimButton.classList.add("is-locked");
           claimButton.disabled = true;
         }
+        cardStates.push({ card, claimed, complete, ratio, remaining: Math.max(progress.total - progress.current, 0), order: missionOrder.indexOf(missionId) });
       });
+      if (missionsList && cardStates.length) {
+        cardStates
+          .sort((left, right) => {
+            if (left.claimed !== right.claimed) return left.claimed ? 1 : -1;
+            if (!left.claimed) {
+              if (right.ratio !== left.ratio) return right.ratio - left.ratio;
+              if (left.remaining !== right.remaining) return left.remaining - right.remaining;
+            }
+            return left.order - right.order;
+          })
+          .forEach(({ card }) => missionsList.appendChild(card));
+      }
       updateMissionsBadge();
     }
 
@@ -11846,6 +12630,8 @@
         setCurrentUser(updatedUser);
       }
       refreshMissionCards();
+      updateCoinsCard();
+      refreshCoinHistoryIfVisible();
     }
 
     function openWelcomeModal() {
@@ -12008,6 +12794,7 @@
 
       await fetchCurrentUserFromBackend();
       await restoreBuffSelectionsForCurrentUser();
+      updateCoinsCard();
       void loadMissionProgress();
       return true;
     }
@@ -12046,6 +12833,7 @@
 
       await fetchCurrentUserFromBackend();
       await restoreBuffSelectionsForCurrentUser();
+      updateCoinsCard();
       void loadMissionProgress();
       return removedBuff;
     }
@@ -13229,6 +14017,9 @@
         if (nextId === "tab-filtros") {
           void loadActiveFiltersSection();
         }
+        if (nextId === "tab-moedas") {
+          void loadCoinHistory();
+        }
       }, 500);
     }
 
@@ -13799,8 +14590,15 @@
     avatarModal?.addEventListener("click", (e) => { if (e.target === avatarModal) closeAvatarModal(); });
     avatarViewerClose?.addEventListener("click", closeAvatarViewer);
     avatarViewerModal?.addEventListener("click", (e) => { if (e.target === avatarViewerModal) closeAvatarViewer(); });
+    coinsHistoryList?.addEventListener("click", (e) => {
+      const button = e.target.closest(".coins-history-toggle");
+      if (!button) return;
+      const card = button.closest(".coins-history-card");
+      const isExpanded = card?.classList.toggle("is-expanded") || false;
+      button.setAttribute("aria-expanded", String(isExpanded));
+    });
     rankingRows?.addEventListener("click", (e) => {
-      const pointsButton = e.target.closest(".ranking-points-button");
+      const pointsButton = e.target.closest(".ranking-points-button, .ranking-view-button");
       if (pointsButton) {
         void openAdminPointsDetailModal({
           userId: pointsButton.dataset.pointsUserId,
