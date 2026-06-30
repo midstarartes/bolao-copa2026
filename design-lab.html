@@ -5789,9 +5789,26 @@
       .coins-card,
       .login-card {
         min-height: 42px;
-        min-width: 88px;
+        min-width: 0;
         padding-inline: 8px;
         border-radius: 14px;
+      }
+
+      .header-eyebrow {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(74px, 0.95fr);
+        align-items: stretch;
+        gap: 6px;
+      }
+
+      .account-switcher {
+        min-width: 0;
+        width: 100%;
+      }
+
+      .login-card {
+        width: 100%;
+        padding: 6px 4px;
       }
 
       .login-card-user {
@@ -5799,8 +5816,17 @@
       }
 
       .login-card-label {
-        font-size: 0.72rem;
-        letter-spacing: 0.1em;
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-size: clamp(0.5rem, 2vw, 0.64rem);
+        letter-spacing: 0.06em;
+        white-space: nowrap;
+      }
+
+      .login-card.is-logged-in .login-card-label {
+        font-size: clamp(0.5rem, 2.25vw, 0.66rem);
+        letter-spacing: 0.04em;
       }
 
       .coins-card-value {
@@ -5814,10 +5840,6 @@
 
       .coins-card-number {
         font-size: clamp(1.3rem, 6.2vw, 1.85rem);
-      }
-
-      .header-eyebrow {
-        gap: 6px;
       }
 
       .header-edition {

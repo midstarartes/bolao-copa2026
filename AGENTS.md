@@ -652,6 +652,7 @@ Antes de qualquer commit:
   - o card verde `Edicao especial entre amigos` passou a ficar logo abaixo do titulo, em largura total, com menor altura, fonte ajustada e maior espacamento entre letras.
   - os mini-cards de rotulo/numero e o card de titulo passaram para o visual preto metalico dos cards de palpite;
   - os numeros das estatisticas do topo foram aumentados.
+  - no mobile, a linha dos tres cards e do login passou a usar grid responsivo para evitar corte do botao de login.
 - Por que foi alterado:
   - concentrar no topo os principais dados do participante sem aumentar a area ocupada.
 - Arquivos modificados:
