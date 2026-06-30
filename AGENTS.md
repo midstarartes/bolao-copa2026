@@ -643,6 +643,8 @@ Antes de qualquer commit:
 ### Sessao 2026-06-30 - resumo no card amarelo do topo
 
 - O que foi alterado:
+  - o fundo global do site foi padronizado para preto sem gradiente vertical, mantendo a textura pontilhada;
+  - a luz radial do topo do `poster` foi removida para evitar diferenca de tonalidade entre topo e fim da pagina;
   - o card amarelo superior deixou de exibir apenas moedas;
   - o resumo do participante passou a usar tres cards amarelos separados para `Posicao`, `Pontos` e `Moedas`;
   - cada coluna amarela passou a ter dois mini-cards empilhados, um para o rotulo e outro para o numero, com separacao visual entre eles;
