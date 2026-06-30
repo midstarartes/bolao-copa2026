@@ -724,38 +724,6 @@
       filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.48));
     }
 
-    .header-logo-mark {
-      position: relative;
-      display: inline-grid;
-      place-items: center;
-      flex: 0 0 auto;
-      width: clamp(46px, 6.4vw, 64px);
-      line-height: 1;
-    }
-
-    .header-logo-year {
-      position: absolute;
-      z-index: 0;
-      left: 50%;
-      top: 47%;
-      transform: translate(-38%, -50%);
-      color: rgba(255, 255, 255, 0.18);
-      font-family: Impact, "Arial Black", sans-serif;
-      font-size: clamp(2.5rem, 5.9vw, 3.9rem);
-      font-weight: 900;
-      letter-spacing: 0;
-      line-height: 0.75;
-      text-shadow:
-        0 0 1px rgba(255, 255, 255, 0.28),
-        0 8px 18px rgba(0, 0, 0, 0.76);
-      pointer-events: none;
-    }
-
-    .header-logo-mark .header-logo {
-      position: relative;
-      z-index: 1;
-    }
-
     .header p {
       margin: 0;
       font-size: clamp(0.72rem, 0.92vw, 0.84rem);
@@ -5882,14 +5850,6 @@
         width: 46px;
       }
 
-      .header-logo-mark {
-        width: 58px;
-      }
-
-      .header-logo-year {
-        font-size: 3.35rem;
-      }
-
       .header p {
         font-size: 0.62rem;
         line-height: 1.28;
@@ -6684,7 +6644,7 @@
 <body>
   <main class="poster">
     <header class="header">
-      <h1>BOLÃO COPA <span class="header-logo-mark" aria-label="Logo oficial da Copa do Mundo 2026"><span class="header-logo-year" aria-hidden="true">26</span><img class="header-logo" src="https://commons.wikimedia.org/wiki/Special:FilePath/2026%20FIFA%20World%20Cup%20emblem.svg" alt=""></span></h1>
+      <h1>BOLÃO COPA <img class="header-logo" src="https://commons.wikimedia.org/wiki/Special:FilePath/2026%20FIFA%20World%20Cup%20emblem.svg" alt="Logo oficial da Copa do Mundo 2026"></h1>
       <span class="header-edition">Edição especial entre amigos</span>
       <div class="header-eyebrow">
         <div class="coins-card" aria-label="Posição no ranking">

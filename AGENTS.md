@@ -649,6 +649,7 @@ Antes de qualquer commit:
   - a textura foi movida para uma camada fixa de viewport e teve a opacidade reduzida para manter a pagina preta de forma uniforme.
   - a textura teve a intensidade visual restaurada para as bolinhas voltarem a aparecer;
   - a logo do topo passou a renderizar um `26` atras da taca para manter a numeracao visivel sobre fundo escuro.
+  - o `26` manual foi removido depois que a numeracao original da logo voltou a aparecer corretamente.
 - Por que foi alterado:
   - corrigir a diferenca visual em que o topo da pagina aparecia mais acinzentado e o fim mais escuro.
 - Arquivos modificados:
