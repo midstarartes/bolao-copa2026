@@ -646,6 +646,7 @@ Antes de qualquer commit:
   - o fundo global do site foi padronizado para preto sem gradiente vertical, mantendo a textura pontilhada;
   - a luz radial do topo do `poster` foi removida para evitar diferenca de tonalidade entre topo e fim da pagina;
   - a camada diagonal clara da textura global foi removida, mantendo apenas os pontos em opacidade menor.
+  - a textura do fundo passou a ser aplicada diretamente no `body`, sobre `#000`, sem pseudo-elemento, blend ou camada de brilho.
   - o card amarelo superior deixou de exibir apenas moedas;
   - o resumo do participante passou a usar tres cards amarelos separados para `Posicao`, `Pontos` e `Moedas`;
   - cada coluna amarela passou a ter dois mini-cards empilhados, um para o rotulo e outro para o numero, com separacao visual entre eles;
