@@ -659,6 +659,7 @@ Antes de qualquer commit:
   - a frase foi ajustada para uma unica linha pequena, `EDICAO ESPECIAL ENTRE AMIGOS`, logo abaixo de `Bolao Copa`.
   - a frase foi movida para dentro do bloco do titulo, ficando diretamente abaixo das palavras `Bolao Copa` e antes da logo.
   - os tres cards de estatisticas do topo (`Posicao`, `Pontos` e `Moedas`) passaram a usar preenchimento com textura verde escuro.
+  - o tom dos cards verdes do topo foi fechado para reduzir o destaque visual.
 - Por que foi alterado:
   - corrigir a diferenca visual em que o topo da pagina aparecia mais acinzentado e o fim mais escuro.
 - Arquivos modificados:
