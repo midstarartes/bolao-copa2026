@@ -15139,11 +15139,10 @@
 
     let bracketDragState = null;
     let suppressBracketClick = false;
-    const BRACKET_TOUCH_DRAG_MIN_MULTIPLIER = 6;
-    const BRACKET_TOUCH_DRAG_MAX_MULTIPLIER = 12;
-    const BRACKET_TOUCH_DRAG_SCREEN_FACTOR = 0.85;
-    const BRACKET_HORIZONTAL_DRAG_THRESHOLD = 4;
-    const BRACKET_VERTICAL_CANCEL_RATIO = 1.35;
+    const BRACKET_TOUCH_DRAG_MIN_MULTIPLIER = 24;
+    const BRACKET_TOUCH_DRAG_SCREEN_FACTOR = 0.16;
+    const BRACKET_HORIZONTAL_DRAG_THRESHOLD = 2;
+    const BRACKET_VERTICAL_CANCEL_RATIO = 2.2;
     function isInteractiveBracketTarget(target) {
       return Boolean(target?.closest?.(
         "button,a,input,select,textarea,[role='button'],[contenteditable='true']"
@@ -15153,12 +15152,9 @@
     function getBracketDragMultiplier(event) {
       if (!(event.pointerType === "touch" || event.pointerType === "pen")) return 1;
       const maxScroll = Math.max(0, board.scrollWidth - board.clientWidth);
-      const targetDragDistance = Math.max(120, board.clientWidth * BRACKET_TOUCH_DRAG_SCREEN_FACTOR);
+      const targetDragDistance = Math.max(48, board.clientWidth * BRACKET_TOUCH_DRAG_SCREEN_FACTOR);
       if (!maxScroll) return 1;
-      return Math.min(
-        BRACKET_TOUCH_DRAG_MAX_MULTIPLIER,
-        Math.max(BRACKET_TOUCH_DRAG_MIN_MULTIPLIER, maxScroll / targetDragDistance)
-      );
+      return Math.max(BRACKET_TOUCH_DRAG_MIN_MULTIPLIER, maxScroll / targetDragDistance);
     }
 
     board?.addEventListener("pointerdown", (event) => {
@@ -15188,7 +15184,6 @@
           bracketDragState = null;
           return;
         }
-        if (absX <= absY && absX < 12) return;
         bracketDragState.dragging = true;
         bracketDragState.moved = true;
         board.classList.add("is-dragging");

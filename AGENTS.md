@@ -647,6 +647,8 @@ Antes de qualquer commit:
   - foi aplicado multiplicador apenas para `pointerType` touch/pen, mantendo mouse em movimento 1:1;
   - o multiplicador deixou de ser fixo e passou a ser calculado pelo tamanho real rolavel do chaveamento;
   - em celular, um arraste amplo na tela passa a cobrir praticamente todo o canvas horizontal do chaveamento;
+  - a calibragem mobile foi reforcada removendo o teto baixo do multiplicador, reduzindo a distancia-alvo do gesto e diminuindo a trava inicial horizontal;
+  - o cancelamento por movimento vertical ficou mais tolerante para evitar que pequenos desvios diagonais cortem o arraste horizontal;
   - a deteccao de gesto horizontal passou a tolerar pequenos desvios diagonais antes de cancelar o arraste;
   - o cancelamento por gesto vertical ficou mais conservador para preservar o scroll vertical sem travar o movimento horizontal.
 - Por que foi alterado:
