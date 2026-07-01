@@ -20,13 +20,10 @@
   <meta name="apple-mobile-web-app-title" content="Bolão 26" />
   <style>
     :root {
-      --bg-top: #050506;
-      --bg-mid: #050506;
+      --bg-top: #0c0c0e;
+      --bg-mid: #0c0c0e;
       color-scheme: dark;
-      --bg-bottom: #050506;
-      --page-texture:
-        radial-gradient(rgba(255, 255, 255, 0.12) 0.7px, transparent 0.9px),
-        radial-gradient(rgba(255, 255, 255, 0.035) 1.2px, transparent 1.4px);
+      --bg-bottom: #0c0c0e;
       --panel: rgba(255, 255, 255, 0.045);
       --line: rgba(255, 255, 255, 0.18);
       --text: #fbfbfc;
@@ -43,7 +40,7 @@
       min-height: 100vh;
       font-family: "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
       color: var(--text);
-      background: #000;
+      background: var(--bg-bottom);
       position: relative;
       overflow-x: hidden;
       -webkit-text-size-adjust: 100%;
@@ -54,23 +51,29 @@
       width: 100%;
       max-width: 100%;
       overflow-x: hidden;
-      background: #000;
     }
 
     body::before {
       content: "";
       position: fixed;
       inset: 0;
-      z-index: 0;
       pointer-events: none;
-      background-image: var(--page-texture);
-      background-size: 4px 4px, 9px 9px;
-      background-position: 0 0, 2px 2px;
-      opacity: 0.34;
+      opacity: 0.28;
+      background-image:
+        radial-gradient(rgba(255, 255, 255, 0.26) 0.7px, transparent 0.9px),
+        radial-gradient(rgba(255, 255, 255, 0.08) 1.2px, transparent 1.4px),
+        linear-gradient(135deg, rgba(255, 255, 255, 0.03), transparent 32%, rgba(255, 255, 255, 0.025) 52%, transparent 72%);
+      background-size: 4px 4px, 9px 9px, 100% 100%;
+      background-position: 0 0, 2px 2px, 0 0;
+      mix-blend-mode: screen;
     }
 
     body::after {
-      content: none;
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background: transparent;
     }
 
     .poster {
@@ -84,13 +87,20 @@
       align-content: start;
       gap: 8px;
       position: relative;
-      z-index: 1;
       isolation: isolate;
-      background: transparent;
     }
 
     .poster::before {
-      content: none;
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 50% 12%, rgba(255, 255, 255, 0.13), transparent 18%),
+        radial-gradient(circle at 50% 42%, rgba(255, 255, 255, 0.04), transparent 36%);
+      filter: blur(8px);
+      opacity: 0.9;
+      z-index: -1;
     }
 
     .login-card {
@@ -720,9 +730,7 @@
       height: auto;
       flex: 0 0 auto;
       object-fit: contain;
-      filter:
-        drop-shadow(0 8px 16px rgba(0, 0, 0, 0.62))
-        drop-shadow(0 0 1px rgba(255, 255, 255, 0.22));
+      filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.48));
     }
 
     .header p {

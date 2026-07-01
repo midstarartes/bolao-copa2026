@@ -652,6 +652,8 @@ Antes de qualquer commit:
   - o `26` manual foi removido depois que a numeracao original da logo voltou a aparecer corretamente.
   - a textura foi reequilibrada para manter as bolinhas visiveis sem deixar o fundo geral acinzentado;
   - a logo original recebeu reforco de sombra/recorte sem adicionar numeracao manual.
+  - depois de validacao visual pelo usuario, o CSS global de fundo foi revertido ao estado anterior as edicoes de fundo, incluindo variaveis `#0c0c0e`, textura original, camada diagonal e brilho radial do `.poster::before`;
+  - o reforco de sombra da logo tambem foi removido, voltando ao filtro anterior.
 - Por que foi alterado:
   - corrigir a diferenca visual em que o topo da pagina aparecia mais acinzentado e o fim mais escuro.
 - Arquivos modificados:
