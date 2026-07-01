@@ -665,6 +665,7 @@ Antes de qualquer commit:
   - ao acessar a aba Jogos sem filtros e sem pagina escolhida manualmente, a pagina passa a abrir no jogo seguinte ao ultimo jogo com resultado oficial lancado;
   - a escolha manual de pagina e os filtros impedem esse reposicionamento automatico durante a navegacao.
   - nos cards de estatisticas do topo, o espaco entre o card do rotulo e o card numerico foi reduzido, aumentando a altura visual do card numerico.
+  - jogos com resultado oficial lancado na aba Jogos passaram a ser exibidos com 80% de opacidade no bloco inteiro da partida.
 - Por que foi alterado:
   - corrigir a diferenca visual em que o topo da pagina aparecia mais acinzentado e o fim mais escuro.
 - Arquivos modificados:
