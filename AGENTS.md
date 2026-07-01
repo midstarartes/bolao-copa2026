@@ -681,8 +681,11 @@ Antes de qualquer commit:
   - a coluna soma o saldo atual do usuario com as moedas retidas em buffs/apostas de jogos futuros ainda abertos;
   - a consulta de usuarios dos filtros passou a carregar o campo `coins`;
   - foi adicionada uma consulta dos buffs em jogos futuros para calcular as moedas em espera por usuario.
+  - as linhas das tres subabas de `FILTROS` passaram a usar colunas mais flexiveis e quebra controlada de texto/tags para evitar corte ou descida irregular dos dados;
+  - a subaba `BUFFS` ganhou um breakpoint intermediario para empilhar os buffs abaixo de jogador/moedas quando a largura ficar apertada.
 - Por que foi alterado:
   - permitir conferencia administrativa do total de moedas de cada participante diretamente na visao de filtros de buffs.
+  - corrigir corte visual e desalinhamento dos dados nas subabas de filtros do ADMIN.
 - Arquivos modificados:
   - `design-lab.html`
   - `AGENTS.md`

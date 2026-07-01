@@ -2864,20 +2864,21 @@
       overflow: auto;
       display: grid;
       gap: 8px;
-      padding: 2px 4px 4px 0;
+      padding: 2px 6px 4px 0;
     }
 
     .filters-row {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(180px, 0.55fr);
+      grid-template-columns: minmax(0, 1fr) minmax(0, 0.55fr);
       gap: 12px;
       align-items: center;
       min-height: 68px;
       padding: 12px 14px;
+      overflow: visible;
     }
 
     .filters-row--buffs {
-      grid-template-columns: minmax(0, 1fr) minmax(72px, 0.24fr) minmax(180px, 0.55fr);
+      grid-template-columns: minmax(0, 1fr) minmax(64px, 0.22fr) minmax(0, 0.58fr);
     }
 
     .filters-row .ranking-player-name {
@@ -2916,12 +2917,14 @@
       justify-self: end;
       display: grid;
       gap: 4px;
+      min-width: 0;
       color: #f8fafc;
       font-size: 0.86rem;
       font-weight: 900;
       letter-spacing: 0.04em;
       text-align: right;
       text-transform: uppercase;
+      overflow-wrap: anywhere;
     }
 
     .filters-value small {
@@ -2940,6 +2943,7 @@
       justify-self: end;
       display: grid;
       gap: 2px;
+      min-width: 0;
       text-align: right;
       text-transform: uppercase;
       white-space: nowrap;
@@ -2965,6 +2969,7 @@
       justify-content: flex-end;
       flex-wrap: wrap;
       gap: 5px;
+      min-width: 0;
     }
 
     .filters-tag {
@@ -2980,6 +2985,10 @@
       font-weight: 900;
       letter-spacing: 0.04em;
       text-transform: uppercase;
+      min-width: 0;
+      max-width: 100%;
+      white-space: normal;
+      overflow-wrap: anywhere;
     }
 
     .filters-loading,
@@ -4633,6 +4642,22 @@
       .bracket-scrollbar,
       .board.board--bracket {
         width: calc(100vw - 20px);
+      }
+    }
+
+    @media (max-width: 920px) {
+      .filters-row--buffs {
+        grid-template-columns: minmax(0, 1fr) minmax(64px, auto);
+      }
+
+      .filters-row--buffs .filters-value {
+        grid-column: 1 / -1;
+        justify-self: stretch;
+        text-align: left;
+      }
+
+      .filters-row--buffs .filters-tags {
+        justify-content: flex-start;
       }
     }
 
