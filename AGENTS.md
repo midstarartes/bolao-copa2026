@@ -640,6 +640,85 @@ Antes de qualquer commit:
 
 ## 32. Registro de mudanças do AGENTS.md
 
+### Sessao 2026-07-01 - preenchimento automatico do mata-mata
+
+- O que foi alterado:
+  - o resolvedor de jogos do mata-mata passou a propagar automaticamente vencedores oficiais para a fase seguinte;
+  - a disputa de terceiro lugar passa a receber os perdedores das semifinais;
+  - a final passa a receber os vencedores das semifinais;
+  - os empates ja ocorridos dos jogos 74 e 75 passaram a considerar, respectivamente, Paraguai e Marrocos como classificados enquanto o banco ainda nao trouxer `winner_team`;
+  - a regra usa os numeros dos jogos do bolao e preserva os nomes/codigos das selecoes ja resolvidos no proprio sistema.
+- Por que foi alterado:
+  - permitir que, ao ADMIN lancar um resultado oficial, a selecao classificada apareca automaticamente no card da proxima fase.
+- Arquivos modificados:
+  - `design-lab.html`
+  - `AGENTS.md`
+- Impacto no bolao:
+  - afeta a exibicao e disponibilidade visual dos jogos de mata-mata futuros;
+  - nao altera pontuacao, ranking, historico, moedas, usuarios, Supabase, API, Vercel ou GitHub;
+  - nao grava os times resolvidos no banco, apenas calcula na carga da pagina a partir dos resultados oficiais existentes.
+- Areas afetadas:
+  - jogos/palpites/buffs do mata-mata: afetados visualmente conforme as selecoes forem resolvidas.
+- Testes ou verificacoes feitos:
+  - `git status`;
+  - leitura dos commits recentes;
+  - consulta somente leitura dos jogos `73` a `104` no Supabase para confirmar numeracao real;
+  - `npm.cmd run build`.
+- Pendencias:
+  - validar visualmente no navegador apos resultados oficiais com `winner_team` preenchido em jogos empatados;
+  - publicar somente se autorizado.
+
+### Sessao 2026-07-01 - visualizacao de chaveamento nos jogos
+
+- O que foi alterado:
+  - a aba Jogos ganhou o filtro `Visualizacao`, com as opcoes `Cronologia` e `Chaveamento`;
+  - `Cronologia` preserva o comportamento atual com filtros e paginacao;
+  - `Chaveamento` renderiza os jogos do mata-mata em colunas por fase, usando os mesmos cards de jogo e os mesmos botoes de palpites e buffs;
+  - ao selecionar `Chaveamento`, os filtros `Fase` e `Grupo` ficam travados e voltam para `all`.
+  - o chaveamento foi reorganizado em duas chaves laterais que convergem para a final centralizada;
+  - os cards, fontes, bandeiras e placares no modo `Chaveamento` foram reduzidos para evitar sobreposicao;
+  - foram adicionados conectores visuais entre as fases e uma barra superior de rolagem sincronizada com a rolagem inferior;
+  - o modo `Chaveamento` passou a aceitar arraste horizontal com dedo ou mouse.
+  - o layout do `Chaveamento` foi refeito para uma grade tradicional:
+    `16 avos -> oitavas -> quartas -> semifinal -> final <- semifinal <- quartas <- oitavas <- 16 avos`;
+  - os conectores passaram a ser desenhados por SVG atras dos cards, ligando os confrontos corretos;
+  - a final ficou no centro, com campeao acima e disputa de terceiro lugar abaixo;
+  - os cards do chaveamento foram mantidos legiveis, sem `zoom` ou `transform: scale()`.
+  - a navegacao do `Chaveamento` foi ajustada para manter Fase/Grupo preservados ao alternar entre modos;
+  - o arraste horizontal por mouse passou a ignorar botoes, inputs, links e elementos interativos;
+  - a barra superior de rolagem foi mantida sincronizada com o scroll principal;
+  - o SVG de conectores e a barra superior passaram a ser recalculados apos render, resize e mudancas de estado dos cards.
+  - o motor de posicionamento do `Chaveamento` foi reconstruido para usar canvas relativo, cards absolutos e coordenadas calculadas por JavaScript;
+  - as nove colunas fixas passaram a seguir a formula `x = coluna * (largura do card + espacamento)`;
+  - os centros verticais passaram a ser calculados a partir da primeira rodada e propagados por media entre pares para cada fase seguinte;
+  - a chave direita passou a usar os mesmos centros verticais da esquerda, espelhando a estrutura;
+  - o canvas do chaveamento foi limitado ao wrapper com overflow horizontal para nao alargar o topo ou a pagina inteira;
+  - o arraste horizontal foi ajustado com Pointer Events para mouse e toque, sem iniciar em botoes, links, inputs ou elementos interativos.
+- Por que foi alterado:
+  - permitir acompanhar o mata-mata em formato de chave, mantendo o fluxo de palpite e buffs ativo.
+- Arquivos modificados:
+  - `design-lab.html`
+  - `AGENTS.md`
+- Impacto no bolao:
+  - alteracao visual e de navegacao na aba Jogos;
+  - nao altera pontuacao, ranking, historico, moedas, usuarios, Supabase, API, Vercel ou GitHub.
+- Areas afetadas:
+  - Jogos/visualizacao: afetado;
+  - Palpites e buffs: reaproveitam os mesmos handlers ja existentes.
+- Testes ou verificacoes feitos:
+  - `npm.cmd run build`;
+  - `git diff --check`;
+  - pre-visualizacao local em `http://127.0.0.1:4181/design-lab.html?local=knockout-auto`;
+  - captura visual local do chaveamento;
+  - validacao DOM de 32 jogos unicos, 9 titulos e 16 conectores;
+  - teste de arraste horizontal em desktop e viewport mobile;
+  - teste da barra superior sincronizada;
+  - teste de alternancia `Chaveamento -> Cronologia -> Chaveamento`;
+  - teste de `Palpitar`, `Editar` e `Buffs` sem salvar alteracoes no Supabase;
+  - verificacao de console sem erros.
+- Pendencias:
+  - validar no celular real apos publicacao.
+
 ### Sessao 2026-06-30 - fundo preto aplicado no poster
 
 - O que foi alterado:

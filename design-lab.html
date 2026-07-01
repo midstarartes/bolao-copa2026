@@ -901,7 +901,7 @@
 
     .sub-nav {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(4, minmax(0, 1fr));
       align-items: center;
       gap: 8px;
       margin: 16px 0 10px;
@@ -924,6 +924,12 @@
       box-shadow:
         inset 0 0 0 1px rgba(255, 255, 255, 0.12),
         0 8px 16px rgba(0, 0, 0, 0.18);
+    }
+
+    .sub-nav-card.is-disabled {
+      opacity: 0.42;
+      pointer-events: none;
+      filter: grayscale(0.8);
     }
 
     /* ── Estilos globais para todos os <select> do site ─────────────── */
@@ -4347,6 +4353,246 @@
       align-content: start;
     }
 
+    .bracket-scrollbar {
+      display: none;
+      overflow-x: auto;
+      overflow-y: hidden;
+      width: min(872px, calc(100vw - 80px));
+      max-width: 100%;
+      box-sizing: border-box;
+      height: 14px;
+      margin: 10px 8px -4px;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255,255,255,0.34) rgba(255,255,255,0.08);
+    }
+
+    .bracket-scrollbar.is-visible {
+      display: block;
+    }
+
+    .bracket-scrollbar-spacer {
+      height: 1px;
+    }
+
+    .board.board--bracket {
+      position: relative;
+      display: block;
+      width: min(872px, calc(100vw - 80px));
+      max-width: 100%;
+      min-width: 0;
+      box-sizing: border-box;
+      overflow-x: auto;
+      overflow-y: visible;
+      padding: 14px 8px 10px;
+      cursor: grab;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255,255,255,0.34) rgba(255,255,255,0.08);
+      -webkit-overflow-scrolling: touch;
+      touch-action: pan-y;
+    }
+
+    .board.board--bracket.is-dragging {
+      cursor: grabbing;
+      user-select: none;
+    }
+
+    .board.board--bracket::before {
+      display: none;
+    }
+
+    .bracket-layout {
+      --bracket-card-width: 200px;
+      --bracket-col-gap: 60px;
+      position: relative;
+      min-width: calc((var(--bracket-card-width) * 9) + (var(--bracket-col-gap) * 8));
+    }
+
+    .bracket-title {
+      position: absolute;
+      z-index: 2;
+      width: var(--bracket-card-width);
+      padding: 5px 7px;
+      border-radius: 9px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.03) 18%, rgba(0,0,0,0.34) 100%),
+        linear-gradient(135deg, rgba(18,18,20,0.98), rgba(0,0,0,0.94));
+      color: rgba(255,255,255,0.82);
+      font-size: 0.52rem;
+      font-weight: 900;
+      letter-spacing: 0.1em;
+      line-height: 1.1;
+      text-align: center;
+      text-transform: uppercase;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.12),
+        inset 0 0 0 1px rgba(255,255,255,0.1),
+        0 8px 14px rgba(0,0,0,0.24);
+    }
+
+    .bracket-connectors {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: visible;
+    }
+
+    .bracket-connector {
+      fill: none;
+      stroke: rgba(255,255,255,0.26);
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      filter: drop-shadow(0 0 4px rgba(255,255,255,0.08));
+    }
+
+    .bracket-match {
+      position: absolute;
+      z-index: 2;
+      width: var(--bracket-card-width);
+      min-height: var(--bracket-card-height, auto);
+      min-width: 0;
+      display: grid;
+      align-items: center;
+    }
+
+    .bracket-match--final {
+      z-index: 3;
+    }
+
+    .bracket-center-label {
+      position: absolute;
+      z-index: 2;
+      width: var(--bracket-card-width);
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 7px 8px;
+      border-radius: 12px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.14), rgba(255,255,255,0.03) 22%, rgba(0,0,0,0.32) 100%),
+        linear-gradient(135deg, rgba(18,18,20,0.98), rgba(0,0,0,0.94));
+      color: rgba(255,255,255,0.86);
+      font-size: 0.58rem;
+      font-weight: 900;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      text-shadow: 0 4px 12px rgba(0,0,0,0.62);
+      box-shadow:
+        0 10px 18px rgba(0,0,0,0.28),
+        inset 0 1px 0 rgba(255,255,255,0.14),
+        inset 0 0 0 1px rgba(255,255,255,0.1);
+    }
+
+    .bracket-center-label--champion {
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.16), rgba(255,255,255,0.03) 20%, rgba(0,0,0,0.38) 100%),
+        linear-gradient(135deg, rgba(184,134,11,0.84), rgba(80,54,0,0.92));
+      color: #fff7c2;
+    }
+
+    .bracket-center-label--third {
+      color: rgba(220,226,238,0.72);
+    }
+
+    .board--bracket .fixture {
+      gap: 3px;
+      width: 100%;
+    }
+
+    .board--bracket .fixture-row {
+      grid-template-columns: 46px minmax(92px, 1fr) 46px;
+      gap: 5px;
+    }
+
+    .board--bracket .score-stack {
+      gap: 3px;
+    }
+
+    .board--bracket .score-actions {
+      gap: 3px;
+    }
+
+    .board--bracket .score-action {
+      min-height: 20px;
+      padding: 2px 4px;
+      border-radius: 7px;
+      font-size: 0.48rem;
+      letter-spacing: 0.06em;
+    }
+
+    .board--bracket .score-action--predict.is-view {
+      font-size: 0.48rem;
+      letter-spacing: 0.03em;
+    }
+
+    .board--bracket .score-action-buff-count {
+      width: 15px;
+      height: 15px;
+      min-width: 15px;
+      font-size: 0.46rem;
+    }
+
+    .board--bracket .badge-code {
+      font-size: 0.58rem;
+      letter-spacing: 0.1em;
+      margin-bottom: 3px;
+    }
+
+    .board--bracket .badge {
+      width: 44px;
+      height: 44px;
+    }
+
+    .board--bracket .score {
+      min-height: 46px;
+      border-radius: 12px;
+      padding: 3px 8px;
+    }
+
+    .board--bracket .score::after {
+      border-radius: 11px;
+    }
+
+    .board--bracket .score-inputs {
+      gap: 5px;
+    }
+
+    .board--bracket .score-value,
+    .board--bracket .score strong {
+      font-size: 1.58rem;
+      letter-spacing: 0;
+    }
+
+    .board--bracket .score-separator {
+      font-size: 1rem;
+    }
+
+    .board--bracket .fixture-time {
+      font-size: 0.56rem;
+      line-height: 1.18;
+      margin-top: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    @media (max-width: 720px) {
+      .bracket-scrollbar,
+      .board.board--bracket {
+        width: calc(100vw - 20px);
+      }
+    }
+
+    @media (max-width: 520px) {
+      .bracket-scrollbar,
+      .board.board--bracket {
+        width: calc(100vw - 12px);
+      }
+    }
+
     .fixture {
       display: grid;
       gap: 4px;
@@ -5500,7 +5746,7 @@
 
       .sub-nav {
         display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-columns: repeat(2, minmax(0, 1fr));
         align-items: stretch;
         gap: 6px;
         margin: 12px 0 8px;
@@ -6788,6 +7034,19 @@
             </select>
           </div>
 
+          <!-- Filtro VISUALIZAÇÃO -->
+          <div class="sub-nav-card" data-dropdown>
+            <button class="sub-nav-btn" type="button" aria-expanded="false" aria-haspopup="listbox">VISUALIZAÇÃO</button>
+            <ul class="sub-nav-dropdown" role="listbox" aria-label="Selecionar Visualização">
+              <li class="sub-nav-option is-selected" data-value="timeline" role="option" aria-selected="true">CRONOLOGIA</li>
+              <li class="sub-nav-option" data-value="bracket" role="option">CHAVEAMENTO</li>
+            </ul>
+            <select id="filter-view" aria-hidden="true" tabindex="-1" style="display:none">
+              <option value="timeline">CRONOLOGIA</option>
+              <option value="bracket">CHAVEAMENTO</option>
+            </select>
+          </div>
+
         </nav>
 
         <div class="admin-results-bar" id="admin-results-bar">
@@ -6800,6 +7059,7 @@
           </div>
         </div>
 
+        <div class="bracket-scrollbar" id="bracket-scrollbar" aria-hidden="true"><div class="bracket-scrollbar-spacer" id="bracket-scrollbar-spacer"></div></div>
         <section class="board" aria-label="Confrontos" id="matches-board"></section>
         <div class="board-empty" id="board-empty">Nenhum jogo encontrado nesse filtro</div>
         <div class="games-pagination" id="games-pagination"></div>
@@ -8014,8 +8274,11 @@
     const statusFilter = document.getElementById("filter-status");
     const phaseFilter = document.getElementById("filter-phase");
     const groupFilter = document.getElementById("filter-group");
+    const viewFilter = document.getElementById("filter-view");
     const board = document.getElementById("matches-board");
     const boardEmpty = document.getElementById("board-empty");
+    const bracketScrollbar = document.getElementById("bracket-scrollbar");
+    const bracketScrollbarSpacer = document.getElementById("bracket-scrollbar-spacer");
     const gamesPagination = document.getElementById("games-pagination");
     const syncStatusBar = document.getElementById("sync-status-bar");
     const syncStatusText = document.getElementById("sync-status-text");
@@ -10197,6 +10460,73 @@
       "1K": "L",
       "1L": "K",
     };
+    const KNOCKOUT_ADVANCEMENT_RULES = [
+      { match: 89, home: { from: 74, result: "winner" }, away: { from: 77, result: "winner" } },
+      { match: 90, home: { from: 73, result: "winner" }, away: { from: 75, result: "winner" } },
+      { match: 91, home: { from: 76, result: "winner" }, away: { from: 78, result: "winner" } },
+      { match: 92, home: { from: 79, result: "winner" }, away: { from: 80, result: "winner" } },
+      { match: 93, home: { from: 83, result: "winner" }, away: { from: 84, result: "winner" } },
+      { match: 94, home: { from: 81, result: "winner" }, away: { from: 82, result: "winner" } },
+      { match: 95, home: { from: 86, result: "winner" }, away: { from: 88, result: "winner" } },
+      { match: 96, home: { from: 85, result: "winner" }, away: { from: 87, result: "winner" } },
+      { match: 97, home: { from: 89, result: "winner" }, away: { from: 90, result: "winner" } },
+      { match: 98, home: { from: 93, result: "winner" }, away: { from: 94, result: "winner" } },
+      { match: 99, home: { from: 91, result: "winner" }, away: { from: 92, result: "winner" } },
+      { match: 100, home: { from: 95, result: "winner" }, away: { from: 96, result: "winner" } },
+      { match: 101, home: { from: 97, result: "winner" }, away: { from: 98, result: "winner" } },
+      { match: 102, home: { from: 99, result: "winner" }, away: { from: 100, result: "winner" } },
+      { match: 103, home: { from: 101, result: "loser" }, away: { from: 102, result: "loser" } },
+      { match: 104, home: { from: 101, result: "winner" }, away: { from: 102, result: "winner" } },
+    ];
+    const OFFICIAL_KNOCKOUT_WINNER_OVERRIDES = {
+      74: "PAR",
+      75: "MAR",
+    };
+    const BRACKET_LAYOUT_CONFIG = {
+      cardWidth: 200,
+      columnGap: 60,
+      verticalGap: 24,
+      titleTop: 0,
+      paddingTop: 46,
+      paddingBottom: 18,
+      centerGap: 22,
+      centerLabelGap: 8,
+    };
+    const BRACKET_COLUMN_TITLES = [
+      "16 Avos",
+      "Oitavas",
+      "Quartas",
+      "Semifinal",
+      "Final",
+      "Semifinal",
+      "Quartas",
+      "Oitavas",
+      "16 Avos",
+    ];
+    const BRACKET_SIDE_ROUNDS = {
+      left: [
+        { title: "16 Avos", matches: [74, 77, 73, 75, 83, 84, 81, 82] },
+        { title: "Oitavas", matches: [89, 90, 93, 94] },
+        { title: "Quartas", matches: [97, 98] },
+        { title: "Semifinal", matches: [101] },
+      ],
+      right: [
+        { title: "Semifinal", matches: [102] },
+        { title: "Quartas", matches: [99, 100] },
+        { title: "Oitavas", matches: [91, 92, 95, 96] },
+        { title: "16 Avos", matches: [76, 78, 79, 80, 86, 88, 85, 87] },
+      ],
+    };
+    const BRACKET_CONNECTION_GROUPS = [
+      { sources: [74, 77], target: 89 }, { sources: [73, 75], target: 90 },
+      { sources: [83, 84], target: 93 }, { sources: [81, 82], target: 94 },
+      { sources: [89, 90], target: 97 }, { sources: [93, 94], target: 98 },
+      { sources: [97, 98], target: 101 }, { sources: [101], target: 104 },
+      { sources: [102], target: 104 }, { sources: [99, 100], target: 102 },
+      { sources: [91, 92], target: 99 }, { sources: [95, 96], target: 100 },
+      { sources: [76, 78], target: 91 }, { sources: [79, 80], target: 92 },
+      { sources: [86, 88], target: 95 }, { sources: [85, 87], target: 96 },
+    ];
 
     function getGroupLetter(groupName) {
       const normalized = fixTeamEncoding(groupName).toUpperCase();
@@ -10309,6 +10639,10 @@
           const away = resolveSeed(match.away_code, match.home_code);
           resolvedRound32Matches.set(match.id, {
             ...match,
+            raw_home_team: match.home_team,
+            raw_away_team: match.away_team,
+            raw_home_code: match.home_code,
+            raw_away_code: match.away_code,
             home_team: home?.team || match.home_team,
             away_team: away?.team || match.away_team,
             home_code: home?.code || match.home_code,
@@ -10316,10 +10650,99 @@
           });
         });
 
-      return matches.map((match) => {
+      const resolvedMatches = matches.map((match) => {
         if (match.phase !== "round32") return match;
         return resolvedRound32Matches.get(match.id) || match;
       });
+
+      return applyKnockoutAdvancement(resolvedMatches);
+    }
+
+    function normalizeTeamKey(value) {
+      return normalizeTextForApi(fixTeamEncoding(value));
+    }
+
+    function getMatchSide(match, side) {
+      return {
+        team: match?.[`${side}_team`] || "",
+        code: match?.[`${side}_code`] || "",
+        rawTeam: match?.[`raw_${side}_team`] || "",
+        rawCode: match?.[`raw_${side}_code`] || "",
+      };
+    }
+
+    function teamSideMatchesValue(side, value) {
+      const valueKey = normalizeTeamKey(value);
+      if (!valueKey) return false;
+      return [side.team, side.code, side.rawTeam, side.rawCode]
+        .some((entry) => normalizeTeamKey(entry) === valueKey);
+    }
+
+    function getOfficialAdvancementSide(match, resultType = "winner") {
+      if (!matchHasOfficialResult(match)) return null;
+      const home = getMatchSide(match, "home");
+      const away = getMatchSide(match, "away");
+      const homeScore = Number(match.score_home);
+      const awayScore = Number(match.score_away);
+      let winnerSide = null;
+
+      if (Number.isFinite(homeScore) && Number.isFinite(awayScore)) {
+        if (homeScore > awayScore) winnerSide = "home";
+        else if (awayScore > homeScore) winnerSide = "away";
+      }
+
+      if (!winnerSide && match.extra_time_home != null && match.extra_time_away != null) {
+        const extraHome = Number(match.extra_time_home);
+        const extraAway = Number(match.extra_time_away);
+        if (Number.isFinite(extraHome) && Number.isFinite(extraAway)) {
+          if (extraHome > extraAway) winnerSide = "home";
+          else if (extraAway > extraHome) winnerSide = "away";
+        }
+      }
+
+      if (!winnerSide && match.winner_team) {
+        if (teamSideMatchesValue(home, match.winner_team)) winnerSide = "home";
+        else if (teamSideMatchesValue(away, match.winner_team)) winnerSide = "away";
+      }
+
+      if (!winnerSide) {
+        const overrideWinner = OFFICIAL_KNOCKOUT_WINNER_OVERRIDES[Number(match.match_number || 0)];
+        if (overrideWinner) {
+          if (teamSideMatchesValue(home, overrideWinner)) winnerSide = "home";
+          else if (teamSideMatchesValue(away, overrideWinner)) winnerSide = "away";
+        }
+      }
+
+      if (!winnerSide) return null;
+      const side = resultType === "loser"
+        ? (winnerSide === "home" ? away : home)
+        : (winnerSide === "home" ? home : away);
+      if (!side.team && !side.code) return null;
+      return side;
+    }
+
+    function applyKnockoutAdvancement(matches) {
+      const byNumber = new Map(matches.map((match) => [Number(match.match_number || 0), match]));
+
+      KNOCKOUT_ADVANCEMENT_RULES.forEach((rule) => {
+        ["home", "away"].forEach((targetSide) => {
+          const sourceRule = rule[targetSide];
+          const targetMatch = byNumber.get(rule.match);
+          const sourceMatch = byNumber.get(sourceRule.from);
+          if (!targetMatch || !sourceMatch) return;
+
+          const resolvedSide = getOfficialAdvancementSide(sourceMatch, sourceRule.result);
+          if (!resolvedSide) return;
+
+          byNumber.set(rule.match, {
+            ...targetMatch,
+            [`${targetSide}_team`]: resolvedSide.team || targetMatch[`${targetSide}_team`],
+            [`${targetSide}_code`]: resolvedSide.code || targetMatch[`${targetSide}_code`],
+          });
+        });
+      });
+
+      return matches.map((match) => byNumber.get(Number(match.match_number || 0)) || match);
     }
 
     function matchHasOfficialResult(match) {
@@ -10923,8 +11346,9 @@
 
     function getFilteredMatchesData() {
       const statusValue = statusFilter?.value || "all";
-      const phaseValue = phaseFilter?.value || "all";
-      const groupValue = groupFilter?.value || "all";
+      const isBracketView = getGamesViewMode() === "bracket";
+      const phaseValue = isBracketView ? "all" : (phaseFilter?.value || "all");
+      const groupValue = isBracketView ? "all" : (groupFilter?.value || "all");
       const predictionMap = getCurrentUserPredictionMap();
       const today = new Date().toLocaleDateString("en-CA", { timeZone: "America/Sao_Paulo" });
 
@@ -11090,7 +11514,26 @@
     }
 
     async function renderCurrentGamesPage() {
+      syncViewDependentFilters();
       filteredMatchRecords = getFilteredMatchesData();
+      if (getGamesViewMode() === "bracket") {
+        userSelectedGamesPage = true;
+        renderBracketBoard(filteredMatchRecords);
+        await restorePredictionsForCurrentUser();
+        await restoreBuffSelectionsForCurrentUser();
+        const hasBracketMatches = filteredMatchRecords.some((match) => isKnockoutMatch(match));
+        boardEmpty.classList.toggle("is-visible", !hasBracketMatches);
+        if (gamesPagination) {
+          gamesPagination.classList.remove("is-visible");
+          gamesPagination.innerHTML = "";
+        }
+        refreshMissionCards();
+        void loadMissionProgress();
+        updateCountdowns();
+        recalculateBracketView();
+        return;
+      }
+
       focusNextOfficialGamePage(filteredMatchRecords);
       const totalPages = Math.max(1, Math.ceil(filteredMatchRecords.length / GAMES_PER_PAGE));
       currentGamesPage = Math.min(Math.max(1, currentGamesPage), totalPages);
@@ -12175,8 +12618,45 @@
       boardColumns = Array.from(document.querySelectorAll(".board .column"));
     }
 
+    function getGamesViewMode() {
+      return viewFilter?.value === "bracket" ? "bracket" : "timeline";
+    }
+
+    function getSubNavCardForSelect(select) {
+      return select?.closest(".sub-nav-card") || null;
+    }
+
+    function setCustomSelectValue(select, value) {
+      if (!select) return;
+      select.value = value;
+      const card = getSubNavCardForSelect(select);
+      const options = Array.from(card?.querySelectorAll(".sub-nav-option") || []);
+      options.forEach((option) => {
+        const isSelected = option.dataset.value === value;
+        option.classList.toggle("is-selected", isSelected);
+        if (isSelected) option.setAttribute("aria-selected", "true");
+        else option.removeAttribute("aria-selected");
+      });
+    }
+
+    function syncViewDependentFilters() {
+      const isBracketView = getGamesViewMode() === "bracket";
+      [phaseFilter, groupFilter].forEach((select) => {
+        const card = getSubNavCardForSelect(select);
+        if (!card) return;
+        card.classList.toggle("is-disabled", isBracketView);
+        card.removeAttribute("data-open");
+        card.querySelector(".sub-nav-btn")?.setAttribute("aria-expanded", "false");
+      });
+    }
+
     function renderMatchesBoard(matches) {
       if (!board) return;
+      bracketMutationObserver?.disconnect();
+      bracketMutationObserver = null;
+      board.classList.remove("board--bracket");
+      board.classList.remove("is-dragging");
+      bracketScrollbar?.classList.remove("is-visible");
       const sortedMatches = [...matches].sort((left, right) => new Date(left.starts_at) - new Date(right.starts_at));
       const midpoint = Math.ceil(sortedMatches.length / 2);
       const columns = [sortedMatches.slice(0, midpoint), sortedMatches.slice(midpoint)];
@@ -12188,6 +12668,267 @@
         `)
         .join("");
       refreshBoardReferences();
+    }
+
+    let bracketLayoutFrame = 0;
+    let bracketMutationObserver = null;
+
+    function getBracketColumnX(columnIndex) {
+      return columnIndex * (BRACKET_LAYOUT_CONFIG.cardWidth + BRACKET_LAYOUT_CONFIG.columnGap);
+    }
+
+    function getBracketPairCenters(previousCenters) {
+      const centers = [];
+      for (let index = 0; index < previousCenters.length; index += 2) {
+        centers.push((previousCenters[index] + previousCenters[index + 1]) / 2);
+      }
+      return centers;
+    }
+
+    function getBracketRoundCenters(cardHeight, paddingTop) {
+      const firstRoundCenters = Array.from({ length: 8 }, (_, index) =>
+        paddingTop + (cardHeight / 2) + (index * (cardHeight + BRACKET_LAYOUT_CONFIG.verticalGap))
+      );
+      const round16Centers = getBracketPairCenters(firstRoundCenters);
+      const quarterCenters = getBracketPairCenters(round16Centers);
+      const semifinalCenters = getBracketPairCenters(quarterCenters);
+      return [firstRoundCenters, round16Centers, quarterCenters, semifinalCenters];
+    }
+
+    function renderBracketTitle(title, columnIndex) {
+      return `
+        <div class="bracket-title" data-bracket-title-column="${columnIndex}">
+          ${escapeHtml(title)}
+        </div>
+      `;
+    }
+
+    function renderBracketSide(side, rounds, matchesByNumber) {
+      return rounds
+        .map((round, roundIndex) =>
+          round.matches.map((matchNumber, matchIndex) => {
+            const match = matchesByNumber.get(matchNumber);
+            if (!match) return "";
+            const columnIndex = side === "left" ? roundIndex : 5 + roundIndex;
+            return `
+              <div class="bracket-match" data-bracket-match="${matchNumber}" data-bracket-side="${side}" data-bracket-round-index="${roundIndex}" data-bracket-match-index="${matchIndex}" data-bracket-column="${columnIndex}">
+                ${buildFixtureMarkup(match)}
+              </div>
+            `;
+          }).join("")
+        )
+        .join("");
+    }
+
+    function renderBracketCenter(matchesByNumber) {
+      const finalMatch = matchesByNumber.get(104);
+      const thirdMatch = matchesByNumber.get(103);
+      return `
+        <div class="bracket-center-label bracket-center-label--champion" data-bracket-center-item="champion">Campeão</div>
+        ${finalMatch ? `
+          <div class="bracket-match bracket-match--final" data-bracket-match="104" data-bracket-center-match="final" data-bracket-column="4">
+            ${buildFixtureMarkup(finalMatch)}
+          </div>
+        ` : ""}
+        <div class="bracket-center-label bracket-center-label--third" data-bracket-center-item="third-label">3º Lugar</div>
+        ${thirdMatch ? `
+          <div class="bracket-match bracket-match--third" data-bracket-match="103" data-bracket-center-match="third" data-bracket-column="4">
+            ${buildFixtureMarkup(thirdMatch)}
+          </div>
+        ` : ""}
+      `;
+    }
+
+    function getBracketRelativeRect(element, rootRect) {
+      const rect = element.getBoundingClientRect();
+      return {
+        left: rect.left - rootRect.left,
+        right: rect.right - rootRect.left,
+        top: rect.top - rootRect.top,
+        bottom: rect.bottom - rootRect.top,
+        centerX: rect.left - rootRect.left + rect.width / 2,
+        centerY: rect.top - rootRect.top + rect.height / 2,
+      };
+    }
+
+    function buildBracketConnectorPath(sourceRects, targetRect) {
+      if (!sourceRects.length) return "";
+      const firstSource = sourceRects[0];
+      const targetIsRight = targetRect.centerX > firstSource.centerX;
+      const sourceX = targetIsRight
+        ? Math.max(...sourceRects.map((rect) => rect.right))
+        : Math.min(...sourceRects.map((rect) => rect.left));
+      const targetX = targetIsRight ? targetRect.left : targetRect.right;
+      const bridgeX = sourceX + (targetX - sourceX) / 2;
+      const targetY = targetRect.centerY;
+
+      if (sourceRects.length === 1) {
+        const sourceY = sourceRects[0].centerY;
+        if (Math.abs(sourceY - targetY) < 1) return `M ${sourceX} ${sourceY} H ${targetX}`;
+        return `M ${sourceX} ${sourceY} H ${bridgeX} V ${targetY} H ${targetX}`;
+      }
+
+      const sourceYs = sourceRects.map((rect) => rect.centerY);
+      const minY = Math.min(...sourceYs);
+      const maxY = Math.max(...sourceYs);
+      const sourceLines = sourceYs.map((sourceY) => `M ${sourceX} ${sourceY} H ${bridgeX}`).join(" ");
+      return `${sourceLines} M ${bridgeX} ${minY} V ${maxY} M ${bridgeX} ${targetY} H ${targetX}`;
+    }
+
+    function setBracketElementPosition(element, left, top) {
+      if (!element) return;
+      element.style.left = `${Math.round(left)}px`;
+      element.style.top = `${Math.round(top)}px`;
+      element.style.width = `${BRACKET_LAYOUT_CONFIG.cardWidth}px`;
+    }
+
+    function measureAndLayoutBracket() {
+      if (!board?.classList.contains("board--bracket")) return;
+      const layout = board.querySelector(".bracket-layout");
+      const svg = board.querySelector(".bracket-connectors");
+      if (!layout || !svg) return;
+
+      layout.style.setProperty("--bracket-card-width", `${BRACKET_LAYOUT_CONFIG.cardWidth}px`);
+      layout.style.setProperty("--bracket-col-gap", `${BRACKET_LAYOUT_CONFIG.columnGap}px`);
+
+      const titleElements = Array.from(layout.querySelectorAll(".bracket-title"));
+      const matchElements = Array.from(layout.querySelectorAll(".bracket-match"));
+      if (!matchElements.length) return;
+
+      const titleHeight = Math.max(0, ...titleElements.map((element) => Math.ceil(element.getBoundingClientRect().height)));
+      const cardHeight = Math.max(1, ...matchElements.map((element) => Math.ceil(element.getBoundingClientRect().height)));
+      layout.style.setProperty("--bracket-card-height", `${cardHeight}px`);
+      const paddingTop = Math.max(BRACKET_LAYOUT_CONFIG.paddingTop, titleHeight + 18);
+      const roundCenters = getBracketRoundCenters(cardHeight, paddingTop);
+      const finalCenterY = roundCenters[3][0] || paddingTop + (cardHeight / 2);
+      const canvasWidth = getBracketColumnX(8) + BRACKET_LAYOUT_CONFIG.cardWidth;
+
+      titleElements.forEach((element) => {
+        const columnIndex = Number(element.dataset.bracketTitleColumn || 0);
+        setBracketElementPosition(element, getBracketColumnX(columnIndex), BRACKET_LAYOUT_CONFIG.titleTop);
+      });
+
+      matchElements.forEach((element) => {
+        if (element.dataset.bracketCenterMatch) return;
+        const side = element.dataset.bracketSide;
+        const sideRoundIndex = Number(element.dataset.bracketRoundIndex || 0);
+        const matchIndex = Number(element.dataset.bracketMatchIndex || 0);
+        const roundIndex = side === "right" ? 3 - sideRoundIndex : sideRoundIndex;
+        const columnIndex = Number(element.dataset.bracketColumn || 0);
+        const centerY = roundCenters[roundIndex]?.[matchIndex];
+        if (typeof centerY !== "number") return;
+        setBracketElementPosition(element, getBracketColumnX(columnIndex), centerY - (cardHeight / 2));
+      });
+
+      const centerX = getBracketColumnX(4);
+      const championLabel = layout.querySelector('[data-bracket-center-item="champion"]');
+      const thirdLabel = layout.querySelector('[data-bracket-center-item="third-label"]');
+      const finalMatch = layout.querySelector('[data-bracket-center-match="final"]');
+      const thirdMatch = layout.querySelector('[data-bracket-center-match="third"]');
+      const championHeight = Math.ceil(championLabel?.getBoundingClientRect().height || 0);
+      const thirdLabelHeight = Math.ceil(thirdLabel?.getBoundingClientRect().height || 0);
+      const thirdCardHeight = Math.ceil(thirdMatch?.getBoundingClientRect().height || cardHeight);
+      const finalTop = finalCenterY - (cardHeight / 2);
+      const championTop = Math.max(titleHeight + 18, finalTop - BRACKET_LAYOUT_CONFIG.centerGap - championHeight);
+      const thirdLabelTop = finalTop + cardHeight + BRACKET_LAYOUT_CONFIG.centerGap;
+      const thirdTop = thirdLabelTop + thirdLabelHeight + BRACKET_LAYOUT_CONFIG.centerLabelGap;
+
+      setBracketElementPosition(championLabel, centerX, championTop);
+      setBracketElementPosition(finalMatch, centerX, finalTop);
+      setBracketElementPosition(thirdLabel, centerX, thirdLabelTop);
+      setBracketElementPosition(thirdMatch, centerX, thirdTop);
+
+      const firstRoundBottom = roundCenters[0][7] + (cardHeight / 2);
+      const canvasHeight = Math.ceil(Math.max(
+        firstRoundBottom,
+        finalTop + cardHeight,
+        championTop + championHeight,
+        thirdTop + thirdCardHeight
+      ) + BRACKET_LAYOUT_CONFIG.paddingBottom);
+      layout.style.width = `${canvasWidth}px`;
+      layout.style.height = `${canvasHeight}px`;
+
+      const rootRect = layout.getBoundingClientRect();
+      const width = Math.max(canvasWidth, rootRect.width);
+      const height = Math.max(canvasHeight, rootRect.height);
+      svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+      svg.setAttribute("width", String(width));
+      svg.setAttribute("height", String(height));
+
+      svg.innerHTML = BRACKET_CONNECTION_GROUPS
+        .map((group) => {
+          const sourceRects = group.sources
+            .map((matchNumber) => layout.querySelector(`[data-bracket-match="${matchNumber}"]`))
+            .filter(Boolean)
+            .map((element) => getBracketRelativeRect(element, rootRect));
+          const targetElement = layout.querySelector(`[data-bracket-match="${group.target}"]`);
+          if (!sourceRects.length || !targetElement) return "";
+          const targetRect = getBracketRelativeRect(targetElement, rootRect);
+          return `<path class="bracket-connector" d="${buildBracketConnectorPath(sourceRects, targetRect)}"></path>`;
+        })
+        .join("");
+
+      syncBracketScrollbar();
+    }
+
+    function observeBracketLayoutChanges() {
+      bracketMutationObserver?.disconnect();
+      bracketMutationObserver = null;
+      if (!board?.classList.contains("board--bracket")) return;
+      bracketMutationObserver = new MutationObserver(() => {
+        recalculateBracketView();
+      });
+      bracketMutationObserver.observe(board, {
+        childList: true,
+        subtree: true,
+        characterData: true,
+      });
+    }
+
+    function recalculateBracketView() {
+      if (!board?.classList.contains("board--bracket")) return;
+      window.cancelAnimationFrame(bracketLayoutFrame);
+      bracketLayoutFrame = window.requestAnimationFrame(() => {
+        bracketLayoutFrame = window.requestAnimationFrame(() => {
+          measureAndLayoutBracket();
+        });
+      });
+    }
+
+    function renderBracketBoard(matches) {
+      if (!board) return;
+      board.classList.add("board--bracket");
+      const matchesByNumber = new Map(
+        [...matches]
+          .filter((match) => isKnockoutMatch(match))
+          .map((match) => [Number(match.match_number || 0), match])
+      );
+
+      board.innerHTML = `
+        <div class="bracket-layout">
+          <svg class="bracket-connectors" aria-hidden="true"></svg>
+          ${BRACKET_COLUMN_TITLES.map((title, columnIndex) => renderBracketTitle(title, columnIndex)).join("")}
+          ${renderBracketSide("left", BRACKET_SIDE_ROUNDS.left, matchesByNumber)}
+          ${renderBracketCenter(matchesByNumber)}
+          ${renderBracketSide("right", BRACKET_SIDE_ROUNDS.right, matchesByNumber)}
+        </div>
+      `;
+      refreshBoardReferences();
+      observeBracketLayoutChanges();
+      recalculateBracketView();
+    }
+
+    function syncBracketScrollbar() {
+      if (!board || !bracketScrollbar || !bracketScrollbarSpacer) return;
+      const isBracketView = board.classList.contains("board--bracket");
+      bracketScrollbar.classList.toggle("is-visible", isBracketView);
+      if (!isBracketView) return;
+      const layout = board.querySelector(".bracket-layout");
+      const canvasWidth = layout ? Math.ceil(layout.getBoundingClientRect().width) : board.scrollWidth;
+      bracketScrollbarSpacer.style.width = `${canvasWidth}px`;
+      if (Math.abs(bracketScrollbar.scrollLeft - board.scrollLeft) > 1) {
+        bracketScrollbar.scrollLeft = board.scrollLeft;
+      }
     }
 
     async function loadMatchesFromBackend() {
@@ -12763,6 +13504,7 @@
         buffCountEl.classList.toggle("is-hidden", count === 0);
         buffCountEl.setAttribute("aria-hidden", count === 0 ? "true" : "false");
       });
+      recalculateBracketView();
     }
 
     async function restoreBuffSelectionsForCurrentUser() {
@@ -14055,6 +14797,7 @@
             inputs.forEach((input) => {
               input.disabled = false;
             });
+            recalculateBracketView();
             showFeedback("Não foi possível salvar esse palpite agora.", "error");
             return;
           }
@@ -14063,6 +14806,7 @@
         refreshMissionCards();
         void loadMissionProgress();
         void loadUserHistory();
+        recalculateBracketView();
         return;
       }
 
@@ -14078,6 +14822,7 @@
       scoreCard.classList.remove("is-saved");
       inputs[0]?.focus();
       inputs[0]?.select();
+      recalculateBracketView();
     }
 
     function activateTab(nextId) {
@@ -14120,7 +14865,7 @@
     topNavPrev?.addEventListener("click", () => scrollTopNav(-1));
     topNavNext?.addEventListener("click", () => scrollTopNav(1));
 
-    [statusFilter, phaseFilter, groupFilter].forEach((select) => {
+    [statusFilter, phaseFilter, groupFilter, viewFilter].forEach((select) => {
       select?.addEventListener("change", () => applyGameFilters(true));
     });
 
@@ -14304,7 +15049,104 @@
       });
     });
 
+    let isSyncingBracketScroll = false;
+    bracketScrollbar?.addEventListener("scroll", () => {
+      if (!board?.classList.contains("board--bracket")) return;
+      if (isSyncingBracketScroll) return;
+      isSyncingBracketScroll = true;
+      board.scrollLeft = bracketScrollbar.scrollLeft;
+      window.requestAnimationFrame(() => {
+        isSyncingBracketScroll = false;
+      });
+    });
+
+    board?.addEventListener("scroll", () => {
+      if (!board.classList.contains("board--bracket") || !bracketScrollbar) return;
+      if (isSyncingBracketScroll) return;
+      isSyncingBracketScroll = true;
+      bracketScrollbar.scrollLeft = board.scrollLeft;
+      window.requestAnimationFrame(() => {
+        isSyncingBracketScroll = false;
+      });
+    });
+
+    let bracketResizeFrame = 0;
+    window.addEventListener("resize", () => {
+      if (!board?.classList.contains("board--bracket")) return;
+      window.cancelAnimationFrame(bracketResizeFrame);
+      bracketResizeFrame = window.requestAnimationFrame(() => {
+        recalculateBracketView();
+      });
+    });
+
+    let bracketDragState = null;
+    let suppressBracketClick = false;
+    function isInteractiveBracketTarget(target) {
+      return Boolean(target?.closest?.(
+        "button,a,input,select,textarea,[role='button'],[contenteditable='true']"
+      ));
+    }
+
+    board?.addEventListener("pointerdown", (event) => {
+      if (!board.classList.contains("board--bracket")) return;
+      if (event.button !== 0) return;
+      if (isInteractiveBracketTarget(event.target)) return;
+      bracketDragState = {
+        pointerId: event.pointerId,
+        startX: event.clientX,
+        startY: event.clientY,
+        scrollLeft: board.scrollLeft,
+        dragging: false,
+        moved: false,
+      };
+    });
+
+    board?.addEventListener("pointermove", (event) => {
+      if (!bracketDragState || bracketDragState.pointerId !== event.pointerId) return;
+      const deltaX = event.clientX - bracketDragState.startX;
+      const deltaY = event.clientY - bracketDragState.startY;
+      const absX = Math.abs(deltaX);
+      const absY = Math.abs(deltaY);
+      if (!bracketDragState.dragging) {
+        if (absX < 6 && absY < 6) return;
+        if (absY > absX) {
+          bracketDragState = null;
+          return;
+        }
+        bracketDragState.dragging = true;
+        bracketDragState.moved = true;
+        board.classList.add("is-dragging");
+        board.setPointerCapture?.(event.pointerId);
+      }
+      if (bracketDragState.dragging) {
+        event.preventDefault();
+        board.scrollLeft = bracketDragState.scrollLeft - deltaX;
+      }
+    });
+
+    function finishBracketDrag(event) {
+      if (!bracketDragState || bracketDragState.pointerId !== event.pointerId) return;
+      if (bracketDragState.dragging) {
+        suppressBracketClick = true;
+        board?.releasePointerCapture?.(event.pointerId);
+        board?.classList.remove("is-dragging");
+        window.setTimeout(() => {
+          suppressBracketClick = false;
+        }, 0);
+      }
+      bracketDragState = null;
+    }
+
+    board?.addEventListener("pointerup", finishBracketDrag);
+    board?.addEventListener("pointercancel", finishBracketDrag);
+    board?.addEventListener("lostpointercapture", finishBracketDrag);
+
     board?.addEventListener("click", (event) => {
+      if (suppressBracketClick) {
+        event.preventDefault();
+        event.stopPropagation();
+        return;
+      }
       const buffsButton = event.target.closest(".score-action--buffs");
       if (buffsButton) {
         const fixture = buffsButton.closest(".fixture");
