@@ -656,6 +656,7 @@ Antes de qualquer commit:
   - o reforco de sombra da logo tambem foi removido, voltando ao filtro anterior.
   - o card visual `Edicao especial entre amigos` foi removido do topo;
   - a frase passou a aparecer como texto puro em duas linhas abaixo de `Bolao Copa`: `EDICAO ESPECIAL` e `ENTRE AMIGOS`, com largura alinhada ao titulo.
+  - a frase foi ajustada para uma unica linha pequena, `EDICAO ESPECIAL ENTRE AMIGOS`, logo abaixo de `Bolao Copa`.
 - Por que foi alterado:
   - corrigir a diferenca visual em que o topo da pagina aparecia mais acinzentado e o fim mais escuro.
 - Arquivos modificados:

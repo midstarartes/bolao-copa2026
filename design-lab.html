@@ -677,25 +677,20 @@
     }
 
     .header-edition {
-      display: block;
+      display: inline-block;
       justify-self: center;
-      width: clamp(206px, 29vw, 294px);
-      transform: translateX(clamp(-28px, -3vw, -18px));
+      transform: translateX(clamp(-30px, -3vw, -18px));
       color: rgba(255, 255, 255, 0.9);
-      font-size: clamp(0.78rem, 1.55vw, 1.04rem);
+      font-size: clamp(0.56rem, 1vw, 0.72rem);
       font-weight: 900;
-      letter-spacing: 0.18em;
+      letter-spacing: 0.16em;
       text-transform: uppercase;
-      text-align: justify;
-      text-align-last: justify;
-      line-height: 1.02;
+      text-align: center;
+      line-height: 1;
+      white-space: nowrap;
       text-shadow:
         0 8px 22px rgba(0, 0, 0, 0.72),
         0 1px 0 rgba(255, 255, 255, 0.14);
-    }
-
-    .header-edition span {
-      display: block;
     }
 
     .header h1 {
@@ -5838,11 +5833,10 @@
       }
 
       .header-edition {
-        width: 206px;
         transform: translateX(-21px);
-        font-size: 0.76rem;
-        line-height: 1.05;
-        letter-spacing: 0.16em;
+        font-size: 0.56rem;
+        line-height: 1;
+        letter-spacing: 0.13em;
       }
 
       .header h1 {
@@ -6649,7 +6643,7 @@
   <main class="poster">
     <header class="header">
       <h1>BOLÃO COPA <img class="header-logo" src="https://commons.wikimedia.org/wiki/Special:FilePath/2026%20FIFA%20World%20Cup%20emblem.svg" alt="Logo oficial da Copa do Mundo 2026"></h1>
-      <span class="header-edition"><span>EDIÇÃO ESPECIAL</span><span>ENTRE AMIGOS</span></span>
+      <span class="header-edition">EDIÇÃO ESPECIAL ENTRE AMIGOS</span>
       <div class="header-eyebrow">
         <div class="coins-card" aria-label="Posição no ranking">
           <span class="coins-card-value">
