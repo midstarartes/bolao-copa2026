@@ -664,6 +664,7 @@ Antes de qualquer commit:
   - a frase `Va ate a aba REGRAS para entender como funcionara tudo` foi removida do topo.
   - ao acessar a aba Jogos sem filtros e sem pagina escolhida manualmente, a pagina passa a abrir no jogo seguinte ao ultimo jogo com resultado oficial lancado;
   - a escolha manual de pagina e os filtros impedem esse reposicionamento automatico durante a navegacao.
+  - nos cards de estatisticas do topo, o espaco entre o card do rotulo e o card numerico foi reduzido, aumentando a altura visual do card numerico.
 - Por que foi alterado:
   - corrigir a diferenca visual em que o topo da pagina aparecia mais acinzentado e o fim mais escuro.
 - Arquivos modificados:
