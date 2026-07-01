@@ -4521,18 +4521,40 @@
       border-radius: 7px;
       font-size: 0.48rem;
       letter-spacing: 0.06em;
+      min-width: 0;
+      line-height: 1;
+    }
+
+    .board--bracket .score-action--predict {
+      overflow: hidden;
+      text-overflow: clip;
+    }
+
+    .board--bracket .score-action--buffs {
+      overflow: visible;
+    }
+
+    .board--bracket .score-action-label {
+      gap: 4px;
     }
 
     .board--bracket .score-action--predict.is-view {
+      font-size: 0;
+      letter-spacing: 0;
+    }
+
+    .board--bracket .score-action--predict.is-view::before {
+      content: "VER";
       font-size: 0.48rem;
-      letter-spacing: 0.03em;
+      letter-spacing: 0.06em;
     }
 
     .board--bracket .score-action-buff-count {
-      width: 15px;
-      height: 15px;
-      min-width: 15px;
-      font-size: 0.46rem;
+      width: 13px;
+      height: 13px;
+      min-width: 13px;
+      padding: 0;
+      font-size: 0.42rem;
     }
 
     .board--bracket .badge-code {

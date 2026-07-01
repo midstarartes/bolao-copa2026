@@ -652,6 +652,9 @@ Antes de qualquer commit:
   - apos validacao no celular, o toque/caneta deixou de usar o arraste manual com multiplicador e passou a usar rolagem nativa horizontal do navegador;
   - o `touch-action` do chaveamento passou a permitir `pan-x pan-y`, mantendo scroll vertical e horizontal nativos no mobile;
   - o handler manual de arraste ficou restrito ao mouse no desktop, com deslocamento 1:1;
+  - no modo `Chaveamento`, o botao visual de mercado fechado passou a aparecer como `VER` em vez de `VER PALPITES`, apenas para evitar que cards concluidos invadam bandeiras/codigos laterais;
+  - os botoes dos cards no `Chaveamento` passaram a limitar overflow de texto dentro da propria area.
+  - o limite de overflow ficou restrito ao botao de palpite, e o badge numerico de buffs do `Chaveamento` foi reduzido para nao ser cortado.
   - a deteccao de gesto horizontal passou a tolerar pequenos desvios diagonais antes de cancelar o arraste;
   - o cancelamento por gesto vertical ficou mais conservador para preservar o scroll vertical sem travar o movimento horizontal.
 - Por que foi alterado:
