@@ -640,6 +640,30 @@ Antes de qualquer commit:
 
 ## 32. Registro de mudanças do AGENTS.md
 
+### Sessao 2026-07-01 - calibragem do touch no chaveamento
+
+- O que foi alterado:
+  - o arraste horizontal do modo `Chaveamento` ficou mais sensivel em toque/caneta;
+  - foi aplicado multiplicador apenas para `pointerType` touch/pen, mantendo mouse em movimento 1:1;
+  - a deteccao de gesto horizontal passou a tolerar pequenos desvios diagonais antes de cancelar o arraste;
+  - o cancelamento por gesto vertical ficou mais conservador para preservar o scroll vertical sem travar o movimento horizontal.
+- Por que foi alterado:
+  - no celular, o chaveamento movia pouco mesmo com arraste longo, deixando a navegacao horizontal pesada.
+- Arquivos modificados:
+  - `design-lab.html`
+  - `AGENTS.md`
+- Impacto no bolao:
+  - melhora apenas a interacao de navegacao horizontal no modo `Chaveamento`;
+  - nao altera layout, cronologia, cards, conectores, filtros, palpites, buffs, pontuacao, ranking, moedas, Supabase, API ou regras de negocio.
+- Areas afetadas:
+  - Jogos/Chaveamento/touch mobile: afetado.
+- Testes ou verificacoes feitos:
+  - `npm.cmd run build`;
+  - `git diff --check`;
+  - validacao local em viewport mobile do arraste horizontal, scroll vertical e barra superior.
+- Pendencias:
+  - validar em celular fisico antes de publicar.
+
 ### Sessao 2026-07-01 - desempenho mobile do chaveamento
 
 - O que foi alterado:

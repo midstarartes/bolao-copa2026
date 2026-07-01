@@ -15139,6 +15139,9 @@
 
     let bracketDragState = null;
     let suppressBracketClick = false;
+    const BRACKET_TOUCH_DRAG_MULTIPLIER = 1.65;
+    const BRACKET_HORIZONTAL_DRAG_THRESHOLD = 4;
+    const BRACKET_VERTICAL_CANCEL_RATIO = 1.35;
     function isInteractiveBracketTarget(target) {
       return Boolean(target?.closest?.(
         "button,a,input,select,textarea,[role='button'],[contenteditable='true']"
@@ -15154,6 +15157,7 @@
         startX: event.clientX,
         startY: event.clientY,
         scrollLeft: board.scrollLeft,
+        multiplier: event.pointerType === "touch" || event.pointerType === "pen" ? BRACKET_TOUCH_DRAG_MULTIPLIER : 1,
         dragging: false,
         moved: false,
       };
@@ -15166,11 +15170,12 @@
       const absX = Math.abs(deltaX);
       const absY = Math.abs(deltaY);
       if (!bracketDragState.dragging) {
-        if (absX < 6 && absY < 6) return;
-        if (absY > absX) {
+        if (absX < BRACKET_HORIZONTAL_DRAG_THRESHOLD && absY < BRACKET_HORIZONTAL_DRAG_THRESHOLD) return;
+        if (absY > absX * BRACKET_VERTICAL_CANCEL_RATIO) {
           bracketDragState = null;
           return;
         }
+        if (absX <= absY && absX < 12) return;
         bracketDragState.dragging = true;
         bracketDragState.moved = true;
         board.classList.add("is-dragging");
@@ -15178,7 +15183,7 @@
       }
       if (bracketDragState.dragging) {
         event.preventDefault();
-        board.scrollLeft = bracketDragState.scrollLeft - deltaX;
+        board.scrollLeft = bracketDragState.scrollLeft - (deltaX * bracketDragState.multiplier);
       }
     });
 
