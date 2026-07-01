@@ -666,6 +666,7 @@ Antes de qualquer commit:
   - a escolha manual de pagina e os filtros impedem esse reposicionamento automatico durante a navegacao.
   - nos cards de estatisticas do topo, o espaco entre o card do rotulo e o card numerico foi reduzido, aumentando a altura visual do card numerico.
   - jogos com resultado oficial lancado na aba Jogos passaram a ser exibidos com 80% de opacidade no bloco inteiro da partida.
+  - a opacidade dos jogos com resultado oficial lancado foi ajustada para 50%, incluindo tambem os numeros de palpite dentro desses jogos.
 - Por que foi alterado:
   - corrigir a diferenca visual em que o topo da pagina aparecia mais acinzentado e o fim mais escuro.
 - Arquivos modificados:
