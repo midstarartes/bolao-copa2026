@@ -5943,18 +5943,44 @@
       }
 
       .filters-row {
-        gap: 8px;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
         min-height: 0;
+        height: auto;
+        padding: 14px 12px;
+      }
+
+      .filters-row .ranking-player {
+        width: 100%;
+        min-width: 0;
+      }
+
+      .filters-row .ranking-player > div {
+        min-width: 0;
+      }
+
+      .filters-row .ranking-player-name,
+      .filters-row .ranking-player-real {
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
 
       .filters-value {
         justify-self: stretch;
         text-align: left;
+        width: 100%;
       }
 
       .filters-coins-value {
         justify-self: stretch;
         text-align: left;
+        width: 100%;
+        white-space: normal;
+        padding-left: 4px;
       }
 
       .filters-tags {

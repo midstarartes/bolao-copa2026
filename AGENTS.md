@@ -683,6 +683,7 @@ Antes de qualquer commit:
   - foi adicionada uma consulta dos buffs em jogos futuros para calcular as moedas em espera por usuario.
   - as linhas das tres subabas de `FILTROS` passaram a usar colunas mais flexiveis e quebra controlada de texto/tags para evitar corte ou descida irregular dos dados;
   - a subaba `BUFFS` ganhou um breakpoint intermediario para empilhar os buffs abaixo de jogador/moedas quando a largura ficar apertada.
+  - no mobile, os cards das tres subabas de `FILTROS` passaram a usar layout vertical com altura automatica, evitando sobreposicao entre jogador, moedas e valores.
 - Por que foi alterado:
   - permitir conferencia administrativa do total de moedas de cada participante diretamente na visao de filtros de buffs.
   - corrigir corte visual e desalinhamento dos dados nas subabas de filtros do ADMIN.
