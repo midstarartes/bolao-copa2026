@@ -12652,8 +12652,7 @@
 
     function renderMatchesBoard(matches) {
       if (!board) return;
-      bracketMutationObserver?.disconnect();
-      bracketMutationObserver = null;
+      cleanupBracketLayoutObserver();
       board.classList.remove("board--bracket");
       board.classList.remove("is-dragging");
       bracketScrollbar?.classList.remove("is-visible");
@@ -12671,7 +12670,9 @@
     }
 
     let bracketLayoutFrame = 0;
+    let bracketLayoutScheduled = false;
     let bracketMutationObserver = null;
+    let lastBracketConnectorMarkup = "";
 
     function getBracketColumnX(columnIndex) {
       return columnIndex * (BRACKET_LAYOUT_CONFIG.cardWidth + BRACKET_LAYOUT_CONFIG.columnGap);
@@ -12782,44 +12783,40 @@
       element.style.width = `${BRACKET_LAYOUT_CONFIG.cardWidth}px`;
     }
 
+    function cleanupBracketLayoutObserver() {
+      bracketMutationObserver?.disconnect();
+      bracketMutationObserver = null;
+      lastBracketConnectorMarkup = "";
+      bracketLayoutScheduled = false;
+      window.cancelAnimationFrame(bracketLayoutFrame);
+      bracketLayoutFrame = 0;
+    }
+
     function measureAndLayoutBracket() {
+      bracketLayoutScheduled = false;
       if (!board?.classList.contains("board--bracket")) return;
       const layout = board.querySelector(".bracket-layout");
       const svg = board.querySelector(".bracket-connectors");
       if (!layout || !svg) return;
-
-      layout.style.setProperty("--bracket-card-width", `${BRACKET_LAYOUT_CONFIG.cardWidth}px`);
-      layout.style.setProperty("--bracket-col-gap", `${BRACKET_LAYOUT_CONFIG.columnGap}px`);
+      const shouldRestoreObserver = Boolean(bracketMutationObserver);
+      bracketMutationObserver?.disconnect();
+      bracketMutationObserver = null;
 
       const titleElements = Array.from(layout.querySelectorAll(".bracket-title"));
       const matchElements = Array.from(layout.querySelectorAll(".bracket-match"));
-      if (!matchElements.length) return;
+      if (!matchElements.length) {
+        if (shouldRestoreObserver && board.classList.contains("board--bracket")) {
+          observeBracketLayoutChanges();
+        }
+        return;
+      }
 
       const titleHeight = Math.max(0, ...titleElements.map((element) => Math.ceil(element.getBoundingClientRect().height)));
       const cardHeight = Math.max(1, ...matchElements.map((element) => Math.ceil(element.getBoundingClientRect().height)));
-      layout.style.setProperty("--bracket-card-height", `${cardHeight}px`);
       const paddingTop = Math.max(BRACKET_LAYOUT_CONFIG.paddingTop, titleHeight + 18);
       const roundCenters = getBracketRoundCenters(cardHeight, paddingTop);
       const finalCenterY = roundCenters[3][0] || paddingTop + (cardHeight / 2);
       const canvasWidth = getBracketColumnX(8) + BRACKET_LAYOUT_CONFIG.cardWidth;
-
-      titleElements.forEach((element) => {
-        const columnIndex = Number(element.dataset.bracketTitleColumn || 0);
-        setBracketElementPosition(element, getBracketColumnX(columnIndex), BRACKET_LAYOUT_CONFIG.titleTop);
-      });
-
-      matchElements.forEach((element) => {
-        if (element.dataset.bracketCenterMatch) return;
-        const side = element.dataset.bracketSide;
-        const sideRoundIndex = Number(element.dataset.bracketRoundIndex || 0);
-        const matchIndex = Number(element.dataset.bracketMatchIndex || 0);
-        const roundIndex = side === "right" ? 3 - sideRoundIndex : sideRoundIndex;
-        const columnIndex = Number(element.dataset.bracketColumn || 0);
-        const centerY = roundCenters[roundIndex]?.[matchIndex];
-        if (typeof centerY !== "number") return;
-        setBracketElementPosition(element, getBracketColumnX(columnIndex), centerY - (cardHeight / 2));
-      });
-
       const centerX = getBracketColumnX(4);
       const championLabel = layout.querySelector('[data-bracket-center-item="champion"]');
       const thirdLabel = layout.querySelector('[data-bracket-center-item="third-label"]');
@@ -12832,12 +12829,6 @@
       const championTop = Math.max(titleHeight + 18, finalTop - BRACKET_LAYOUT_CONFIG.centerGap - championHeight);
       const thirdLabelTop = finalTop + cardHeight + BRACKET_LAYOUT_CONFIG.centerGap;
       const thirdTop = thirdLabelTop + thirdLabelHeight + BRACKET_LAYOUT_CONFIG.centerLabelGap;
-
-      setBracketElementPosition(championLabel, centerX, championTop);
-      setBracketElementPosition(finalMatch, centerX, finalTop);
-      setBracketElementPosition(thirdLabel, centerX, thirdLabelTop);
-      setBracketElementPosition(thirdMatch, centerX, thirdTop);
-
       const firstRoundBottom = roundCenters[0][7] + (cardHeight / 2);
       const canvasHeight = Math.ceil(Math.max(
         firstRoundBottom,
@@ -12845,49 +12836,111 @@
         championTop + championHeight,
         thirdTop + thirdCardHeight
       ) + BRACKET_LAYOUT_CONFIG.paddingBottom);
+      const titlePositions = titleElements.map((element) => ({
+        element,
+        left: getBracketColumnX(Number(element.dataset.bracketTitleColumn || 0)),
+        top: BRACKET_LAYOUT_CONFIG.titleTop,
+      }));
+      const matchPositionItems = [];
+      const rectsByMatch = new Map();
+
+      matchElements.forEach((element) => {
+        const matchNumber = Number(element.dataset.bracketMatch || 0);
+        let left = getBracketColumnX(Number(element.dataset.bracketColumn || 0));
+        let top = 0;
+        if (element.dataset.bracketCenterMatch === "final") {
+          top = finalTop;
+        } else if (element.dataset.bracketCenterMatch === "third") {
+          top = thirdTop;
+        } else {
+          const side = element.dataset.bracketSide;
+          const sideRoundIndex = Number(element.dataset.bracketRoundIndex || 0);
+          const matchIndex = Number(element.dataset.bracketMatchIndex || 0);
+          const roundIndex = side === "right" ? 3 - sideRoundIndex : sideRoundIndex;
+          const centerY = roundCenters[roundIndex]?.[matchIndex];
+          if (typeof centerY !== "number") return;
+          top = centerY - (cardHeight / 2);
+        }
+        matchPositionItems.push({ element, left, top });
+        rectsByMatch.set(matchNumber, {
+          left,
+          right: left + BRACKET_LAYOUT_CONFIG.cardWidth,
+          top,
+          bottom: top + cardHeight,
+          centerX: left + (BRACKET_LAYOUT_CONFIG.cardWidth / 2),
+          centerY: top + (cardHeight / 2),
+        });
+      });
+
+      layout.style.setProperty("--bracket-card-width", `${BRACKET_LAYOUT_CONFIG.cardWidth}px`);
+      layout.style.setProperty("--bracket-col-gap", `${BRACKET_LAYOUT_CONFIG.columnGap}px`);
+      layout.style.setProperty("--bracket-card-height", `${cardHeight}px`);
+
+      titlePositions.forEach(({ element, left, top }) => {
+        setBracketElementPosition(element, left, top);
+      });
+
+      matchPositionItems.forEach(({ element, left, top }) => {
+        setBracketElementPosition(element, left, top);
+      });
+
+      setBracketElementPosition(championLabel, centerX, championTop);
+      setBracketElementPosition(finalMatch, centerX, finalTop);
+      setBracketElementPosition(thirdLabel, centerX, thirdLabelTop);
+      setBracketElementPosition(thirdMatch, centerX, thirdTop);
+
       layout.style.width = `${canvasWidth}px`;
       layout.style.height = `${canvasHeight}px`;
 
-      const rootRect = layout.getBoundingClientRect();
-      const width = Math.max(canvasWidth, rootRect.width);
-      const height = Math.max(canvasHeight, rootRect.height);
+      const width = canvasWidth;
+      const height = canvasHeight;
       svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
       svg.setAttribute("width", String(width));
       svg.setAttribute("height", String(height));
 
-      svg.innerHTML = BRACKET_CONNECTION_GROUPS
+      const connectorMarkup = BRACKET_CONNECTION_GROUPS
         .map((group) => {
           const sourceRects = group.sources
-            .map((matchNumber) => layout.querySelector(`[data-bracket-match="${matchNumber}"]`))
-            .filter(Boolean)
-            .map((element) => getBracketRelativeRect(element, rootRect));
-          const targetElement = layout.querySelector(`[data-bracket-match="${group.target}"]`);
-          if (!sourceRects.length || !targetElement) return "";
-          const targetRect = getBracketRelativeRect(targetElement, rootRect);
+            .map((matchNumber) => rectsByMatch.get(matchNumber))
+            .filter(Boolean);
+          const targetRect = rectsByMatch.get(group.target);
+          if (!sourceRects.length || !targetRect) return "";
           return `<path class="bracket-connector" d="${buildBracketConnectorPath(sourceRects, targetRect)}"></path>`;
         })
         .join("");
+      if (connectorMarkup !== lastBracketConnectorMarkup) {
+        lastBracketConnectorMarkup = connectorMarkup;
+        svg.innerHTML = connectorMarkup;
+      }
 
-      syncBracketScrollbar();
+      syncBracketScrollbar(canvasWidth);
+      if (shouldRestoreObserver && board.classList.contains("board--bracket")) {
+        observeBracketLayoutChanges();
+      }
     }
 
     function observeBracketLayoutChanges() {
       bracketMutationObserver?.disconnect();
       bracketMutationObserver = null;
       if (!board?.classList.contains("board--bracket")) return;
-      bracketMutationObserver = new MutationObserver(() => {
-        recalculateBracketView();
+      bracketMutationObserver = new MutationObserver((mutations) => {
+        const shouldRecalculate = mutations.some((mutation) => {
+          const target = mutation.target;
+          if (target?.closest?.(".bracket-connectors")) return false;
+          return true;
+        });
+        if (shouldRecalculate) scheduleBracketLayout();
       });
       bracketMutationObserver.observe(board, {
         childList: true,
         subtree: true,
-        characterData: true,
       });
     }
 
-    function recalculateBracketView() {
+    function scheduleBracketLayout() {
       if (!board?.classList.contains("board--bracket")) return;
-      window.cancelAnimationFrame(bracketLayoutFrame);
+      if (bracketLayoutScheduled) return;
+      bracketLayoutScheduled = true;
       bracketLayoutFrame = window.requestAnimationFrame(() => {
         bracketLayoutFrame = window.requestAnimationFrame(() => {
           measureAndLayoutBracket();
@@ -12895,8 +12948,13 @@
       });
     }
 
+    function recalculateBracketView() {
+      scheduleBracketLayout();
+    }
+
     function renderBracketBoard(matches) {
       if (!board) return;
+      cleanupBracketLayoutObserver();
       board.classList.add("board--bracket");
       const matchesByNumber = new Map(
         [...matches]
@@ -12918,13 +12976,13 @@
       recalculateBracketView();
     }
 
-    function syncBracketScrollbar() {
+    function syncBracketScrollbar(canvasWidthOverride) {
       if (!board || !bracketScrollbar || !bracketScrollbarSpacer) return;
       const isBracketView = board.classList.contains("board--bracket");
       bracketScrollbar.classList.toggle("is-visible", isBracketView);
       if (!isBracketView) return;
       const layout = board.querySelector(".bracket-layout");
-      const canvasWidth = layout ? Math.ceil(layout.getBoundingClientRect().width) : board.scrollWidth;
+      const canvasWidth = canvasWidthOverride || layout?.scrollWidth || board.scrollWidth;
       bracketScrollbarSpacer.style.width = `${canvasWidth}px`;
       if (Math.abs(bracketScrollbar.scrollLeft - board.scrollLeft) > 1) {
         bracketScrollbar.scrollLeft = board.scrollLeft;
@@ -15128,7 +15186,9 @@
       if (!bracketDragState || bracketDragState.pointerId !== event.pointerId) return;
       if (bracketDragState.dragging) {
         suppressBracketClick = true;
-        board?.releasePointerCapture?.(event.pointerId);
+        if (board?.hasPointerCapture?.(event.pointerId)) {
+          board.releasePointerCapture(event.pointerId);
+        }
         board?.classList.remove("is-dragging");
         window.setTimeout(() => {
           suppressBracketClick = false;

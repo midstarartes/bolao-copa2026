@@ -640,6 +640,40 @@ Antes de qualquer commit:
 
 ## 32. Registro de mudanças do AGENTS.md
 
+### Sessao 2026-07-01 - desempenho mobile do chaveamento
+
+- O que foi alterado:
+  - o modo `Chaveamento` deixou de reagendar layout em loop quando o SVG de conectores era reescrito;
+  - foi criado um agendador unico de layout com `requestAnimationFrame`, descartando chamadas duplicadas;
+  - o `MutationObserver` do chaveamento passou a ser desligado durante o calculo e religado apenas ao final;
+  - mutacoes dentro do SVG de conectores passaram a ser ignoradas para nao disparar novo recalc;
+  - os conectores passaram a ser calculados a partir das coordenadas ja calculadas dos cards, evitando nova rodada de `getBoundingClientRect`;
+  - o SVG so e reconstruido quando o markup dos conectores muda;
+  - o `Pointer Events` passou a liberar captura apenas quando ela foi realmente tomada.
+- Por que foi alterado:
+  - corrigir travamento/perda de fluidez do modo `Chaveamento` no celular, causado por recalc excessivo entre observer, SVG e requestAnimationFrame.
+- Arquivos modificados:
+  - `design-lab.html`
+  - `AGENTS.md`
+- Impacto no bolao:
+  - melhora de performance e navegacao no modo `Chaveamento`;
+  - nao altera layout aprovado, cronologia, cards, conectores visuais, filtros, palpites, buffs, pontuacao, ranking, moedas, Supabase, API ou regras de negocio.
+- Areas afetadas:
+  - Jogos/Chaveamento/performance mobile: afetado;
+  - Cronologia e demais abas: sem alteracao intencional.
+- Testes ou verificacoes feitos:
+  - `npm.cmd run build`;
+  - `git diff --check`;
+  - abertura do `Chaveamento` em viewport mobile;
+  - teste de arraste horizontal;
+  - teste de scroll vertical;
+  - teste da barra superior sincronizada;
+  - teste de alternancia `Chaveamento -> Cronologia -> Chaveamento`;
+  - teste de `Palpitar`, `Editar` e `Buffs` sem salvar alteracoes no Supabase;
+  - console sem erros.
+- Pendencias:
+  - validar no celular real apos publicacao.
+
 ### Sessao 2026-07-01 - preenchimento automatico do mata-mata
 
 - O que foi alterado:
