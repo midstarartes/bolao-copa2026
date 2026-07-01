@@ -674,6 +674,30 @@ Antes de qualquer commit:
 - Pendencias:
   - validar em celular fisico antes de publicar.
 
+### Sessao 2026-07-01 - coluna de moedas nos filtros de buffs
+
+- O que foi alterado:
+  - na aba `ADMIN > FILTROS > BUFFS`, cada linha passou a exibir uma coluna `MOEDAS` antes dos buffs usados;
+  - a coluna soma o saldo atual do usuario com as moedas retidas em buffs/apostas de jogos futuros ainda abertos;
+  - a consulta de usuarios dos filtros passou a carregar o campo `coins`;
+  - foi adicionada uma consulta dos buffs em jogos futuros para calcular as moedas em espera por usuario.
+- Por que foi alterado:
+  - permitir conferencia administrativa do total de moedas de cada participante diretamente na visao de filtros de buffs.
+- Arquivos modificados:
+  - `design-lab.html`
+  - `AGENTS.md`
+- Impacto no bolao:
+  - alteracao visual/administrativa na aba de filtros;
+  - nao altera saldo, ranking, pontuacao, palpites, buffs, resultados, Supabase, API, Vercel ou GitHub.
+- Areas afetadas:
+  - ADMIN/FILTROS/BUFFS: afetado;
+  - visual administrativo: afetado.
+- Testes ou verificacoes feitos:
+  - `npm.cmd run build`;
+  - `git diff --check`.
+- Pendencias:
+  - validar no acesso ADMIN com dados reais de usuarios.
+
 ### Sessao 2026-07-01 - desempenho mobile do chaveamento
 
 - O que foi alterado:

@@ -2876,6 +2876,10 @@
       padding: 12px 14px;
     }
 
+    .filters-row--buffs {
+      grid-template-columns: minmax(0, 1fr) minmax(72px, 0.24fr) minmax(180px, 0.55fr);
+    }
+
     .filters-row .ranking-player-name {
       margin: 0;
     }
@@ -2930,6 +2934,30 @@
 
     .filters-value--empty {
       color: rgba(226,232,240,0.44);
+    }
+
+    .filters-coins-value {
+      justify-self: end;
+      display: grid;
+      gap: 2px;
+      text-align: right;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .filters-coins-label {
+      color: rgba(226,232,240,0.52);
+      font-size: 0.58rem;
+      font-weight: 900;
+      letter-spacing: 0.1em;
+    }
+
+    .filters-coins-number {
+      color: #facc15;
+      font-size: 1rem;
+      font-weight: 1000;
+      letter-spacing: 0.03em;
+      text-shadow: 0 4px 12px rgba(0,0,0,0.62);
     }
 
     .filters-tags {
@@ -5895,6 +5923,11 @@
       }
 
       .filters-value {
+        justify-self: stretch;
+        text-align: left;
+      }
+
+      .filters-coins-value {
         justify-self: stretch;
         text-align: left;
       }
@@ -11630,7 +11663,7 @@
       if (filtersUsersCache.length) return filtersUsersCache;
       const { data, error } = await supabase
         .from("app_users")
-        .select("id,nickname,real_name,avatar_type,avatar_value,is_admin,is_blocked")
+        .select("id,nickname,real_name,avatar_type,avatar_value,coins,is_admin,is_blocked")
         .order("nickname", { ascending: true });
       if (error) throw error;
       filtersUsersCache = (data || []).filter((user) => !user.is_admin);
@@ -11781,6 +11814,38 @@
       return `<div class="filters-value"><div class="filters-tags">${tags}</div></div>`;
     }
 
+    function buildFiltersCoinsValue(user, waitingCoinsByUser) {
+      const currentCoins = Number(user?.coins ?? 0);
+      const waitingCoins = Number(waitingCoinsByUser?.get?.(user?.id) || 0);
+      const totalCoins = currentCoins + waitingCoins;
+      return `
+        <div class="filters-coins-value" title="Saldo atual: ${escapeHtml(String(currentCoins))} • Em espera: ${escapeHtml(String(waitingCoins))}">
+          <span class="filters-coins-label">Moedas</span>
+          <span class="filters-coins-number">${escapeHtml(String(totalCoins))}</span>
+        </div>
+      `;
+    }
+
+    async function loadFiltersWaitingCoinsByUser(users) {
+      if (!users.length) return new Map();
+      const userIds = users.map((user) => user.id).filter(Boolean);
+      if (!userIds.length) return new Map();
+      const { data, error } = await supabase
+        .from("match_buffs")
+        .select("user_id,match_id,buff_id,target_nickname")
+        .in("user_id", userIds);
+      if (error) throw error;
+      const matchById = new Map(matchRecords.map((match) => [match.id, match]));
+      return (data || []).reduce((map, buff) => {
+        const match = matchById.get(buff.match_id);
+        if (!isMatchOpenForCoinHistory(match)) return map;
+        const cost = getBuffCoinCost(buff);
+        if (!cost) return map;
+        map.set(buff.user_id, (map.get(buff.user_id) || 0) + cost);
+        return map;
+      }, new Map());
+    }
+
     async function loadFiltersBuffs() {
       const currentUser = getCurrentUser();
       if (!currentUser?.isAdmin || !BACKEND_ENABLED) return;
@@ -11793,12 +11858,13 @@
       }
       renderFiltersLoading(filtersBuffsList);
       try {
-        const [users, buffsResponse] = await Promise.all([
-          loadFiltersUsers(),
+        const users = await loadFiltersUsers();
+        const [buffsResponse, waitingCoinsByUser] = await Promise.all([
           supabase
             .from("match_buffs")
             .select("user_id,buff_id,target_nickname")
             .eq("match_id", matchId),
+          loadFiltersWaitingCoinsByUser(users),
         ]);
         if (buffsResponse.error) throw buffsResponse.error;
         const buffsByUser = (buffsResponse.data || []).reduce((map, entry) => {
@@ -11828,8 +11894,9 @@
         filtersBuffsList.innerHTML = sortedUsers.map((user) => {
           const entries = buffsByUser.get(user.id) || [];
           return `
-            <article class="ranking-card filters-row">
+            <article class="ranking-card filters-row filters-row--buffs">
               ${buildFiltersPlayerHtml(user)}
+              ${buildFiltersCoinsValue(user, waitingCoinsByUser)}
               ${buildBuffDetailTags(entries)}
             </article>
           `;
