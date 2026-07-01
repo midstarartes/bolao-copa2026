@@ -663,7 +663,7 @@
 
     .header {
       display: grid;
-      gap: 10px;
+      gap: 8px;
       min-width: 0;
       padding-top: 6px;
     }
@@ -677,30 +677,25 @@
     }
 
     .header-edition {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 100%;
-      min-height: 36px;
-      padding: 6px 14px;
-      border-radius: 14px;
-      border: 1px solid rgba(255, 255, 255, 0.14);
-      background:
-        linear-gradient(180deg, rgba(255,255,255,0.16), rgba(255,255,255,0.04) 18%, rgba(255,255,255,0.01) 46%, rgba(0,0,0,0.22) 100%),
-        linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01) 42%, rgba(0,0,0,0.18));
-      color: #fffbed;
-      font-size: clamp(0.84rem, 1.75vw, 1.28rem);
+      display: block;
+      justify-self: center;
+      width: clamp(206px, 29vw, 294px);
+      transform: translateX(clamp(-28px, -3vw, -18px));
+      color: rgba(255, 255, 255, 0.9);
+      font-size: clamp(0.78rem, 1.55vw, 1.04rem);
       font-weight: 900;
-      letter-spacing: 0.22em;
+      letter-spacing: 0.18em;
       text-transform: uppercase;
-      text-align: center;
-      line-height: 1;
-      text-wrap: balance;
-      box-shadow:
-        0 18px 34px rgba(0, 0, 0, 0.56),
-        0 4px 12px rgba(0, 0, 0, 0.34),
-        inset 0 1px 0 rgba(255, 255, 255, 0.24),
-        inset 0 -12px 20px rgba(0, 0, 0, 0.34);
+      text-align: justify;
+      text-align-last: justify;
+      line-height: 1.02;
+      text-shadow:
+        0 8px 22px rgba(0, 0, 0, 0.72),
+        0 1px 0 rgba(255, 255, 255, 0.14);
+    }
+
+    .header-edition span {
+      display: block;
     }
 
     .header h1 {
@@ -5843,11 +5838,11 @@
       }
 
       .header-edition {
-        min-height: 30px;
-        padding: 5px 8px;
-        font-size: clamp(0.68rem, 3.05vw, 0.86rem);
-        line-height: 1;
-        letter-spacing: 0.14em;
+        width: 206px;
+        transform: translateX(-21px);
+        font-size: 0.76rem;
+        line-height: 1.05;
+        letter-spacing: 0.16em;
       }
 
       .header h1 {
@@ -6654,7 +6649,7 @@
   <main class="poster">
     <header class="header">
       <h1>BOLÃO COPA <img class="header-logo" src="https://commons.wikimedia.org/wiki/Special:FilePath/2026%20FIFA%20World%20Cup%20emblem.svg" alt="Logo oficial da Copa do Mundo 2026"></h1>
-      <span class="header-edition">Edição especial entre amigos</span>
+      <span class="header-edition"><span>EDIÇÃO ESPECIAL</span><span>ENTRE AMIGOS</span></span>
       <div class="header-eyebrow">
         <div class="coins-card" aria-label="Posição no ranking">
           <span class="coins-card-value">

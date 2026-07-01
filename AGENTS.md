@@ -654,6 +654,8 @@ Antes de qualquer commit:
   - a logo original recebeu reforco de sombra/recorte sem adicionar numeracao manual.
   - depois de validacao visual pelo usuario, o CSS global de fundo foi revertido ao estado anterior as edicoes de fundo, incluindo variaveis `#0c0c0e`, textura original, camada diagonal e brilho radial do `.poster::before`;
   - o reforco de sombra da logo tambem foi removido, voltando ao filtro anterior.
+  - o card visual `Edicao especial entre amigos` foi removido do topo;
+  - a frase passou a aparecer como texto puro em duas linhas abaixo de `Bolao Copa`: `EDICAO ESPECIAL` e `ENTRE AMIGOS`, com largura alinhada ao titulo.
 - Por que foi alterado:
   - corrigir a diferenca visual em que o topo da pagina aparecia mais acinzentado e o fim mais escuro.
 - Arquivos modificados:
