@@ -7003,6 +7003,62 @@
       font-weight: 900;
       text-shadow: 0 3px 10px rgba(0,0,0,0.46);
     }
+
+    @media (max-width: 720px) {
+      .ranking-card.filters-row {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        justify-items: stretch !important;
+        gap: 10px !important;
+        height: auto !important;
+        min-height: 0 !important;
+        padding: 14px 12px !important;
+        overflow: hidden;
+      }
+
+      .ranking-card.filters-row .ranking-player,
+      .ranking-card.filters-row .filters-coins-value,
+      .ranking-card.filters-row .filters-value {
+        position: relative;
+        z-index: 1;
+        width: 100%;
+        max-width: 100%;
+        justify-self: stretch;
+        text-align: left;
+      }
+
+      .ranking-card.filters-row .ranking-player {
+        display: flex !important;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .ranking-card.filters-row .ranking-player > div {
+        min-width: 0;
+      }
+
+      .ranking-card.filters-row .ranking-player-name,
+      .ranking-card.filters-row .ranking-player-real {
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .ranking-card.filters-row .filters-coins-value {
+        padding-left: 0;
+        white-space: normal;
+      }
+
+      .ranking-card.filters-row .filters-value {
+        overflow-wrap: anywhere;
+      }
+
+      .ranking-card.filters-row .filters-tags {
+        justify-content: flex-start;
+      }
+    }
   </style>
 </head>
 <body>
