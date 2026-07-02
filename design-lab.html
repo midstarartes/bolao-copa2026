@@ -4323,6 +4323,10 @@
       letter-spacing: 0.05em;
       text-transform: uppercase;
       margin-bottom: 4px;
+      color: #facc15;
+      text-shadow:
+        0 2px 8px rgba(0,0,0,0.7),
+        0 0 12px rgba(250,204,21,0.38);
     }
 
     .buff-item-meta,
@@ -4333,6 +4337,24 @@
       font-weight: 700;
       color: #d9dde3;
       line-height: 1.45;
+    }
+
+    .buff-item-line {
+      display: block;
+    }
+
+    .buff-item-line::before {
+      content: "➜";
+      color: #22c55e;
+      margin-right: 6px;
+      text-shadow: 0 0 8px rgba(34,197,94,0.5);
+    }
+
+    .buff-item-key {
+      color: #f8fafc;
+      font-weight: 1000;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
     }
 
     .buff-item-state {
@@ -8933,7 +8955,7 @@
         id: "coin-bet",
         title: "Aposta de Moedas",
         cost: 1,
-        description: "Aposte 1 moeda. Resultado certo → 2 moedas; placar exato → 3 moedas; errou → 0.",
+        description: "Aposte 1 moeda. Se cravar o placar exato, receba 3. Se acertar o vencedor/empate, receba 2. Se errar, perca a moeda apostada!",
         usage: "Disponível em todas as fases"
       }
     ];
@@ -14558,6 +14580,37 @@
       return false;
     }
 
+    function getBuffAllowedPhaseText(buffId) {
+      const phases = {
+        "draw-protected": "Disponível até SEMI-FINAL",
+        "palpite-duplo": "Disponível até QUARTAS DE FINAL",
+        "zerar-adversario": "Apenas Fase de Grupos",
+        "meia-adversario": "Disponível em 16 AVOS, OITAVAS E QUARTAS",
+        "coin-bet": "Disponível em todas as fases",
+      };
+      return phases[buffId] || "";
+    }
+
+    function getBuffRemainingUsesText(buffId) {
+      if (buffId !== "zerar-adversario" && buffId !== "meia-adversario") {
+        return "ILIMITADO";
+      }
+      const options = getTargetOptionsForBuff(buffId);
+      if (!options.length) return "0";
+      const remainingUses = options.filter((entry) => entry.is_available).length;
+      return String(Math.max(0, Math.min(2, remainingUses)));
+    }
+
+    function buildBuffItemLine(label, value) {
+      return `<span class="buff-item-desc buff-item-line"><span class="buff-item-key">${label}</span>: ${escapeHtml(String(value || ""))}</span>`;
+    }
+
+    function buildBuffUsageText(buffId) {
+      const remainingUsesText = getBuffRemainingUsesText(buffId);
+      const allowedPhaseText = getBuffAllowedPhaseText(buffId);
+      return `RESTANTES ${remainingUsesText}${allowedPhaseText ? ` (${allowedPhaseText})` : ""}`;
+    }
+
     function renderBuffList() {
       const currentUser = getCurrentUser();
       const currentCoins = getCurrentUserCoins();
@@ -14610,14 +14663,15 @@
             stateText = "Nenhum adversário disponível";
           }
 
-          const costLabel = isCoinBet ? "Custo: 🪙 1 moeda" : `Custo: ${"🪙".repeat(buff.cost)}`;
+          const costValue = isCoinBet ? "🪙 1 moeda" : "🪙".repeat(buff.cost);
+          const usageText = buildBuffUsageText(buff.id);
 
           return `
             <button class="buff-item${alreadyActive ? " is-active" : ""}" type="button" data-buff-id="${buff.id}" ${disabled ? "disabled" : ""}>
               <span class="buff-item-title">${buff.title}</span>
-              <span class="buff-item-meta">${costLabel}</span>
-              <span class="buff-item-desc">Buff: ${buff.description}</span>
-              <span class="buff-item-desc">Uso: ${buff.usage}</span>
+              ${buildBuffItemLine("USO", usageText)}
+              ${buildBuffItemLine("CUSTO", costValue)}
+              ${buildBuffItemLine("BUFF", buff.description)}
               ${stateText ? `<span class="buff-item-state">${stateText}</span>` : ""}
             </button>
           `;

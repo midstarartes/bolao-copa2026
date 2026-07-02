@@ -726,6 +726,36 @@ Antes de qualquer commit:
 - Pendencias:
   - validar visualmente em desktop e mobile apos publicacao.
 
+### Sessao 2026-07-02 - texto e destaque do quadro de buffs
+
+- O que foi alterado:
+  - no quadro de `BUFFS DISPONIVEIS`, os titulos dos buffs passaram a usar fonte dourada brilhante;
+  - os detalhes de cada buff passaram a aparecer em linhas com indicador de bolinha e palavras iniciais em caixa alta: `USOS RESTANTES`, `CUSTO` e `BUFF`;
+  - `Empate Protegido`, `Pontuacao Dobrada` e `Aposta de Moedas` exibem `USOS RESTANTES: ILIMITADO`;
+  - `Zerar Adversario` e `Meiar Adversario` exibem a quantidade restante de usos com base nas opcoes ainda disponiveis para o usuario;
+  - a frase de uso/fase foi incorporada na linha `USOS RESTANTES`, conforme a fase permitida de cada buff.
+  - a expressao `Durante fase` foi removida da linha `USOS RESTANTES`, mantendo apenas o texto da fase entre parenteses.
+  - a linha `USOS RESTANTES` foi renomeada para `USO`, exibindo `RESTANTES X` antes da fase permitida;
+  - `Empate Protegido` passou a mostrar `ILIMITADO (Disponivel ate SEMI-FINAL)`;
+  - `Meiar Adversario` passou a mostrar `X (Disponivel em 16 AVOS, OITAVAS E QUARTAS)`;
+  - os indicadores das linhas do buff foram trocados de bolinhas amarelas para setas verdes.
+  - a descricao do buff `Aposta de Moedas` foi reescrita para explicar retorno por placar exato, vencedor/empate e perda da moeda em caso de erro.
+- Por que foi alterado:
+  - melhorar a leitura do quadro de buffs e deixar explicito o limite de usos de cada buff.
+- Arquivos modificados:
+  - `design-lab.html`
+  - `AGENTS.md`
+- Impacto no bolao:
+  - alteracao visual/informativa no modal de buffs;
+  - nao altera custos, regras de disponibilidade, aplicacao de buffs, moedas, pontuacao, ranking, Supabase, API, Vercel ou GitHub.
+- Areas afetadas:
+  - visual/buffs: afetado.
+- Testes ou verificacoes feitos:
+  - `npm.cmd run build`;
+  - `git diff --check`.
+- Pendencias:
+  - validar visualmente no modal de buffs com usuario comum.
+
 ### Sessao 2026-07-01 - desempenho mobile do chaveamento
 
 - O que foi alterado:
