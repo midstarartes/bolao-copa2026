@@ -7004,17 +7004,19 @@
       text-shadow: 0 3px 10px rgba(0,0,0,0.46);
     }
 
-    @media (max-width: 720px) {
+    @media (max-width: 720px), (pointer: coarse) {
       .ranking-card.filters-row {
-        display: flex !important;
-        flex-direction: column !important;
+        display: grid !important;
+        grid-template-columns: minmax(0, 1fr) !important;
+        grid-auto-flow: row !important;
+        grid-auto-rows: auto !important;
         align-items: stretch !important;
         justify-items: stretch !important;
         gap: 10px !important;
         height: auto !important;
-        min-height: 0 !important;
+        min-height: 104px !important;
         padding: 14px 12px !important;
-        overflow: hidden;
+        overflow: visible !important;
       }
 
       .ranking-card.filters-row .ranking-player,
@@ -7022,16 +7024,19 @@
       .ranking-card.filters-row .filters-value {
         position: relative;
         z-index: 1;
+        grid-column: 1 / -1 !important;
         width: 100%;
         max-width: 100%;
         justify-self: stretch;
         text-align: left;
+        transform: none !important;
       }
 
       .ranking-card.filters-row .ranking-player {
         display: flex !important;
         align-items: center;
         gap: 8px;
+        min-height: 34px;
       }
 
       .ranking-card.filters-row .ranking-player > div {
@@ -7049,9 +7054,11 @@
       .ranking-card.filters-row .filters-coins-value {
         padding-left: 0;
         white-space: normal;
+        min-height: 28px;
       }
 
       .ranking-card.filters-row .filters-value {
+        min-height: 28px;
         overflow-wrap: anywhere;
       }
 

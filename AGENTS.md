@@ -685,6 +685,7 @@ Antes de qualquer commit:
   - a subaba `BUFFS` ganhou um breakpoint intermediario para empilhar os buffs abaixo de jogador/moedas quando a largura ficar apertada.
   - no mobile, os cards das tres subabas de `FILTROS` passaram a usar layout vertical com altura automatica, evitando sobreposicao entre jogador, moedas e valores.
   - foi adicionada uma regra mobile especifica ao final do CSS para `ranking-card.filters-row`, garantindo que as regras gerais do ranking nao sobrescrevam o layout vertical dos filtros.
+  - a regra mobile dos filtros tambem passou a usar `pointer: coarse`, uma coluna unica forcada e altura minima para corrigir navegadores mobile que ainda exibiam os dados sobrepostos.
 - Por que foi alterado:
   - permitir conferencia administrativa do total de moedas de cada participante diretamente na visao de filtros de buffs.
   - corrigir corte visual e desalinhamento dos dados nas subabas de filtros do ADMIN.
