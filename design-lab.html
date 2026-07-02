@@ -3554,6 +3554,39 @@
         inset 0 1px 0 rgba(255,255,255,0.12);
     }
 
+    .extras-result-marker {
+      position: absolute;
+      z-index: 3;
+      top: 50%;
+      left: 50%;
+      width: 38px;
+      height: 38px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      transform: translate(-50%, -50%);
+      font-size: 1.72rem;
+      font-weight: 1000;
+      line-height: 1;
+      pointer-events: none;
+      text-shadow:
+        0 3px 8px rgba(0,0,0,0.72),
+        0 0 10px currentColor;
+      background: rgba(0,0,0,0.34);
+      border: 1px solid currentColor;
+      box-shadow:
+        0 0 18px rgba(0,0,0,0.36),
+        inset 0 1px 0 rgba(255,255,255,0.16);
+    }
+
+    .extras-result-marker--hit {
+      color: #22c55e;
+    }
+
+    .extras-result-marker--miss {
+      color: #ef4444;
+    }
+
     .extras-card-flag-fill {
       position: absolute;
       inset: 6px;
@@ -14265,6 +14298,7 @@
         card.dataset.textValue = "";
         card.removeAttribute("aria-label");
         card.querySelector(".extras-card-flag-fill, .extras-card-flag-emoji")?.remove();
+        card.querySelector(".extras-result-marker")?.remove();
         const placeholder = card.querySelector(".extras-card-placeholder");
         placeholder.classList.remove("is-text-filled");
         placeholder.textContent = "Selecione";
@@ -14291,9 +14325,25 @@
       return draftValue.type === "team" ? draftValue.name : draftValue.value;
     }
 
+    function clearExtraResultMarker(card) {
+      card?.querySelector?.(".extras-result-marker")?.remove();
+    }
+
+    function setExtraResultMarker(card, isCorrect) {
+      clearExtraResultMarker(card);
+      const marker = document.createElement("span");
+      marker.className = `extras-result-marker ${isCorrect ? "extras-result-marker--hit" : "extras-result-marker--miss"}`;
+      marker.textContent = isCorrect ? "✓" : "×";
+      marker.setAttribute("aria-hidden", "true");
+      card.appendChild(marker);
+    }
+
     async function updateExtrasResultStates() {
       if (!BACKEND_ENABLED || getCurrentUser()?.isAdmin) {
-        extraSelectCards.forEach((card) => card.classList.remove("is-extra-hit", "is-result-miss"));
+        extraSelectCards.forEach((card) => {
+          card.classList.remove("is-extra-hit", "is-result-miss");
+          clearExtraResultMarker(card);
+        });
         return;
       }
 
@@ -14304,6 +14354,7 @@
 
         extraSelectCards.forEach((card) => {
           card.classList.remove("is-extra-hit", "is-result-miss");
+          clearExtraResultMarker(card);
           const extraKey = card.dataset.extraSelect;
           const fieldName = extrasFieldMap[extraKey];
           const officialKey = extrasOfficialResultMap[fieldName];
@@ -14315,10 +14366,14 @@
           const hasAnswer = rawValue !== null && rawValue !== undefined && rawValue !== "";
           const isCorrect = hasAnswer && normalizeExtraAnswer(rawValue) === normalizeExtraAnswer(officialValue);
           card.classList.add(isCorrect ? "is-extra-hit" : "is-result-miss");
+          setExtraResultMarker(card, isCorrect);
         });
       } catch (error) {
         console.error(error);
-        extraSelectCards.forEach((card) => card.classList.remove("is-extra-hit", "is-result-miss"));
+        extraSelectCards.forEach((card) => {
+          card.classList.remove("is-extra-hit", "is-result-miss");
+          clearExtraResultMarker(card);
+        });
       }
     }
 

@@ -704,6 +704,28 @@ Antes de qualquer commit:
 - Pendencias:
   - validar no acesso ADMIN com dados reais de usuarios.
 
+### Sessao 2026-07-02 - marcadores de acerto nos extras
+
+- O que foi alterado:
+  - na aba `EXTRAS`, os palpites extras com resultado oficial continuam recebendo fundo verde para acerto e vermelho para erro;
+  - alem do fundo, os cards agora exibem um marcador visual sobre o palpite: `✓` verde para acerto e `×` vermelho para erro;
+  - os marcadores sao limpos e recriados junto com o recarregamento/recalculo dos estados dos extras.
+- Por que foi alterado:
+  - melhorar a leitura dos acertos e erros nos extras, porque apenas a cor de fundo estava ruim de identificar.
+- Arquivos modificados:
+  - `design-lab.html`
+  - `AGENTS.md`
+- Impacto no bolao:
+  - alteracao apenas visual na aba `EXTRAS`;
+  - nao altera pontuacao, ranking, resultados oficiais, palpites, usuarios, Supabase, API, Vercel ou GitHub.
+- Areas afetadas:
+  - visual/extras: afetado.
+- Testes ou verificacoes feitos:
+  - `npm.cmd run build`;
+  - `git diff --check`.
+- Pendencias:
+  - validar visualmente em desktop e mobile apos publicacao.
+
 ### Sessao 2026-07-01 - desempenho mobile do chaveamento
 
 - O que foi alterado:
