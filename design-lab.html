@@ -11075,6 +11075,72 @@
       return { label: "Errou", className: "is-negative" };
     }
 
+    function buildHistoryExtraPillsHtml(entry, missed) {
+      const pills = [];
+      if (!missed && Number(entry.total_multiplier || 1) > 1) {
+        pills.push(`×${formatRankingPoints(entry.total_multiplier)}`);
+      }
+      if (!missed && entry.applied_buffs) {
+        entry.applied_buffs
+          .split(",")
+          .map((buff) => buff.trim())
+          .filter(Boolean)
+          .forEach((buff) => pills.push(buff));
+      }
+      (entry.outgoing_target_buffs || []).forEach((buff) => {
+        pills.push(buildOutgoingTargetBuffLabel(buff));
+      });
+      (entry.incoming_target_buffs || []).forEach((buff) => {
+        pills.push(buildIncomingTargetBuffLabel(buff));
+      });
+      if (!pills.length) return "";
+      return `<div class="history-buffs-row">${
+        pills.map((pill) => `<span class="history-buff-pill">${escapeHtml(pill)}</span>`).join("")
+      }</div>`;
+    }
+
+    async function enrichHistoryEntriesWithTargetBuffs(entries, nickname) {
+      if (!entries?.length || !nickname || !BACKEND_ENABLED) return entries || [];
+      const matchIds = [...new Set(entries.map((entry) => entry.match_id).filter(Boolean))];
+      if (!matchIds.length) return entries;
+      const { data: buffs, error } = await supabase
+        .from("match_buffs")
+        .select("user_id,match_id,buff_id,target_nickname")
+        .in("match_id", matchIds)
+        .in("buff_id", ["zerar-adversario", "meia-adversario", "cancel-rival"]);
+      if (error) throw error;
+      const targetBuffs = (buffs || []).filter((buff) => isTargetBuffId(buff.buff_id));
+      const sourceUserIds = [...new Set(targetBuffs.map((buff) => buff.user_id).filter(Boolean))];
+      const { data: users, error: usersError } = sourceUserIds.length
+        ? await supabase.from("app_users").select("id,nickname").in("id", sourceUserIds)
+        : { data: [], error: null };
+      if (usersError) throw usersError;
+
+      const nicknameByUserId = new Map((users || []).map((user) => [user.id, user.nickname]));
+      const normalizedNickname = normalizeTextForApi(nickname);
+      const outgoingByMatch = new Map();
+      const incomingByMatch = new Map();
+
+      targetBuffs.forEach((buff) => {
+        const sourceNickname = nicknameByUserId.get(buff.user_id) || "";
+        const enriched = { ...buff, source_nickname: sourceNickname };
+        if (normalizeTextForApi(sourceNickname) === normalizedNickname) {
+          if (!outgoingByMatch.has(buff.match_id)) outgoingByMatch.set(buff.match_id, []);
+          outgoingByMatch.get(buff.match_id).push(enriched);
+        }
+        if (normalizeTextForApi(buff.target_nickname || "") === normalizedNickname) {
+          if (!incomingByMatch.has(buff.match_id)) incomingByMatch.set(buff.match_id, []);
+          incomingByMatch.get(buff.match_id).push(enriched);
+        }
+      });
+
+      return entries.map((entry) => ({
+        ...entry,
+        outgoing_target_buffs: outgoingByMatch.get(entry.match_id) || [],
+        incoming_target_buffs: incomingByMatch.get(entry.match_id) || [],
+      }));
+    }
+
     function renderUserHistory(entries) {
       if (!historyList || !historyEmpty) return;
       if (!entries.length) {
@@ -11102,26 +11168,7 @@
             ? `${Number(entry.points_awarded) > 0 ? "+" : ""}${formatRankingPoints(entry.points_awarded)} pts`
             : "Em espera";
 
-          // Buffs como pills compactos
-          const buffsHtml = (!missed && entry.applied_buffs)
-            ? `<div class="history-buffs-row">${
-                entry.applied_buffs.split(",").map((b) => `<span class="history-buff-pill">${escapeHtml(b.trim())}</span>`).join("")
-              }</div>`
-            : "";
-
-          // Multiplicador como pill adicional
-          const multHtml = (!missed && Number(entry.total_multiplier || 1) > 1)
-            ? `<span class="history-buff-pill">×${formatRankingPoints(entry.total_multiplier)}</span>`
-            : "";
-
-          const extraPillsHtml = (buffsHtml || multHtml)
-            ? `<div class="history-buffs-row">${
-                (!missed && Number(entry.total_multiplier || 1) > 1 ? multHtml : "") +
-                (!missed && entry.applied_buffs
-                  ? entry.applied_buffs.split(",").map((b) => `<span class="history-buff-pill">${escapeHtml(b.trim())}</span>`).join("")
-                  : "")
-              }</div>`
-            : "";
+          const extraPillsHtml = buildHistoryExtraPillsHtml(entry, missed);
 
           // Linha de placares (só para quem palpitou)
           const scoresRowHtml = missed
@@ -11174,7 +11221,10 @@
           p_user_id: null,
         });
         if (error) throw error;
-        userHistoryCache = applyKnockoutScoreFallbackToHistory(data || []);
+        userHistoryCache = await enrichHistoryEntriesWithTargetBuffs(
+          applyKnockoutScoreFallbackToHistory(data || []),
+          currentUser.nickname || currentUser.username
+        );
         renderUserHistory(userHistoryCache);
       } catch (error) {
         console.error(error);
@@ -11219,11 +11269,7 @@
           const officialScore = `${entry.official_home}–${entry.official_away}`;
           const predictedScore = missed ? "Sem palpite" : `${entry.predicted_home}–${entry.predicted_away}`;
           const pointsText = `${Number(entry.points_awarded) > 0 ? "+" : ""}${formatRankingPoints(entry.points_awarded)} pts`;
-          const extraPillsHtml = (!missed && entry.applied_buffs)
-            ? `<div class="history-buffs-row">${
-                entry.applied_buffs.split(",").map((buff) => `<span class="history-buff-pill">${escapeHtml(buff.trim())}</span>`).join("")
-              }</div>`
-            : "";
+          const extraPillsHtml = buildHistoryExtraPillsHtml(entry, missed);
 
           return `
             <article class="history-card${missed ? " is-missed" : ""}">
@@ -11372,9 +11418,16 @@
             p_user_id: userId,
           });
           if (error) throw error;
-          renderPointsDetailEntries(applyKnockoutScoreFallbackToHistory(data || []), Number(totalPoints ?? 0));
+          const entries = await enrichHistoryEntriesWithTargetBuffs(
+            applyKnockoutScoreFallbackToHistory(data || []),
+            nickname
+          );
+          renderPointsDetailEntries(entries, Number(totalPoints ?? 0));
         } else {
-          const entries = await loadPointsDetailEntriesFromTables(userId);
+          const entries = await enrichHistoryEntriesWithTargetBuffs(
+            await loadPointsDetailEntriesFromTables(userId),
+            nickname
+          );
           renderPointsDetailEntries(entries, Number(totalPoints ?? 0));
         }
       } catch (error) {
@@ -14950,6 +15003,58 @@
       return BUFF_LABEL_MAP[rawId] || rawId;
     }
 
+    function isTargetBuffId(buffId = "") {
+      return buffId === "zerar-adversario" || buffId === "meia-adversario" || buffId === "cancel-rival";
+    }
+
+    function getTargetBuffBaseLabel(buffId = "") {
+      if (buffId === "meia-adversario") return "Meiou";
+      if (buffId === "zerar-adversario" || buffId === "cancel-rival") return "Zerou";
+      return buffIdToLabel(buffId);
+    }
+
+    function getTargetBuffAffectedLabel(buffId = "") {
+      if (buffId === "meia-adversario") return "Meiado";
+      if (buffId === "zerar-adversario" || buffId === "cancel-rival") return "Zerado";
+      return buffIdToLabel(buffId);
+    }
+
+    function buildOutgoingTargetBuffLabel(buff = {}) {
+      const target = buff.target_nickname || "alvo não informado";
+      return `${getTargetBuffBaseLabel(buff.buff_id)}: ${target}`;
+    }
+
+    function buildIncomingTargetBuffLabel(buff = {}) {
+      const source = buff.source_nickname || "participante";
+      return `${getTargetBuffAffectedLabel(buff.buff_id)} por ${source}`;
+    }
+
+    async function loadMatchTargetBuffsByNickname(matchId) {
+      if (!matchId || !BACKEND_ENABLED) return new Map();
+      const { data: buffs, error } = await supabase
+        .from("match_buffs")
+        .select("user_id,buff_id,target_nickname")
+        .eq("match_id", matchId)
+        .in("buff_id", ["zerar-adversario", "meia-adversario", "cancel-rival"]);
+      if (error) throw error;
+      const userIds = [...new Set((buffs || []).map((buff) => buff.user_id).filter(Boolean))];
+      if (!userIds.length) return new Map();
+      const { data: users, error: usersError } = await supabase
+        .from("app_users")
+        .select("id,nickname")
+        .in("id", userIds);
+      if (usersError) throw usersError;
+      const nicknameByUserId = new Map((users || []).map((user) => [user.id, user.nickname]));
+      return (buffs || []).reduce((map, buff) => {
+        const sourceNickname = nicknameByUserId.get(buff.user_id);
+        const key = normalizeTextForApi(sourceNickname || "");
+        if (!key) return map;
+        if (!map.has(key)) map.set(key, []);
+        map.get(key).push({ ...buff, source_nickname: sourceNickname });
+        return map;
+      }, new Map());
+    }
+
     function buildAvatarHtml(avatarType, avatarValue, nickname) {
       if (avatarType === "upload" && avatarValue) {
         return `<img src="${escapeHtml(avatarValue)}" alt="${escapeHtml(nickname)}" loading="lazy">`;
@@ -15059,6 +15164,7 @@
           return;
         }
 
+        const targetBuffsByNickname = await loadMatchTargetBuffsByNickname(matchId);
         const html = `<div class="preds-list">${rows.map((row) => {
           const isMe = row.nickname?.toLowerCase() === currentUser.nickname?.toLowerCase() ||
                        row.nickname?.toLowerCase() === currentUser.username?.toLowerCase();
@@ -15067,8 +15173,14 @@
             resultState === "exact" ? " is-exact-hit" :
             resultState === "miss" ? " is-result-miss" :
             "";
+          const rowTargetBuffs = targetBuffsByNickname.get(normalizeTextForApi(row.nickname || "")) || [];
           const buffTags = (row.buff_ids || [])
-            .map((b) => `<span class="preds-buff-tag">${escapeHtml(buffIdToLabel(b))}</span>`)
+            .map((b) => {
+              const buffId = String(b || "").split(":")[0];
+              const targetBuff = rowTargetBuffs.find((entry) => entry.buff_id === buffId);
+              const label = targetBuff ? buildOutgoingTargetBuffLabel(targetBuff) : buffIdToLabel(b);
+              return `<span class="preds-buff-tag">${escapeHtml(label)}</span>`;
+            })
             .join("");
           return `
             <div class="preds-row${isMe ? " is-me" : ""}${hitClass}">

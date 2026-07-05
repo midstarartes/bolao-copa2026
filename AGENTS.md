@@ -2261,3 +2261,16 @@ Antes de qualquer commit:
     - liberação quando `AGENTS.md` e outro arquivo estão staged.
 - Pendências:
   - repetir a ativação em cada PC novo usado no projeto.
+
+### Sessao 2026-07-05 - alvos dos buffs nos palpites e historico
+
+- O que foi alterado:
+  - `VER PALPITES` agora exibe o alvo dos buffs `ZERAR ADVERSARIO` e `MEIAR ADVERSARIO`;
+  - historico pessoal e detalhe de pontos agora mostram quando o usuario usou esses buffs e quando foi alvo deles.
+- Arquivos modificados:
+  - `design-lab.html`
+  - `AGENTS.md`
+- Testes ou verificacoes feitos:
+  - `node --check` do script extraido de `design-lab.html`;
+  - `npm.cmd run build`;
+  - `git diff --check`.
